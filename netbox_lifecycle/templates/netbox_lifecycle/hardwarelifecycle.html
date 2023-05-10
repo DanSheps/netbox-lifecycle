@@ -1,0 +1,69 @@
+{% extends 'generic/object.html' %}
+{% load buttons %}
+{% load custom_links %}
+{% load helpers %}
+{% load perms %}
+{% load plugins %}
+{% load tabs %}
+
+{% block content %}
+  <div class="row">
+    <div class="col col-md-6">
+      <div class="card">
+        <h5 class="card-header">{{ object.assigned_object_type.name|capfirst}}</h5>
+        <div class="card-body">
+          <table class="table table-hover attr-table">
+            <tr>
+              <td>Manufacturer</td>
+              <td>{{ object.assigned_object.manufacturer|linkify }}</td>
+            </tr>
+            <tr>
+              <td>Object</td>
+              <td>{{ object.assigned_object|linkify }}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <h5 class="card-header">Dates</h5>
+        <div class="card-body">
+          <table class="table table-hover attr-table">
+            <tr>
+              <td>End of Sale</td>
+              <td>{{ object.end_of_sale }}</td>
+            </tr>
+            <tr>
+              <td>End of Maintenance Updates</td>
+              <td>{{ object.end_of_maintenance }}</td>
+            </tr>
+            <tr>
+              <td>End of Security Updates</td>
+              <td>{{ object.end_of_security }}</td>
+            </tr>
+            <tr>
+              <td>Last Support Contract Purchase Date</td>
+              <td>{{ object.last_contract_date }}</td>
+            </tr>
+            <tr>
+              <td>End of Support</td>
+              <td>{{ object.end_of_support }}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      {% plugin_left_page object %}
+      {% include 'inc/panels/tags.html' %}
+    </div>
+    <div class="col col-md-6">
+      {% include 'inc/panels/related_objects.html' %}
+      {% include 'inc/panels/custom_fields.html' %}
+      {% include 'inc/panels/comments.html' %}
+      {% plugin_right_page object %}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col col-md-12">
+      {% plugin_full_width_page object %}
+    </div>
+  </div>
+{% endblock %}

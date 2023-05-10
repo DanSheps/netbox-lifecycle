@@ -1,0 +1,65 @@
+{% extends 'generic/object.html' %}
+{% load buttons %}
+{% load custom_links %}
+{% load helpers %}
+{% load perms %}
+{% load plugins %}
+{% load tabs %}
+
+{% block content %}
+  <div class="row">
+    <div class="col col-md-6">
+      <div class="card">
+        <h5 class="card-header">Contract</h5>
+        <div class="card-body">
+          <table class="table table-hover attr-table">
+            <tr>
+              <td>Manufacturer</td>
+              <td>{{ object.manufacturer|linkify }}</td>
+            </tr>
+            <tr>
+              <td>Vendor</td>
+              <td>{{ object.vendor|linkify }}</td>
+
+            <tr>
+              <td>Contract ID</td>
+              <td>{{ object.contract_id }}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <h5 class="card-header">Dates</h5>
+        <div class="card-body">
+          <table class="table table-hover attr-table">
+            <tr>
+              <td>Start</td>
+              <td>{{ object.start }}</td>
+            </tr>
+            <tr>
+              <td>Last renewal</td>
+              <td>{{ object.renewal }}</td>
+            </tr>
+            <tr>
+              <td>Expiry</td>
+              <td>{{ object.expiry }}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      {% plugin_left_page object %}
+      {% include 'inc/panels/tags.html' %}
+    </div>
+    <div class="col col-md-6">
+      {% include 'inc/panels/related_objects.html' %}
+      {% include 'inc/panels/custom_fields.html' %}
+      {% include 'inc/panels/comments.html' %}
+      {% plugin_right_page object %}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col col-md-12">
+      {% plugin_full_width_page object %}
+    </div>
+  </div>
+{% endblock %}

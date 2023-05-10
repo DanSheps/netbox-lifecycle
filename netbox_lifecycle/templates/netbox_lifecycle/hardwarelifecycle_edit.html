@@ -1,0 +1,50 @@
+{% extends 'generic/object_edit.html' %}
+{% load form_helpers %}
+{% load static %}
+
+{% block form %}
+
+    <div class="field-group my-5">
+      <div class="row mb-2">
+        <h5 class="offset-sm-3">Assignment</h5>
+      </div>
+      <div class="row mb-2">
+        <div class="offset-sm-3">
+          <ul class="nav nav-pills" role="tablist">
+            <li role="presentation" class="nav-item">
+              <button role="tab" type="button" id="device_tab" data-bs-toggle="tab" aria-controls="device-type" data-bs-target="#device-type" class="nav-link {% if not form.initial.module_type %}active{% endif %}">
+                Device Type
+              </button>
+            </li>
+            <li role="presentation" class="nav-item">
+              <button role="tab" type="button" id="vm_tab" data-bs-toggle="tab" aria-controls="module-type" data-bs-target="#module-type" class="nav-link {% if form.initial.module_type %}active{% endif %}">
+                Module Type
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="tab-content p-0 border-0">
+        <div class="tab-pane {% if not form.initial.module_type %}active{% endif %}" id="device-type" role="tabpanel" aria-labeled-by="device_tab">
+          {% render_field form.device_type %}
+        </div>
+        <div class="tab-pane {% if form.initial.module_type %}active{% endif %}" id="module-type" role="tabpanel" aria-labeled-by="vm_tab">
+          {% render_field form.module_type %}
+        </div>
+      </div>
+    </div>
+
+    <div class="field-group my-5">
+      <div class="row mb-2">
+        <h5 class="offset-sm-3">Key Dates</h5>
+      </div>
+      {% render_field form.end_of_sale %}
+      {% render_field form.end_of_maintenance %}
+      {% render_field form.end_of_security %}
+      {% render_field form.last_contract_date %}
+      {% render_field form.end_of_support %}
+    </div>
+    <div class="field-group my-5">
+      {% render_field form.tags %}
+    </div>
+{% endblock %}
