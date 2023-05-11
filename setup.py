@@ -11,9 +11,7 @@ setup(
     author_email='dans@dansheps.com',
     maintainer='Daniel Sheppard',
     maintainer_email='dans@dansheps.com',
-    install_requires=[
-        'django-polymorphic'
-    ],
+    install_requires=[],
     packages=find_packages(),
     include_package_data=True,
     license='Proprietary',
