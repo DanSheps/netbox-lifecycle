@@ -1,15 +1,21 @@
+from django.contrib.contenttypes.models import ContentType
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from dcim.api.nested_serializers import NestedManufacturerSerializer, NestedDeviceSerializer
+from netbox.api.fields import ContentTypeField
 from netbox.api.serializers import NetBoxModelSerializer
+from netbox.constants import NESTED_SERIALIZER_PREFIX
 from netbox_lifecycle.api.nested_serializers import NestedVendorSerializer, NestedSupportContractSerializer
-from netbox_lifecycle.models import Vendor, SupportContract, SupportContractDeviceAssignment
+from netbox_lifecycle.models import Vendor, SupportContract, SupportContractAssignment
 
 __all__ = (
     'VendorSerializer',
     'SupportContractSerializer',
-    'SupportContractDeviceAssignmentSerializer',
+    'SupportContractAssignmentSerializer',
 )
+
+from utilities.api import get_serializer_for_model
 
 
 class VendorSerializer(NetBoxModelSerializer):
@@ -27,18 +33,35 @@ class SupportContractSerializer(NetBoxModelSerializer):
     start = serializers.DateField()
     renewal = serializers.DateField()
     end = serializers.DateField()
-    devices = NestedDeviceSerializer(many=True)
 
     class Meta:
         model = SupportContract
-        fields = ('url', 'id', 'display', 'manufacturer', 'vendor', 'contract_id', 'start', 'renewal', 'end', 'devices')
+        fields = ('url', 'id', 'display', 'manufacturer', 'vendor', 'contract_id', 'start', 'renewal', 'end', )
 
 
-class SupportContractDeviceAssignmentSerializer(NetBoxModelSerializer):
+class SupportContractAssignmentSerializer(NetBoxModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_lifecycle-api:licenseassignment-detail')
     contract = NestedSupportContractSerializer()
-    device = NestedDeviceSerializer()
+
+    assigned_object_type = ContentTypeField(
+        queryset=ContentType.objects.all()
+    )
+    assigned_object = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
-        model = SupportContractDeviceAssignment
-        fields = ('url', 'id', 'display', 'vendor', 'contract', 'device')
+        model = SupportContractAssignment
+        fields = (
+            'url', 'id', 'display', 'contract', 'assigned_object_type', 'assigned_object_id',
+            'assigned_object'
+        )
+
+    assigned_object_type = ContentTypeField(
+        queryset=ContentType.objects.all()
+    )
+    assigned_object = serializers.SerializerMethodField(read_only=True)
+
+    @extend_schema_field(serializers.JSONField(allow_null=True))
+    def get_assigned_object(self, instance):
+        serializer = get_serializer_for_model(instance.assigned_object, prefix=NESTED_SERIALIZER_PREFIX)
+        context = {'request': self.context['request']}
+        return serializer(instance.assigned_object, context=context).data

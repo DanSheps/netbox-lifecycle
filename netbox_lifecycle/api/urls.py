@@ -6,6 +6,6 @@ router.register('hardwarelifecycle', HardwareLifecycleViewSet)
 router.register('license', LicenseViewSet)
 router.register('licenseassignment', LicenseAssignmentViewSet)
 router.register('supportcontract', SupportContractViewSet)
-router.register('supportcontractassignment', SupportContractDeviceAssignmentViewSet)
+router.register('supportcontractassignment', SupportContractAssignmentViewSet)
 router.register('vendor', VendorViewSet)
 urlpatterns = router.urls

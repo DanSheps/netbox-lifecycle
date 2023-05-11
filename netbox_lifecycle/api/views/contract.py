@@ -1,13 +1,13 @@
 from rest_framework.viewsets import ModelViewSet
 
 from netbox_lifecycle.api.serializers import VendorSerializer, SupportContractSerializer, \
-    SupportContractDeviceAssignmentSerializer
-from netbox_lifecycle.models import Vendor, SupportContract, SupportContractDeviceAssignment
+    SupportContractAssignmentSerializer
+from netbox_lifecycle.models import Vendor, SupportContract, SupportContractAssignment
 
 __all__ = (
     'VendorViewSet',
     'SupportContractViewSet',
-    'SupportContractDeviceAssignmentViewSet',
+    'SupportContractAssignmentViewSet',
 )
 
 
@@ -21,6 +21,6 @@ class SupportContractViewSet(ModelViewSet):
     serializer_class = SupportContractSerializer
 
 
-class SupportContractDeviceAssignmentViewSet(ModelViewSet):
-    queryset = SupportContractDeviceAssignment.objects.all()
-    serializer_class = SupportContractDeviceAssignmentSerializer
+class SupportContractAssignmentViewSet(ModelViewSet):
+    queryset = SupportContractAssignment.objects.all()
+    serializer_class = SupportContractAssignmentSerializer

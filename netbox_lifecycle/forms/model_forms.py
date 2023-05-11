@@ -4,7 +4,7 @@ from django.utils.translation import gettext as _
 from dcim.models import DeviceType, ModuleType, Manufacturer, Device
 from netbox.forms import NetBoxModelForm
 from netbox_lifecycle.models import HardwareLifecycle, Vendor, SupportContract, LicenseAssignment, License, \
-    SupportContractDeviceAssignment
+    SupportContractAssignment
 from utilities.forms.fields import DynamicModelChoiceField, DynamicModelMultipleChoiceField
 from utilities.forms.widgets import DatePicker
 
@@ -12,7 +12,7 @@ from utilities.forms.widgets import DatePicker
 __all__ = (
     'VendorForm',
     'SupportContractForm',
-    'SupportContractDeviceAssignmentForm',
+    'SupportContractAssignmentForm',
     'LicenseForm',
     'LicenseAssignmentForm',
     'HardwareLifecycleForm'
@@ -48,7 +48,7 @@ class SupportContractForm(NetBoxModelForm):
         }
 
 
-class SupportContractDeviceAssignmentForm(NetBoxModelForm):
+class SupportContractAssignmentForm(NetBoxModelForm):
     contract = DynamicModelChoiceField(
         queryset=SupportContract.objects.all(),
         required=False,
@@ -58,11 +58,49 @@ class SupportContractDeviceAssignmentForm(NetBoxModelForm):
         queryset=Device.objects.all(),
         required=False,
         selector=True,
+        label=_('Device'),
+    )
+    license = DynamicModelChoiceField(
+        queryset=License.objects.all(),
+        required=False,
+        selector=True,
+        label=_('License'),
     )
 
     class Meta:
-        model = SupportContractDeviceAssignment
-        fields = ('contract', 'device')
+        model = SupportContractAssignment
+        fields = ('contract', 'device', 'license', )
+
+    def __init__(self, *args, **kwargs):
+
+        # Initialize helper selectors
+        instance = kwargs.get('instance')
+        initial = kwargs.get('initial', {}).copy()
+        if instance:
+            if type(instance.assigned_object) is Device:
+                initial['device'] = instance.assigned_object
+            elif type(instance.assigned_object) is License:
+                initial['license'] = instance.assigned_object
+        kwargs['initial'] = initial
+
+        super().__init__(*args, **kwargs)
+
+    def clean(self):
+        super().clean()
+
+        # Handle object assignment
+        selected_objects = [
+            field for field in ('device', 'license') if self.cleaned_data[field]
+        ]
+
+        if len(selected_objects) > 1:
+            raise forms.ValidationError({
+                selected_objects[1]: "You can only assign a device or license"
+            })
+        elif selected_objects:
+            self.instance.assigned_object = self.cleaned_data[selected_objects[0]]
+        else:
+            self.instance.assigned_object = None
 
 
 class LicenseForm(NetBoxModelForm):
@@ -135,7 +173,7 @@ class HardwareLifecycleForm(NetBoxModelForm):
             if type(instance.assigned_object) is DeviceType:
                 initial['device_type'] = instance.assigned_object
             elif type(instance.assigned_object) is ModuleType:
-                initial['device_type'] = instance.assigned_object
+                initial['module_type'] = instance.assigned_object
         kwargs['initial'] = initial
 
         super().__init__(*args, **kwargs)

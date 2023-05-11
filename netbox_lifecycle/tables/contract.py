@@ -1,12 +1,14 @@
+from django.utils.translation import gettext as _
+
 import django_tables2 as tables
 
 from netbox.tables import NetBoxTable
-from netbox_lifecycle.models import SupportContract, Vendor, SupportContractDeviceAssignment
+from netbox_lifecycle.models import SupportContract, Vendor, SupportContractAssignment
 
 __all__ = (
     'VendorTable',
     'SupportContractTable',
-    'SupportContractDeviceAssignmentTable'
+    'SupportContractAssignmentTable'
 )
 
 
@@ -47,19 +49,23 @@ class SupportContractTable(NetBoxTable):
         )
 
 
-class SupportContractDeviceAssignmentTable(NetBoxTable):
+class SupportContractAssignmentTable(NetBoxTable):
     contract = tables.Column(
         linkify=True
     )
-    device = tables.Column(
-        linkify=True
+    assigned_object_type = tables.Column(
+        verbose_name=_('Object Type'),
+    )
+    assigned_object = tables.Column(
+        verbose_name='Assigned Object',
+        linkify=True,
     )
 
     class Meta(NetBoxTable.Meta):
-        model = SupportContractDeviceAssignment
+        model = SupportContractAssignment
         fields = (
-            'pk', 'contract', 'device'
+            'pk', 'contract', 'assigned_object_type', 'assigned_object'
         )
         default_columns = (
-            'pk', 'contract', 'device'
+            'pk', 'contract', 'assigned_object_type', 'assigned_object'
         )

@@ -1,14 +1,15 @@
 import django_filters
+from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import gettext as _
 
 from dcim.models import Manufacturer, Device
 from netbox.filtersets import NetBoxModelFilterSet
-from netbox_lifecycle.models import Vendor, SupportContract, SupportContractDeviceAssignment
+from netbox_lifecycle.models import Vendor, SupportContract, SupportContractAssignment
 
 __all__ = (
     'SupportContractFilterSet',
     'VendorFilterSet',
-    'SupportContractDeviceAssignment'
+    'SupportContractAssignmentFilterSet'
 )
 
 
@@ -42,18 +43,16 @@ class SupportContractFilterSet(NetBoxModelFilterSet):
         fields = ('id', 'q', )
 
 
-class SupportContractDeviceAssignmentFilterSet(NetBoxModelFilterSet):
+class SupportContractAssignmentFilterSet(NetBoxModelFilterSet):
     contract_id = django_filters.ModelMultipleChoiceFilter(
         field_name='contract',
         queryset=SupportContract.objects.all(),
         label=_('Contract'),
     )
-    device_id = django_filters.ModelMultipleChoiceFilter(
-        field_name='device',
-        queryset=Device.objects.all(),
-        label=_('Device'),
+    assigned_object_type_id = django_filters.ModelMultipleChoiceFilter(
+        queryset=ContentType.objects.all()
     )
 
     class Meta:
-        model = SupportContractDeviceAssignment
-        fields = ('id', 'q', )
+        model = SupportContractAssignment
+        fields = ('id', 'q', 'assigned_object_type_id', 'assigned_object_id', )

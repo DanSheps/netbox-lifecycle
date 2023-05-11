@@ -3,14 +3,13 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.urls import reverse
 
-from dcim.models import DeviceType, ModuleType
 from netbox.models import NetBoxModel
 
 
 __all__ = (
     'Vendor',
     'SupportContract',
-    'SupportContractDeviceAssignment',
+    'SupportContractAssignment',
 )
 
 
@@ -45,15 +44,31 @@ class SupportContract(NetBoxModel):
         return reverse('plugins:netbox_lifecycle:supportcontract', args=[self.pk])
 
 
-class SupportContractDeviceAssignment(NetBoxModel):
+class SupportContractAssignment(NetBoxModel):
     contract = models.ForeignKey(to='netbox_lifecycle.SupportContract', on_delete=models.CASCADE)
-    device = models.ForeignKey(to='dcim.Device', on_delete=models.CASCADE)
+
+    assigned_object_type = models.ForeignKey(
+        to=ContentType,
+        limit_choices_to=('dcim.Device', 'netbox_lifecycle.License'),
+        on_delete=models.PROTECT,
+        related_name='+',
+        blank=True,
+        null=True
+    )
+    assigned_object_id = models.PositiveBigIntegerField(
+        blank=True,
+        null=True
+    )
+    assigned_object = GenericForeignKey(
+        ct_field='assigned_object_type',
+        fk_field='assigned_object_id'
+    )
 
     class Meta:
-        ordering = ['contract', 'device']
+        ordering = ['contract', 'assigned_object_type', 'assigned_object_id']
 
     def __str__(self):
-        return f'{self.device.name}: {self.contract.contract_id}'
+        return f'{self.assigned_object}: {self.contract.contract_id}'
 
     def get_absolute_url(self):
-        return reverse('plugins:netbox_lifecycle:supportcontract_devices', args=[self.contract.pk])
+        return reverse('plugins:netbox_lifecycle:supportcontract_assignments', args=[self.contract.pk])

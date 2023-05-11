@@ -4,7 +4,7 @@
 {% load static %}
 
 {% block content %}
-  {% include 'inc/table_controls_htmx.html' with table_modal="LicenseAssignment_config" %}
+  {% include 'inc/table_controls_htmx.html' with table_modal="ObjectTable_config" %}
   
   <form method="post">
     {% csrf_token %}
@@ -19,14 +19,14 @@
       <div class="bulk-button-group">
         {% if 'bulk_edit' in actions %}
           <div class="btn-group" role="group">
-            <button type="submit" name="_edit" formaction="{% url 'plugins:netbox_lifecycle:licenseassignment_bulk_edit' %}?license={{ object.pk }}&return_url={% url 'plugins:netbox_lifecycle:license_assignments' pk=object.pk %}" class="btn btn-warning btn-sm">
+            <button type="submit" name="_edit" formaction="{% url 'plugins:netbox_lifecycle:supportcontractassignment_bulk_edit' %}?contract={{ object.pk }}&return_url={% url 'plugins:netbox_lifecycle:supportcontract_assignments' pk=object.pk %}" class="btn btn-warning btn-sm">
               <i class="mdi mdi-pencil" aria-hidden="true"></i> Edit
             </button>
           </div>
         {% endif %}
         <div class="btn-group" role="group">
           {% if 'bulk_delete' in actions %}
-            <button type="submit" name="_delete" formaction="{% url 'plugins:netbox_lifecycle:licenseassignment_bulk_delete' %}?return_url={% url 'plugins:netbox_lifecycle:license_assignments' pk=object.pk %}" class="btn btn-danger btn-sm">
+            <button type="submit" name="_delete" formaction="{% url 'plugins:netbox_lifecycle:supportcontractassignment_bulk_delete' %}?return_url={% url 'plugins:netbox_lifecycle:supportcontract_assignments' pk=object.pk %}" class="btn btn-danger btn-sm">
               <i class="mdi mdi-trash-can-outline" aria-hidden="true"></i> Delete
             </button>
           {% endif %}
@@ -34,7 +34,7 @@
       </div>
       {% if 'add' in actions %}
         <div class="bulk-button-group">
-          <a href="{% url 'plugins:netbox_lifecycle:licenseassignment_add' %}?license={{ object.pk }}&return_url={% url 'plugins:netbox_lifecycle:license_assignments' pk=object.pk %}" class="btn btn-sm btn-primary">
+          <a href="{% url 'plugins:netbox_lifecycle:supportcontractassignment_add' %}?contract={{ object.pk }}&return_url={% url 'plugins:netbox_lifecycle:supportcontract_assignments' pk=object.pk %}" class="btn btn-sm btn-primary">
             <i class="mdi mdi-plus-thick" aria-hidden="true"></i> Add
           </a>
         </div>
@@ -45,5 +45,5 @@
 
 {% block modals %}
   {{ block.super }}
-  {% table_config_form table %}
+  {% table_config_form table table_name="ObjectTable" %}
 {% endblock modals %}

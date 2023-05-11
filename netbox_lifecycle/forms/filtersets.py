@@ -5,7 +5,7 @@ from django.db.models import Q
 from dcim.models import Device, Manufacturer
 from netbox.forms import NetBoxModelFilterSetForm
 from netbox_lifecycle.models import HardwareLifecycle, SupportContract, Vendor, License, LicenseAssignment, \
-    SupportContractDeviceAssignment
+    SupportContractAssignment
 from utilities.forms.fields import DynamicModelMultipleChoiceField, TagFilterField
 from utilities.forms.widgets import APISelectMultiple
 
@@ -16,7 +16,7 @@ __all__ = (
     'VendorFilterSetForm',
     'LicenseFilterSetForm',
     'LicenseAssignmentFilterSetForm',
-    'SupportContractDeviceAssignmentFilterSetForm'
+    'SupportContractAssignmentFilterSetForm'
 )
 
 
@@ -82,11 +82,11 @@ class LicenseFilterSetForm(NetBoxModelFilterSetForm):
     tag = TagFilterField(model)
 
 
-class SupportContractDeviceAssignmentFilterSetForm(NetBoxModelFilterSetForm):
-    model = SupportContractDeviceAssignment
+class SupportContractAssignmentFilterSetForm(NetBoxModelFilterSetForm):
+    model = SupportContractAssignment
     fieldsets = (
         (None, ('q', 'filter_id', 'tag')),
-        ('Assignment', ('contract_id', 'device_id', )),
+        ('Assignment', ('contract_id', 'assigned_object_type_id', )),
     )
     contract_id = DynamicModelMultipleChoiceField(
         queryset=SupportContract.objects.all(),
@@ -94,11 +94,14 @@ class SupportContractDeviceAssignmentFilterSetForm(NetBoxModelFilterSetForm):
         selector=True,
         label=_('Licenses'),
     )
-    device_id = DynamicModelMultipleChoiceField(
-        queryset=Device.objects.all(),
+
+    assigned_object_type_id = DynamicModelMultipleChoiceField(
+        queryset=ContentType.objects.filter(Q(app_label='dcim', model='devicetype') | Q(app_label='dcim', model='moduletype')),
         required=False,
-        selector=True,
-        label=_('Devices'),
+        label=_('Object Type'),
+        widget=APISelectMultiple(
+            api_url='/api/extras/content-types/',
+        )
     )
     tag = TagFilterField(model)
 
