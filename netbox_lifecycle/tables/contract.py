@@ -1,12 +1,12 @@
 import django_tables2 as tables
 
 from netbox.tables import NetBoxTable
-from netbox_lifecycle.models import SupportContract, Vendor
-
+from netbox_lifecycle.models import SupportContract, Vendor, SupportContractDeviceAssignment
 
 __all__ = (
     'VendorTable',
     'SupportContractTable',
+    'SupportContractDeviceAssignmentTable'
 )
 
 
@@ -44,4 +44,22 @@ class SupportContractTable(NetBoxTable):
         )
         default_columns = (
             'pk', 'contract_id',
+        )
+
+
+class SupportContractDeviceAssignmentTable(NetBoxTable):
+    contract = tables.Column(
+        linkify=True
+    )
+    device = tables.Column(
+        linkify=True
+    )
+
+    class Meta(NetBoxTable.Meta):
+        model = SupportContractDeviceAssignment
+        fields = (
+            'pk', 'contract', 'device'
+        )
+        default_columns = (
+            'pk', 'contract', 'device'
         )

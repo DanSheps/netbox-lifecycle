@@ -10,6 +10,7 @@ from netbox.models import NetBoxModel
 __all__ = (
     'Vendor',
     'SupportContract',
+    'SupportContractDeviceAssignment',
 )
 
 
@@ -33,11 +34,6 @@ class SupportContract(NetBoxModel):
     start = models.DateField()
     renewal = models.DateField()
     end = models.DateField()
-    devices = models.ManyToManyField(
-        to='dcim.Device',
-        related_name='contracts',
-        blank=True
-    )
 
     class Meta:
         ordering = ['contract_id']
@@ -47,3 +43,17 @@ class SupportContract(NetBoxModel):
 
     def get_absolute_url(self):
         return reverse('plugins:netbox_lifecycle:supportcontract', args=[self.pk])
+
+
+class SupportContractDeviceAssignment(NetBoxModel):
+    contract = models.ForeignKey(to='netbox_lifecycle.SupportContract', on_delete=models.CASCADE)
+    device = models.ForeignKey(to='dcim.Device', on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ['contract', 'device']
+
+    def __str__(self):
+        return f'{self.device.name}: {self.contract.contract_id}'
+
+    def get_absolute_url(self):
+        return reverse('plugins:netbox_lifecycle:supportcontract_devices', args=[self.contract.pk])

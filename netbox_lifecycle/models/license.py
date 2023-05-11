@@ -12,6 +12,7 @@ __all__ = (
     'LicenseAssignment'
 )
 
+
 class License(NetBoxModel):
     manufacturer = models.ForeignKey(to='dcim.Manufacturer', on_delete=models.CASCADE)
     name = models.CharField(max_length=100)

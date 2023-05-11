@@ -2,7 +2,7 @@ from django.urls import path
 
 from netbox.views.generic import ObjectChangeLogView
 from . import views
-from .models import HardwareLifecycle, SupportContract, License, LicenseAssignment
+from .models import HardwareLifecycle, SupportContract, License, LicenseAssignment, SupportContractDeviceAssignment
 
 urlpatterns = [
     path('lifecycle/', views.HardwareLifecycleListView.as_view(), name='hardwarelifecycle_list'),
@@ -23,9 +23,15 @@ urlpatterns = [
     path('contracts/add', views.SupportContractEditView.as_view(), name='supportcontract_add'),
     path('contracts/<int:pk>', views.SupportContractView.as_view(), name='supportcontract'),
     path('contracts/<int:pk>/devices', views.SupportContractDeviceView.as_view(), name='supportcontract_devices'),
+    #path('contracts/<int:pk>/licenses', views.SupportContractLicenseView.as_view(), name='supportcontract_licenses'),
     path('contracts/<int:pk>/edit', views.SupportContractEditView.as_view(), name='supportcontract_edit'),
     path('contracts/<int:pk>/delete', views.SupportContractDeleteView.as_view(), name='supportcontract_delete'),
     path('contracts/<int:pk>/changelog', ObjectChangeLogView.as_view(), name='supportcontract_changelog', kwargs={'model': SupportContract}),
+
+    path('contract_assignment/add', views.SupportContractDeviceAssignmentEditView.as_view(), name='supportcontractdeviceassignment_add'),
+    path('contract_assignment/<int:pk>/edit', views.SupportContractDeviceAssignmentEditView.as_view(), name='supportcontractdeviceassignment_edit'),
+    path('contract_assignment/<int:pk>/delete', views.SupportContractDeviceAssignmentDeleteView.as_view(), name='supportcontractdeviceassignment_delete'),
+    path('contract_assignment/<int:pk>/changelog', ObjectChangeLogView.as_view(), name='supportcontractdeviceassignment_changelog', kwargs={'model': SupportContractDeviceAssignment}),
 
     path('license/', views.LicenseListView.as_view(), name='license_list'),
     path('license/add', views.LicenseEditView.as_view(), name='license_add'),

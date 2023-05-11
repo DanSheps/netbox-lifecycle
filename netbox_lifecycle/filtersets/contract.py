@@ -3,12 +3,12 @@ from django.utils.translation import gettext as _
 
 from dcim.models import Manufacturer, Device
 from netbox.filtersets import NetBoxModelFilterSet
-from netbox_lifecycle.models import Vendor, SupportContract
-
+from netbox_lifecycle.models import Vendor, SupportContract, SupportContractDeviceAssignment
 
 __all__ = (
     'SupportContractFilterSet',
-    'VendorFilterSet'
+    'VendorFilterSet',
+    'SupportContractDeviceAssignment'
 )
 
 
@@ -36,12 +36,24 @@ class SupportContractFilterSet(NetBoxModelFilterSet):
         queryset=Vendor.objects.all(),
         label=_('Vendor'),
     )
+
+    class Meta:
+        model = SupportContract
+        fields = ('id', 'q', )
+
+
+class SupportContractDeviceAssignmentFilterSet(NetBoxModelFilterSet):
+    contract_id = django_filters.ModelMultipleChoiceFilter(
+        field_name='contract',
+        queryset=SupportContract.objects.all(),
+        label=_('Contract'),
+    )
     device_id = django_filters.ModelMultipleChoiceFilter(
-        field_name='devices',
+        field_name='device',
         queryset=Device.objects.all(),
         label=_('Device'),
     )
 
     class Meta:
-        model = SupportContract
+        model = SupportContractDeviceAssignment
         fields = ('id', 'q', )

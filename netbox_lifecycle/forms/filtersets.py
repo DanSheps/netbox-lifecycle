@@ -4,7 +4,8 @@ from django.db.models import Q
 
 from dcim.models import Device, Manufacturer
 from netbox.forms import NetBoxModelFilterSetForm
-from netbox_lifecycle.models import HardwareLifecycle, SupportContract, Vendor, License, LicenseAssignment
+from netbox_lifecycle.models import HardwareLifecycle, SupportContract, Vendor, License, LicenseAssignment, \
+    SupportContractDeviceAssignment
 from utilities.forms.fields import DynamicModelMultipleChoiceField, TagFilterField
 from utilities.forms.widgets import APISelectMultiple
 
@@ -14,7 +15,8 @@ __all__ = (
     'SupportContractFilterSetForm',
     'VendorFilterSetForm',
     'LicenseFilterSetForm',
-    'LicenseAssignmentFilterSetForm'
+    'LicenseAssignmentFilterSetForm',
+    'SupportContractDeviceAssignmentFilterSetForm'
 )
 
 
@@ -41,7 +43,6 @@ class SupportContractFilterSetForm(NetBoxModelFilterSetForm):
     fieldsets = (
         (None, ('q', 'filter_id', 'tag')),
         ('Purchase Information', ('manufacturer_id', 'vendor_id', )),
-        ('Assignments', ('device_id', )),
     )
     manufacturer_id = DynamicModelMultipleChoiceField(
         queryset=Manufacturer.objects.all(),
@@ -54,12 +55,6 @@ class SupportContractFilterSetForm(NetBoxModelFilterSetForm):
         required=False,
         selector=True,
         label=_('Vendor'),
-    )
-    device_id = DynamicModelMultipleChoiceField(
-        queryset=Device.objects.all(),
-        required=False,
-        selector=True,
-        label=_('Device'),
     )
     tag = TagFilterField(model)
 
@@ -83,6 +78,27 @@ class LicenseFilterSetForm(NetBoxModelFilterSetForm):
         required=False,
         selector=True,
         label=_('Manufacturer'),
+    )
+    tag = TagFilterField(model)
+
+
+class SupportContractDeviceAssignmentFilterSetForm(NetBoxModelFilterSetForm):
+    model = SupportContractDeviceAssignment
+    fieldsets = (
+        (None, ('q', 'filter_id', 'tag')),
+        ('Assignment', ('contract_id', 'device_id', )),
+    )
+    contract_id = DynamicModelMultipleChoiceField(
+        queryset=SupportContract.objects.all(),
+        required=False,
+        selector=True,
+        label=_('Licenses'),
+    )
+    device_id = DynamicModelMultipleChoiceField(
+        queryset=Device.objects.all(),
+        required=False,
+        selector=True,
+        label=_('Devices'),
     )
     tag = TagFilterField(model)
 

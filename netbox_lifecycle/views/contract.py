@@ -4,10 +4,12 @@ from dcim.filtersets import DeviceFilterSet
 from dcim.models import Device
 from dcim.tables import DeviceTable
 from netbox.views.generic import ObjectListView, ObjectEditView, ObjectDeleteView, ObjectView, ObjectChildrenView
-from netbox_lifecycle.filtersets import SupportContractFilterSet, VendorFilterSet
-from netbox_lifecycle.forms import SupportContractFilterSetForm, VendorFilterSetForm, SupportContractForm, VendorForm
-from netbox_lifecycle.models import SupportContract, Vendor
-from netbox_lifecycle.tables import SupportContractTable, VendorTable
+from netbox_lifecycle.filtersets import SupportContractFilterSet, VendorFilterSet, LicenseAssignmentFilterSet
+from netbox_lifecycle.forms import SupportContractFilterSetForm, VendorFilterSetForm, SupportContractForm, VendorForm, \
+    SupportContractDeviceAssignmentForm
+from netbox_lifecycle.models import SupportContract, Vendor, LicenseAssignment, SupportContractDeviceAssignment
+from netbox_lifecycle.tables import SupportContractTable, VendorTable, LicenseAssignmentTable, \
+    SupportContractDeviceAssignmentTable
 from utilities.views import ViewTab, register_model_view
 
 
@@ -19,8 +21,11 @@ __all__ = (
     'SupportContractListView',
     'SupportContractView',
     'SupportContractDeviceView',
+    #'SupportContractLicenseView',
     'SupportContractEditView',
     'SupportContractDeleteView',
+    'SupportContractDeviceAssignmentEditView',
+    'SupportContractDeviceAssignmentDeleteView',
 )
 
 
@@ -65,18 +70,17 @@ class SupportContractView(ObjectView):
 class SupportContractDeviceView(ObjectChildrenView):
     template_name = 'netbox_lifecycle/supportcontract_devices.html'
     queryset = SupportContract.objects.all()
-    child_model = Device
-    table = DeviceTable
+    child_model = SupportContractDeviceAssignment
+    table = SupportContractDeviceAssignmentTable
     filterset = DeviceFilterSet
     actions = []
     tab = ViewTab(
         label='Devices',
-        badge=lambda obj: obj.devices.count(),
+        badge=lambda obj: SupportContractDeviceAssignment.objects.filter(contract=obj).count(),
     )
 
     def get_children(self, request, parent):
-        return self.child_model.objects.filter(contracts=parent)
-
+        return self.child_model.objects.filter(contract=parent)
 
 
 @register_model_view(SupportContract, 'edit')
@@ -88,3 +92,14 @@ class SupportContractEditView(ObjectEditView):
 @register_model_view(SupportContract, 'delete')
 class SupportContractDeleteView(ObjectDeleteView):
     queryset = SupportContract.objects.all()
+
+
+@register_model_view(LicenseAssignment, 'edit')
+class SupportContractDeviceAssignmentEditView(ObjectEditView):
+    queryset = SupportContractDeviceAssignment.objects.all()
+    form = SupportContractDeviceAssignmentForm
+
+
+@register_model_view(LicenseAssignment, 'delete')
+class SupportContractDeviceAssignmentDeleteView(ObjectDeleteView):
+    queryset = SupportContractDeviceAssignment.objects.all()

@@ -3,9 +3,20 @@ from django.utils.translation import gettext as _
 
 from dcim.models import DeviceType, ModuleType, Manufacturer, Device
 from netbox.forms import NetBoxModelForm
-from netbox_lifecycle.models import HardwareLifecycle, Vendor, SupportContract, LicenseAssignment, License
+from netbox_lifecycle.models import HardwareLifecycle, Vendor, SupportContract, LicenseAssignment, License, \
+    SupportContractDeviceAssignment
 from utilities.forms.fields import DynamicModelChoiceField, DynamicModelMultipleChoiceField
 from utilities.forms.widgets import DatePicker
+
+
+__all__ = (
+    'VendorForm',
+    'SupportContractForm',
+    'SupportContractDeviceAssignmentForm',
+    'LicenseForm',
+    'LicenseAssignmentForm',
+    'HardwareLifecycleForm'
+)
 
 
 class VendorForm(NetBoxModelForm):
@@ -26,20 +37,32 @@ class SupportContractForm(NetBoxModelForm):
         required=False,
         selector=True,
     )
-    devices = DynamicModelMultipleChoiceField(
+
+    class Meta:
+        model = SupportContract
+        fields = ('manufacturer', 'vendor', 'contract_id', 'start', 'renewal', 'end', )
+        widgets = {
+            'start': DatePicker(),
+            'renewal': DatePicker(),
+            'end': DatePicker(),
+        }
+
+
+class SupportContractDeviceAssignmentForm(NetBoxModelForm):
+    contract = DynamicModelChoiceField(
+        queryset=SupportContract.objects.all(),
+        required=False,
+        selector=True,
+    )
+    device = DynamicModelChoiceField(
         queryset=Device.objects.all(),
         required=False,
         selector=True,
     )
 
     class Meta:
-        model = SupportContract
-        fields = ('manufacturer', 'vendor', 'contract_id', 'start', 'renewal', 'end', 'devices')
-        widgets = {
-            'start': DatePicker(),
-            'renewal': DatePicker(),
-            'end': DatePicker(),
-        }
+        model = SupportContractDeviceAssignment
+        fields = ('contract', 'device')
 
 
 class LicenseForm(NetBoxModelForm):
