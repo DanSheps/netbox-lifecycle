@@ -4,13 +4,14 @@ from django.utils.translation import gettext as _
 from dcim.models import DeviceType, ModuleType, Manufacturer, Device
 from netbox.forms import NetBoxModelForm
 from netbox_lifecycle.models import HardwareLifecycle, Vendor, SupportContract, LicenseAssignment, License, \
-    SupportContractAssignment
+    SupportContractAssignment, SupportSKU
 from utilities.forms.fields import DynamicModelChoiceField, DynamicModelMultipleChoiceField
 from utilities.forms.widgets import DatePicker
 
 
 __all__ = (
     'VendorForm',
+    'SupportSKUForm',
     'SupportContractForm',
     'SupportContractAssignmentForm',
     'LicenseForm',
@@ -26,21 +27,26 @@ class VendorForm(NetBoxModelForm):
         fields = ('name', )
 
 
-class SupportContractForm(NetBoxModelForm):
+class SupportSKUForm(NetBoxModelForm):
     manufacturer = DynamicModelChoiceField(
         queryset=Manufacturer.objects.all(),
-        required=False,
         selector=False,
     )
+
+    class Meta:
+        model = SupportSKU
+        fields = ('manufacturer', 'sku', )
+
+
+class SupportContractForm(NetBoxModelForm):
     vendor = DynamicModelChoiceField(
         queryset=Vendor.objects.all(),
-        required=False,
         selector=True,
     )
 
     class Meta:
         model = SupportContract
-        fields = ('manufacturer', 'vendor', 'contract_id', 'start', 'renewal', 'end', )
+        fields = ('vendor', 'contract_id', 'start', 'renewal', 'end', )
         widgets = {
             'start': DatePicker(),
             'renewal': DatePicker(),
@@ -51,8 +57,13 @@ class SupportContractForm(NetBoxModelForm):
 class SupportContractAssignmentForm(NetBoxModelForm):
     contract = DynamicModelChoiceField(
         queryset=SupportContract.objects.all(),
+        selector=True,
+    )
+    sku = DynamicModelChoiceField(
+        queryset=SupportSKU.objects.all(),
         required=False,
         selector=True,
+        label=_('SKU'),
     )
     device = DynamicModelChoiceField(
         queryset=Device.objects.all(),
@@ -61,15 +72,18 @@ class SupportContractAssignmentForm(NetBoxModelForm):
         label=_('Device'),
     )
     license = DynamicModelChoiceField(
-        queryset=License.objects.all(),
+        queryset=LicenseAssignment.objects.all(),
         required=False,
         selector=True,
-        label=_('License'),
+        label=_('License Assignment'),
     )
 
     class Meta:
         model = SupportContractAssignment
-        fields = ('contract', 'device', 'license', )
+        fields = ('contract', 'sku', 'device', 'license', 'end')
+        widgets = {
+            'end': DatePicker(),
+        }
 
     def __init__(self, *args, **kwargs):
 
@@ -79,7 +93,7 @@ class SupportContractAssignmentForm(NetBoxModelForm):
         if instance:
             if type(instance.assigned_object) is Device:
                 initial['device'] = instance.assigned_object
-            elif type(instance.assigned_object) is License:
+            elif type(instance.assigned_object) is LicenseAssignment:
                 initial['license'] = instance.assigned_object
         kwargs['initial'] = initial
 
@@ -106,24 +120,21 @@ class SupportContractAssignmentForm(NetBoxModelForm):
 class LicenseForm(NetBoxModelForm):
     manufacturer = DynamicModelChoiceField(
         queryset=Manufacturer.objects.all(),
-        required=False,
         selector=False,
     )
 
     class Meta:
         model = License
-        fields = ('name', 'manufacturer', )
+        fields = ('manufacturer', 'name', )
 
 
 class LicenseAssignmentForm(NetBoxModelForm):
     vendor = DynamicModelChoiceField(
         queryset=Vendor.objects.all(),
-        required=False,
         selector=True,
     )
     license = DynamicModelChoiceField(
         queryset=License.objects.all(),
-        required=False,
         selector=True,
     )
     device = DynamicModelChoiceField(
@@ -134,7 +145,7 @@ class LicenseAssignmentForm(NetBoxModelForm):
 
     class Meta:
         model = LicenseAssignment
-        fields = ('vendor', 'license', 'device')
+        fields = ('vendor', 'license', 'device', 'quantity')
 
 
 class HardwareLifecycleForm(NetBoxModelForm):
@@ -142,6 +153,7 @@ class HardwareLifecycleForm(NetBoxModelForm):
         queryset=DeviceType.objects.all(),
         required=False,
         selector=True,
+        label=_('Device Type'),
     )
     module_type = DynamicModelChoiceField(
         queryset=ModuleType.objects.all(),

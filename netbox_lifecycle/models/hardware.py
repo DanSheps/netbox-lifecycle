@@ -39,6 +39,16 @@ class HardwareLifecycle(NetBoxModel):
     notice = models.CharField(max_length=500, blank=True, null=True)
     documentation = models.CharField(max_length=500, blank=True, null=True)
 
+    class Meta:
+        ordering = ['assigned_object_type']
+        constraints = (
+            models.UniqueConstraint(
+                'assigned_object_type', 'assigned_object_id',
+                name='%(app_label)s_%(class)s_unique_object',
+                violation_error_message="Objects must be unique."
+            ),
+        )
+
     @property
     def name(self):
         return self

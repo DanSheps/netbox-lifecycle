@@ -6,10 +6,11 @@ from dcim.api.nested_serializers import NestedManufacturerSerializer, NestedDevi
 from netbox.api.fields import ContentTypeField
 from netbox.api.serializers import WritableNestedSerializer
 from netbox.constants import NESTED_SERIALIZER_PREFIX
-from netbox_lifecycle.models import Vendor, SupportContract, SupportContractAssignment
+from netbox_lifecycle.models import Vendor, SupportContract, SupportContractAssignment, SupportSKU
 
 __all__ = (
     'NestedVendorSerializer',
+    'NestedSupportSKUSerializer',
     'NestedSupportContractSerializer',
     'NestedSupportContractAssignmentSerializer',
 )
@@ -23,6 +24,15 @@ class NestedVendorSerializer(WritableNestedSerializer):
     class Meta:
         model = Vendor
         fields = ('url', 'id', 'display', 'name')
+
+
+class NestedSupportSKUSerializer(WritableNestedSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_lifecycle-api:hardwarelifecycle-detail')
+    manufacturer = NestedManufacturerSerializer()
+
+    class Meta:
+        model = SupportSKU
+        fields = ('url', 'id', 'display', 'manufacturer', 'sku')
 
 
 class NestedSupportContractSerializer(WritableNestedSerializer):

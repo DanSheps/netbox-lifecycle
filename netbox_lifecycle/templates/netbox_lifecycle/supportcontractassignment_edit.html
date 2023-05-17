@@ -8,6 +8,7 @@
         <h5 class="offset-sm-3">Contract</h5>
       </div>
       {% render_field form.contract %}
+      {% render_field form.sku %}
     </div>
     <div class="field-group my-5">
       <div class="row mb-2">
@@ -33,10 +34,16 @@
         <div class="tab-pane {% if not form.initial.license %}active{% endif %}" id="device" role="tabpanel" aria-labeled-by="device_tab">
           {% render_field form.device %}
         </div>
-        <div class="tab-pane {% if form.initial.license %}active{% endif %}" id="module" role="tabpanel" aria-labeled-by="vm_tab">
+        <div class="tab-pane {% if form.initial.license %}active{% endif %}" id="license" role="tabpanel" aria-labeled-by="vm_tab">
           {% render_field form.license %}
         </div>
       </div>
+    </div>
+    <div class="field-group my-5">
+      <div class="row mb-2">
+        <h5 class="offset-sm-3">Dates</h5>
+      </div>
+      {% render_field form.end %}
     </div>
     <div class="field-group my-5">
       {% render_field form.tags %}

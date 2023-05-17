@@ -2,7 +2,8 @@ from django.urls import path
 
 from netbox.views.generic import ObjectChangeLogView
 from . import views
-from .models import HardwareLifecycle, SupportContract, License, LicenseAssignment, SupportContractAssignment
+from .models import HardwareLifecycle, SupportContract, License, LicenseAssignment, SupportContractAssignment, \
+    SupportSKU
 
 urlpatterns = [
     path('lifecycle/', views.HardwareLifecycleListView.as_view(), name='hardwarelifecycle_list'),
@@ -27,10 +28,13 @@ urlpatterns = [
     path('contracts/<int:pk>/delete', views.SupportContractDeleteView.as_view(), name='supportcontract_delete'),
     path('contracts/<int:pk>/changelog', ObjectChangeLogView.as_view(), name='supportcontract_changelog', kwargs={'model': SupportContract}),
 
-    path('contract_assignment/add', views.SupportContractDeviceAssignmentEditView.as_view(), name='supportcontractassignment_add'),
-    path('contract_assignment/<int:pk>/edit', views.SupportContractDeviceAssignmentEditView.as_view(), name='supportcontractassignment_edit'),
-    path('contract_assignment/<int:pk>/delete', views.SupportContractDeviceAssignmentDeleteView.as_view(), name='supportcontractassignment_delete'),
-    path('contract_assignment/<int:pk>/changelog', ObjectChangeLogView.as_view(), name='supportcontractassignment_changelog', kwargs={'model': SupportContractAssignment}),
+    path('contract-assignment/', views.SupportContractAssignmentListView.as_view(), name='supportcontractassignment_list'),
+    path('contract-assignment/add', views.SupportContractAssignmentEditView.as_view(), name='supportcontractassignment_add'),
+    path('contract-assignment/edit/', views.SupportContractAssignmentBulkEditView.as_view(), name='supportcontractassignment_bulk_edit'),
+    path('contract-assignment/delete/', views.SupportContractAssignmentBulkDeleteView.as_view(), name='supportcontractassignment_bulk_delete'),
+    path('contract-assignment/<int:pk>/edit', views.SupportContractAssignmentEditView.as_view(), name='supportcontractassignment_edit'),
+    path('contract-assignment/<int:pk>/delete', views.SupportContractAssignmentDeleteView.as_view(), name='supportcontractassignment_delete'),
+    path('contract-assignment/<int:pk>/changelog', ObjectChangeLogView.as_view(), name='supportcontractassignment_changelog', kwargs={'model': SupportContractAssignment}),
 
     path('license/', views.LicenseListView.as_view(), name='license_list'),
     path('license/add', views.LicenseEditView.as_view(), name='license_add'),
@@ -40,8 +44,18 @@ urlpatterns = [
     path('license/<int:pk>/delete', views.LicenseDeleteView.as_view(), name='license_delete'),
     path('license/<int:pk>/changelog', ObjectChangeLogView.as_view(), name='license_changelog', kwargs={'model': License}),
 
-    path('license_assignment/add', views.LicenseAssignmentEditView.as_view(), name='licenseassignment_add'),
-    path('license_assignment/<int:pk>/edit', views.LicenseAssignmentEditView.as_view(), name='licenseassignment_edit'),
-    path('license_assignment/<int:pk>/delete', views.LicenseAssignmentDeleteView.as_view(), name='licenseassignment_delete'),
-    path('license_assignment/<int:pk>/changelog', ObjectChangeLogView.as_view(), name='licenseassignment_changelog', kwargs={'model': LicenseAssignment}),
+    path('sku/', views.SupportSKUListView.as_view(), name='supportsku_list'),
+    path('sku/add', views.SupportSKUEditView.as_view(), name='supportsku_add'),
+    path('sku/<int:pk>', views.SupportSKUView.as_view(), name='supportsku'),
+    path('sku/<int:pk>/edit', views.SupportSKUEditView.as_view(), name='supportsku_edit'),
+    path('sku/<int:pk>/delete', views.SupportSKUDeleteView.as_view(), name='supportsku_delete'),
+    path('sku/<int:pk>/changelog', ObjectChangeLogView.as_view(), name='supportsku_changelog', kwargs={'model': SupportSKU}),
+
+    path('license-assignment/', views.LicenseAssignmentListView.as_view(), name='licenseassignment_list'),
+    path('license-assignment/add', views.LicenseAssignmentEditView.as_view(), name='licenseassignment_add'),
+    path('license-assignment/<int:pk>/edit', views.LicenseAssignmentEditView.as_view(), name='licenseassignment_edit'),
+    path('license-assignment/<int:pk>/delete', views.LicenseAssignmentDeleteView.as_view(), name='licenseassignment_delete'),
+    path('license-assignment/<int:pk>/changelog', ObjectChangeLogView.as_view(), name='licenseassignment_changelog', kwargs={'model': LicenseAssignment}),
+    path('license-assignment/delete/', views.LicenseAssignmentBulkDeleteView.as_view(), name='licenseassignment_bulk_delete'),
+    path('license-assignment/<int:pk>/edit', views.LicenseAssignmentEditView.as_view(), name='licenseassignment_edit'),
 ]

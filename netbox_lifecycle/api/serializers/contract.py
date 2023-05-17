@@ -7,10 +7,11 @@ from netbox.api.fields import ContentTypeField
 from netbox.api.serializers import NetBoxModelSerializer
 from netbox.constants import NESTED_SERIALIZER_PREFIX
 from netbox_lifecycle.api.nested_serializers import NestedVendorSerializer, NestedSupportContractSerializer
-from netbox_lifecycle.models import Vendor, SupportContract, SupportContractAssignment
+from netbox_lifecycle.models import Vendor, SupportContract, SupportContractAssignment, SupportSKU
 
 __all__ = (
     'VendorSerializer',
+    'SupportSKUSerializer',
     'SupportContractSerializer',
     'SupportContractAssignmentSerializer',
 )
@@ -26,9 +27,17 @@ class VendorSerializer(NetBoxModelSerializer):
         fields = ('url', 'id', 'display', 'name')
 
 
-class SupportContractSerializer(NetBoxModelSerializer):
+class SupportSKUSerializer(NetBoxModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_lifecycle-api:hardwarelifecycle-detail')
     manufacturer = NestedManufacturerSerializer()
+
+    class Meta:
+        model = SupportSKU
+        fields = ('url', 'id', 'display', 'manufacturer', 'sku')
+
+
+class SupportContractSerializer(NetBoxModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_lifecycle-api:hardwarelifecycle-detail')
     vendor = NestedVendorSerializer()
     start = serializers.DateField()
     renewal = serializers.DateField()
@@ -36,7 +45,7 @@ class SupportContractSerializer(NetBoxModelSerializer):
 
     class Meta:
         model = SupportContract
-        fields = ('url', 'id', 'display', 'manufacturer', 'vendor', 'contract_id', 'start', 'renewal', 'end', )
+        fields = ('url', 'id', 'display', 'vendor', 'contract_id', 'start', 'renewal', 'end', )
 
 
 class SupportContractAssignmentSerializer(NetBoxModelSerializer):
@@ -52,7 +61,7 @@ class SupportContractAssignmentSerializer(NetBoxModelSerializer):
         model = SupportContractAssignment
         fields = (
             'url', 'id', 'display', 'contract', 'assigned_object_type', 'assigned_object_id',
-            'assigned_object'
+            'assigned_object', 'end'
         )
 
     assigned_object_type = ContentTypeField(

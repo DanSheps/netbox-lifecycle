@@ -1,4 +1,5 @@
 import django_filters
+from django.db.models import Q
 from django.utils.translation import gettext as _
 
 from dcim.models import Manufacturer, Device
@@ -22,6 +23,15 @@ class LicenseFilterSet(NetBoxModelFilterSet):
         model = License
         fields = ('id', 'q', )
 
+    def search(self, queryset, name, value):
+        if not value.strip():
+            return queryset
+        qs_filter = (
+            Q(manufacturer__name_icontains=value) |
+            Q(name__icontains=value)
+        )
+        return queryset.filter(qs_filter)
+
 
 class LicenseAssignmentFilterSet(NetBoxModelFilterSet):
     license_id = django_filters.ModelMultipleChoiceFilter(
@@ -43,3 +53,14 @@ class LicenseAssignmentFilterSet(NetBoxModelFilterSet):
     class Meta:
         model = LicenseAssignment
         fields = ('id', 'q', )
+
+    def search(self, queryset, name, value):
+        if not value.strip():
+            return queryset
+        qs_filter = (
+            Q(license__manufacturer__name_icontains=value) |
+            Q(license__name__icontains=value) |
+            Q(vendor__name__icontains=value) |
+            Q(device__name__icontains=value)
+        )
+        return queryset.filter(qs_filter)
