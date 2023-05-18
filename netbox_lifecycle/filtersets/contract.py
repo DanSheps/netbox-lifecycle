@@ -29,7 +29,7 @@ class VendorFilterSet(NetBoxModelFilterSet):
         qs_filter = (
             Q(name__icontains=value)
         )
-        return queryset.filter(qs_filter)
+        return queryset.filter(qs_filter).distinct()
 
 
 class SupportSKUFilterSet(NetBoxModelFilterSet):
@@ -56,7 +56,7 @@ class SupportSKUFilterSet(NetBoxModelFilterSet):
             Q(sku__icontains=value) |
             Q(manufacturer__name__icontains=value)
         )
-        return queryset.filter(qs_filter)
+        return queryset.filter(qs_filter).distinct()
 
 
 
@@ -78,7 +78,7 @@ class SupportContractFilterSet(NetBoxModelFilterSet):
             Q(vendor__name__icontains=value) |
             Q(contract_id__icontains=value)
         )
-        return queryset.filter(qs_filter)
+        return queryset.filter(qs_filter).distinct()
 
 
 class SupportContractAssignmentFilterSet(NetBoxModelFilterSet):
@@ -126,7 +126,7 @@ class SupportContractAssignmentFilterSet(NetBoxModelFilterSet):
             Q(license__device__name__icontains=value) |
             Q(license__license__name__icontains=value)
         )
-        return queryset.filter(qs_filter)
+        return queryset.filter(qs_filter).distinct()
 
     def filter_device(self, queryset, name, value):
         licenses = LicenseAssignment.objects.filter(**{'device__{}__in'.format(name): value})

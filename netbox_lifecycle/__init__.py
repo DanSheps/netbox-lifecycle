@@ -46,7 +46,5 @@ class NetBoxLifeCycle(PluginConfig):
             related_query_name='module_type'
         ).contribute_to_class(ModuleType, 'hardware_lifecycle')
 
-        print('Added Generic Relations')
-
 
 config = NetBoxLifeCycle

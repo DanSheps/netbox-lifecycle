@@ -39,10 +39,6 @@ class HardwareLifecycleFilterSetForm(NetBoxModelFilterSetForm):
     )
     tag = TagFilterField(model)
 
-    def search(self, queryset, name, value):
-        if not value.strip():
-            return queryset
-
 
 class SupportSKUFilterSetForm(NetBoxModelFilterSetForm):
     model = SupportSKU

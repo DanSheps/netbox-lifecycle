@@ -30,7 +30,7 @@ class LicenseFilterSet(NetBoxModelFilterSet):
             Q(manufacturer__name_icontains=value) |
             Q(name__icontains=value)
         )
-        return queryset.filter(qs_filter)
+        return queryset.filter(qs_filter).distinct()
 
 
 class LicenseAssignmentFilterSet(NetBoxModelFilterSet):
@@ -63,4 +63,4 @@ class LicenseAssignmentFilterSet(NetBoxModelFilterSet):
             Q(vendor__name__icontains=value) |
             Q(device__name__icontains=value)
         )
-        return queryset.filter(qs_filter)
+        return queryset.filter(qs_filter).distinct()

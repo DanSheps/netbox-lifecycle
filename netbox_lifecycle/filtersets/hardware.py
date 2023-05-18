@@ -55,4 +55,4 @@ class HardwareLifecycleFilterSet(NetBoxModelFilterSet):
             Q(device_type__model__icontains=value) |
             Q(module_type__model__icontains=value)
         )
-        return queryset.filter(qs_filter)
+        return queryset.filter(qs_filter).distinct()
