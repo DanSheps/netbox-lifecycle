@@ -39,5 +39,5 @@ menu = PluginMenu(
         ('Support Contracts', (vendors, skus, contracts, contract_assignments)),
         ('Licensing', (licenses, license_assignments)),
     ),
-    icon_class='mdi mdi-router'
+    icon_class='mdi mdi-server'
 )
