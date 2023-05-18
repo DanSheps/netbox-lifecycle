@@ -1,0 +1,4 @@
+include README.md
+include LICENSE
+recursive-include netbox_lifecycle/templates *
+recursive-include netbox_lifecycle/static *
