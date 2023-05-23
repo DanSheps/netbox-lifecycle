@@ -1,8 +1,8 @@
 from netbox.views.generic import ObjectListView, ObjectEditView, ObjectDeleteView, ObjectView, ObjectChildrenView, \
     BulkEditView, BulkDeleteView
 from netbox_lifecycle.filtersets import LicenseFilterSet, LicenseAssignmentFilterSet
-from netbox_lifecycle.forms import LicenseFilterSetForm, LicenseForm, LicenseAssignmentForm, \
-    LicenseAssignmentBulkEditForm, LicenseAssignmentFilterSetForm
+from netbox_lifecycle.forms import LicenseFilterForm, LicenseForm, LicenseAssignmentForm, \
+    LicenseAssignmentBulkEditForm, LicenseAssignmentFilterForm
 from netbox_lifecycle.models import License, LicenseAssignment
 from netbox_lifecycle.tables import LicenseTable, LicenseAssignmentTable
 from utilities.views import ViewTab, register_model_view
@@ -26,7 +26,7 @@ class LicenseListView(ObjectListView):
     queryset = License.objects.all()
     table = LicenseTable
     filterset = LicenseFilterSet
-    filterset_form = LicenseFilterSetForm
+    filterset_form = LicenseFilterForm
 
 
 @register_model_view(License)
@@ -68,7 +68,7 @@ class LicenseAssignmentListView(ObjectListView):
     queryset = LicenseAssignment.objects.all()
     table = LicenseAssignmentTable
     filterset = LicenseAssignmentFilterSet
-    filterset_form = LicenseAssignmentFilterSetForm
+    filterset_form = LicenseAssignmentFilterForm
 
 
 @register_model_view(LicenseAssignment, 'edit')

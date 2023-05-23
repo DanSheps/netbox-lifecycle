@@ -2,9 +2,9 @@ from netbox.views.generic import ObjectListView, ObjectEditView, ObjectDeleteVie
     BulkDeleteView, BulkEditView
 from netbox_lifecycle.filtersets import SupportContractFilterSet, VendorFilterSet, LicenseAssignmentFilterSet, \
     SupportContractAssignmentFilterSet, SupportSKUFilterSet
-from netbox_lifecycle.forms import SupportContractFilterSetForm, VendorFilterSetForm, SupportContractForm, VendorForm, \
-    SupportContractAssignmentForm, SupportSKUFilterSetForm, SupportSKUForm, SupportContractAssignmentBulkEditForm, \
-    SupportContractAssignmentFilterSetForm
+from netbox_lifecycle.forms import SupportContractFilterForm, VendorFilterForm, SupportContractForm, VendorForm, \
+    SupportContractAssignmentForm, SupportSKUFilterForm, SupportSKUForm, SupportContractAssignmentBulkEditForm, \
+    SupportContractAssignmentFilterForm
 from netbox_lifecycle.models import SupportContract, Vendor, LicenseAssignment, SupportContractAssignment, SupportSKU
 from netbox_lifecycle.tables import SupportContractTable, VendorTable, LicenseAssignmentTable, \
     SupportContractAssignmentTable, SupportSKUTable
@@ -38,7 +38,7 @@ class VendorListView(ObjectListView):
     queryset = Vendor.objects.all()
     table = VendorTable
     filterset = VendorFilterSet
-    filterset_form = VendorFilterSetForm
+    filterset_form = VendorFilterForm
 
 
 @register_model_view(Vendor)
@@ -62,7 +62,7 @@ class SupportSKUListView(ObjectListView):
     queryset = SupportSKU.objects.all()
     table = SupportSKUTable
     filterset = SupportSKUFilterSet
-    filterset_form = SupportSKUFilterSetForm
+    filterset_form = SupportSKUFilterForm
 
 
 @register_model_view(SupportSKU)
@@ -86,7 +86,7 @@ class SupportContractListView(ObjectListView):
     queryset = SupportContract.objects.all()
     table = SupportContractTable
     filterset = SupportContractFilterSet
-    filterset_form = SupportContractFilterSetForm
+    filterset_form = SupportContractFilterForm
 
 
 @register_model_view(SupportContract)
@@ -139,7 +139,7 @@ class SupportContractAssignmentListView(ObjectListView):
     queryset = SupportContractAssignment.objects.all()
     table = SupportContractAssignmentTable
     filterset = SupportContractAssignmentFilterSet
-    filterset_form = SupportContractAssignmentFilterSetForm
+    filterset_form = SupportContractAssignmentFilterForm
     actions = ['add', 'edit', 'delete', 'bulk_edit', 'bulk_delete']
 
 

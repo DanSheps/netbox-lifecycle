@@ -12,17 +12,17 @@ from utilities.forms.widgets import APISelectMultiple
 
 
 __all__ = (
-    'HardwareLifecycleFilterSetForm',
-    'SupportSKUFilterSetForm',
-    'SupportContractFilterSetForm',
-    'VendorFilterSetForm',
-    'LicenseFilterSetForm',
-    'LicenseAssignmentFilterSetForm',
-    'SupportContractAssignmentFilterSetForm'
+    'HardwareLifecycleFilterForm',
+    'SupportSKUFilterForm',
+    'SupportContractFilterForm',
+    'VendorFilterForm',
+    'LicenseFilterForm',
+    'LicenseAssignmentFilterForm',
+    'SupportContractAssignmentFilterForm'
 )
 
 
-class HardwareLifecycleFilterSetForm(NetBoxModelFilterSetForm):
+class HardwareLifecycleFilterForm(NetBoxModelFilterSetForm):
     model = HardwareLifecycle
     fieldsets = (
         (None, ('q', 'filter_id', 'tag')),
@@ -40,7 +40,7 @@ class HardwareLifecycleFilterSetForm(NetBoxModelFilterSetForm):
     tag = TagFilterField(model)
 
 
-class SupportSKUFilterSetForm(NetBoxModelFilterSetForm):
+class SupportSKUFilterForm(NetBoxModelFilterSetForm):
     model = SupportSKU
     fieldsets = (
         (None, ('q', 'filter_id', 'tag', 'manufacturer_id')),
@@ -54,7 +54,7 @@ class SupportSKUFilterSetForm(NetBoxModelFilterSetForm):
     tag = TagFilterField(model)
 
 
-class SupportContractFilterSetForm(NetBoxModelFilterSetForm):
+class SupportContractFilterForm(NetBoxModelFilterSetForm):
     model = SupportContract
     fieldsets = (
         (None, ('q', 'filter_id', 'tag')),
@@ -69,7 +69,7 @@ class SupportContractFilterSetForm(NetBoxModelFilterSetForm):
     tag = TagFilterField(model)
 
 
-class VendorFilterSetForm(NetBoxModelFilterSetForm):
+class VendorFilterForm(NetBoxModelFilterSetForm):
     model = Vendor
     fieldsets = (
         (None, ('q', 'filter_id', 'tag')),
@@ -77,7 +77,7 @@ class VendorFilterSetForm(NetBoxModelFilterSetForm):
     tag = TagFilterField(model)
 
 
-class LicenseFilterSetForm(NetBoxModelFilterSetForm):
+class LicenseFilterForm(NetBoxModelFilterSetForm):
     model = License
     fieldsets = (
         (None, ('q', 'filter_id', 'tag')),
@@ -92,7 +92,7 @@ class LicenseFilterSetForm(NetBoxModelFilterSetForm):
     tag = TagFilterField(model)
 
 
-class SupportContractAssignmentFilterSetForm(NetBoxModelFilterSetForm):
+class SupportContractAssignmentFilterForm(NetBoxModelFilterSetForm):
     model = SupportContractAssignment
     fieldsets = (
         (None, ('q', 'filter_id', 'tag')),
@@ -119,7 +119,7 @@ class SupportContractAssignmentFilterSetForm(NetBoxModelFilterSetForm):
     tag = TagFilterField(model)
 
 
-class LicenseAssignmentFilterSetForm(NetBoxModelFilterSetForm):
+class LicenseAssignmentFilterForm(NetBoxModelFilterSetForm):
     model = LicenseAssignment
     fieldsets = (
         (None, ('q', 'filter_id', 'tag')),
