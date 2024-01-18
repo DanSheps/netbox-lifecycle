@@ -101,7 +101,11 @@ class SupportContractAssignmentView(ObjectChildrenView):
     child_model = SupportContractAssignment
     table = SupportContractAssignmentTable
     filterset = SupportContractAssignmentFilterSet
-    actions = ['add', 'edit', 'delete']
+    actions = {
+        'add': {'view'},
+        'edit': {'edit'},
+        'delete': {'delete'}
+    }
     tab = ViewTab(
         label='Assignments',
         badge=lambda obj: SupportContractAssignment.objects.filter(contract=obj).count(),
@@ -140,7 +144,13 @@ class SupportContractAssignmentListView(ObjectListView):
     table = SupportContractAssignmentTable
     filterset = SupportContractAssignmentFilterSet
     filterset_form = SupportContractAssignmentFilterForm
-    actions = ['add', 'edit', 'delete', 'bulk_edit', 'bulk_delete']
+    actions = {
+        'add': {'view'},
+        'edit': {'edit'},
+        'delete': {'delete'},
+        'bulk_edit': {'edit'},
+        'bulk_delete': {'delete'}
+    }
 
 
 class SupportContractAssignmentBulkEditView(BulkEditView):
