@@ -136,12 +136,12 @@ class SupportContractAssignmentTestCase(TestCase):
         SupportSKU.objects.bulk_create(skus)
 
         contract = SupportContract.objects.create(
-                vendor=Vendor.objects.first(),
-                contract_id='1234',
-                start=datetime.date.today(),
-                renewal=datetime.date.today() + datetime.timedelta(days=1),
-                end=datetime.date.today() + datetime.timedelta(days=2)
-            )
+            vendor=Vendor.objects.first(),
+            contract_id='1234',
+            start=datetime.date.today(),
+            renewal=datetime.date.today() + datetime.timedelta(days=1),
+            end=datetime.date.today() + datetime.timedelta(days=2)
+        )
 
         LicenseAssignment.objects.create(
             license=license,
@@ -163,7 +163,6 @@ class SupportContractAssignmentTestCase(TestCase):
         )
         contract.full_clean()
         contract.save()
-
 
     def test_supportcontract_duplicate_ids(self):
         contract = SupportContract.objects.first()
@@ -191,4 +190,3 @@ class SupportContractAssignmentTestCase(TestCase):
         contract2.license = license
         contract2.full_clean()
         contract2.save()
-
