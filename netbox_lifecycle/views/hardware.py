@@ -4,7 +4,7 @@ from netbox_lifecycle.forms import HardwareLifecycleFilterForm
 from netbox_lifecycle.forms.model_forms import HardwareLifecycleForm
 from netbox_lifecycle.models import HardwareLifecycle
 from netbox_lifecycle.tables import HardwareLifecycleTable
-from utilities.views import ViewTab, register_model_view
+from utilities.views import register_model_view
 
 
 __all__ = (
