@@ -4,6 +4,7 @@ import django.db.models.deletion
 import taggit.managers
 import utilities.json
 
+
 def migrate_to_assignments(apps, schema_editor):
     from django.contrib.contenttypes.models import ContentType
     SupportContractDeviceAssignment = apps.get_model('netbox_lifecycle', 'SupportContractDeviceAssignment')
@@ -21,6 +22,7 @@ def migrate_to_assignments(apps, schema_editor):
             assigned_object_id=contract.device.pk,
             contract=contract.contract,
         )
+
 
 def migrate_from_assignments(apps, schema_editor):
     SupportContractDeviceAssignment = apps.get_model('netbox_lifecycle', 'SupportContractDeviceAssignment')

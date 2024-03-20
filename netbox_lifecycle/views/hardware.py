@@ -14,6 +14,7 @@ __all__ = (
     'HardwareLifecycleDeleteView',
 )
 
+
 @register_model_view(HardwareLifecycle, name='list')
 class HardwareLifecycleListView(ObjectListView):
     queryset = HardwareLifecycle.objects.all()
@@ -32,7 +33,6 @@ class HardwareLifecycleView(ObjectView):
         }
 
 
-
 @register_model_view(HardwareLifecycle, 'edit')
 class HardwareLifecycleEditView(ObjectEditView):
     template_name = 'netbox_lifecycle/hardwarelifecycle_edit.html'
@@ -40,9 +40,6 @@ class HardwareLifecycleEditView(ObjectEditView):
     form = HardwareLifecycleForm
 
 
-
-
 @register_model_view(HardwareLifecycle, 'delete')
 class HardwareLifecycleDeleteView(ObjectDeleteView):
     queryset = HardwareLifecycle.objects.all()
-
