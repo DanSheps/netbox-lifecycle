@@ -1,5 +1,6 @@
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
 from django.db.models.functions import Lower
@@ -178,3 +179,17 @@ class SupportContractAssignment(NetBoxModel):
         if self.device is None:
             return
         return DeviceStatusChoices.colors.get(self.device.status)
+
+    def clean(self):
+        if self.device and self.license and SupportContractAssignment.objects.filter(
+                    contract=self.contract, device=self.device, license=self.license, sku=self.sku
+                ).exclude(pk=self.pk).count() > 0:
+            raise ValidationError('Device or License must be unique')
+        elif self.device and not self.license and SupportContractAssignment.objects.filter(
+                    contract=self.contract, device=self.device, license=self.license
+                ).exclude(pk=self.pk).count() > 0:
+            raise ValidationError('Device must be unique')
+        elif not self.device and self.license and SupportContractAssignment.objects.filter(
+                    contract=self.contract, device=self.device, license=self.license
+                ).exclude(pk=self.pk).count() > 0:
+            raise ValidationError('License must be unique')
