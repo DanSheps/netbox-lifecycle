@@ -4,13 +4,13 @@ permissions:
   contents: read
 jobs:
   build:
+    name: Check Build
     runs-on: ubuntu-latest
     env:
       NETBOX_CONFIGURATION: netbox.configuration_lifecycle
     strategy:
       matrix:
         python-version: ['3.8', '3.9', '3.10', '3.11']
-        node-version: ['14.x']
     services:
       redis:
         image: redis
