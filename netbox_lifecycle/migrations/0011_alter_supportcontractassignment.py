@@ -21,6 +21,7 @@ def migrate_assigned_object_forward(apps, schema_editor):
             assignment.license = license_assignment
             assignment.save()
 
+
 def migrate_assigned_object_reverse(apps, schema_editor):
     SupportContractAssignment = apps.get_model('netbox_lifecycle', 'SupportContractAssignment')
     ContentType = apps.get_model('contenttypes', 'ContentType')

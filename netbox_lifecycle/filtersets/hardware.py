@@ -12,8 +12,6 @@ __all__ = (
     'HardwareLifecycleFilterSet',
 )
 
-from utilities.filters import MultiValueCharFilter, MultiValueNumberFilter
-
 
 class HardwareLifecycleFilterSet(NetBoxModelFilterSet):
     assigned_object_type_id = django_filters.ModelMultipleChoiceFilter(

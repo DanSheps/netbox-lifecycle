@@ -72,6 +72,7 @@ class SupportSKU(NetBoxModel):
     def get_absolute_url(self):
         return reverse('plugins:netbox_lifecycle:supportsku', args=[self.pk])
 
+
 class SupportContract(NetBoxModel):
     vendor = models.ForeignKey(
         to='netbox_lifecycle.Vendor',

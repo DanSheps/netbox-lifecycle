@@ -1,5 +1,4 @@
 import django_filters
-from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.utils.translation import gettext as _
 
@@ -14,8 +13,6 @@ __all__ = (
     'VendorFilterSet',
     'SupportContractAssignmentFilterSet'
 )
-
-from utilities.filters import MultiValueCharFilter, MultiValueNumberFilter
 
 
 class VendorFilterSet(NetBoxModelFilterSet):
@@ -58,7 +55,6 @@ class SupportSKUFilterSet(NetBoxModelFilterSet):
             Q(manufacturer__name__icontains=value)
         )
         return queryset.filter(qs_filter).distinct()
-
 
 
 class SupportContractFilterSet(NetBoxModelFilterSet):

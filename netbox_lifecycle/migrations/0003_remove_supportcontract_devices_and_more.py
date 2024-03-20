@@ -5,6 +5,7 @@ import django.db.models.deletion
 import taggit.managers
 import utilities.json
 
+
 def migrate_to_assignments(apps, schema_editor):
     SupportContractDeviceAssignment = apps.get_model('netbox_lifecycle', 'SupportContractDeviceAssignment')
     SupportContract = apps.get_model('netbox_lifecycle', 'SupportContract')
@@ -12,6 +13,7 @@ def migrate_to_assignments(apps, schema_editor):
     for contract in SupportContract.objects.all():
         for device in contract.devices.all():
             SupportContractDeviceAssignment.objects.create(contract=contract, device=device)
+
 
 def migrate_from_assignments(apps, schema_editor):
     SupportContractDeviceAssignment = apps.get_model('netbox_lifecycle', 'SupportContractDeviceAssignment')

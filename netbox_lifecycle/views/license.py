@@ -21,6 +21,7 @@ __all__ = (
     'LicenseAssignmentBulkDeleteView',
 )
 
+
 @register_model_view(License, name='list')
 class LicenseListView(ObjectListView):
     queryset = License.objects.all()
