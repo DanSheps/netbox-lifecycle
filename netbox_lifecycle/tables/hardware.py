@@ -19,9 +19,8 @@ class HardwareLifecycleTable(NetBoxTable):
         linkify=True,
         verbose_name='Hardware'
     )
-    devices = tables.Column(
-        accessor=tables.A('devices__count'),
-        verbose_name='Device Count'
+    assigned_object_count = tables.Column(
+        verbose_name='Assigned Object Count'
     )
 
     class Meta(NetBoxTable.Meta):

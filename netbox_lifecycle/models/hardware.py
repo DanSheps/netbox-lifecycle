@@ -3,7 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.urls import reverse
 
-from dcim.models import DeviceType, ModuleType
+from dcim.models import DeviceType, ModuleType, Device, Module
 from netbox.models import NetBoxModel
 
 
@@ -57,6 +57,12 @@ class HardwareLifecycle(NetBoxModel):
         if isinstance(self.assigned_object, ModuleType):
             return f'Module Type: {self.assigned_object.model}'
         return f'Device Type: {self.assigned_object.model}'
+
+    @property
+    def assigned_object_count(self):
+        if isinstance(self.assigned_object, DeviceType):
+            return Device.objects.filter(device_type=self.assigned_object).count()
+        return Module.objects.filter(module_type=self.assigned_object).count()
 
     def get_absolute_url(self):
         return reverse('plugins:netbox_lifecycle:hardwarelifecycle', args=[self.pk])
