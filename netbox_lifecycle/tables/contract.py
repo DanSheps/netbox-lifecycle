@@ -65,45 +65,37 @@ class SupportContractAssignmentTable(NetBoxTable):
         verbose_name='SKU',
         linkify=True,
     )
-    assigned_object_type = tables.Column(
-        verbose_name=_('Object Type'),
-    )
-    assigned_object = tables.Column(
-        verbose_name='Assigned Object',
-        linkify=True,
-        orderable=False,
-    )
     device_name = tables.Column(
         verbose_name='Device Name',
-        accessor='assigned_object__name',
+        accessor='device__name',
         linkify=False,
-        orderable=False,
+        orderable=True,
     )
     device_serial = tables.Column(
         verbose_name='Serial Number',
-        accessor='assigned_object__serial',
-        orderable=False,
+        accessor='device__serial',
+        orderable=True,
     )
     device_model = tables.Column(
         verbose_name='Device Model',
-        accessor='assigned_object__device_type__model',
+        accessor='device__device_type__model',
         linkify=False,
-        orderable=False,
+        orderable=True,
     )
     device_status = ChoiceFieldColumn(
         verbose_name='Device Status',
-        accessor='assigned_object__status',
-        orderable=False,
+        accessor='device__status',
+        orderable=True,
     )
     license_name = tables.Column(
         verbose_name='License',
-        accessor='assigned_object__license__name',
+        accessor='license__license__name',
         linkify=False,
-        orderable=False,
+        orderable=True,
     )
     quantity = tables.Column(
-        verbose_name='Quantity',
-        accessor='assigned_object__quantity',
+        verbose_name='License Quantity',
+        accessor='license__quantity',
         orderable=False,
     )
     renewal = tables.Column(
@@ -119,8 +111,8 @@ class SupportContractAssignmentTable(NetBoxTable):
     class Meta(NetBoxTable.Meta):
         model = SupportContractAssignment
         fields = (
-            'pk', 'contract', 'sku', 'assigned_object_type', 'assigned_object', 'device_name', 'license_name',
-            'device_model', 'device_serial', 'quantity', 'renewal', 'end'
+            'pk', 'contract', 'sku', 'device_name', 'license_name', 'device_model', 'device_serial', 'quantity',
+            'renewal', 'end'
         )
         default_columns = (
             'pk', 'contract', 'sku', 'device_name', 'license_name', 'device_model', 'device_serial'

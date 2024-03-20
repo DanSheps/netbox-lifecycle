@@ -124,22 +124,19 @@ class SupportContractAssignment(NetBoxModel):
         blank=True,
         related_name='assignments',
     )
-
-    assigned_object_type = models.ForeignKey(
-        to=ContentType,
-        limit_choices_to=('dcim.Device', 'netbox_lifecycle.LicenseAssignment'),
-        on_delete=models.PROTECT,
-        related_name='+',
+    device = models.ForeignKey(
+        to='dcim.Device',
+        on_delete=models.SET_NULL,
+        null=True,
         blank=True,
-        null=True
+        related_name='contracts',
     )
-    assigned_object_id = models.PositiveBigIntegerField(
+    license = models.ForeignKey(
+        to='netbox_lifecycle.LicenseAssignment',
+        on_delete=models.SET_NULL,
+        null=True,
         blank=True,
-        null=True
-    )
-    assigned_object = GenericForeignKey(
-        ct_field='assigned_object_type',
-        fk_field='assigned_object_id'
+        related_name='contracts',
     )
     end = models.DateField(
         null=True,
@@ -159,23 +156,13 @@ class SupportContractAssignment(NetBoxModel):
     )
 
     class Meta:
-        ordering = ['contract', 'assigned_object_type', 'assigned_object_id']
-        constraints = (
-            models.UniqueConstraint(
-                'contract', 'sku', 'assigned_object_type', 'assigned_object_id',
-                name='%(app_label)s_%(class)s_unique_assignments',
-                violation_error_message="Contract assignments must be unique."
-            ),
-            models.UniqueConstraint(
-                'contract', 'assigned_object_type', 'assigned_object_id',
-                name='%(app_label)s_%(class)s_unique_assignment_null_sku',
-                condition=Q(sku__isnull=True),
-                violation_error_message="Contract assignments to assigned_objects must be unique."
-            ),
-        )
+        ordering = ['contract', 'device', 'license']
+        constraints = ()
 
     def __str__(self):
-        return f'{self.assigned_object}: {self.contract.contract_id}'
+        if self.license and self.device:
+            return f'{self.device} ({self.license}): {self.contract.contract_id}'
+        return f'{self.device}: {self.contract.contract_id}'
 
     def get_absolute_url(self):
         return reverse('plugins:netbox_lifecycle:supportcontract_assignments', args=[self.contract.pk])
@@ -187,8 +174,6 @@ class SupportContractAssignment(NetBoxModel):
         return self.contract.end
 
     def get_device_status_color(self):
-        if self.assigned_object is None:
+        if self.device is None:
             return
-        if hasattr(self.assigned_object, 'device'):
-            return DeviceStatusChoices.colors.get(self.assigned_object.device.status)
-        return DeviceStatusChoices.colors.get(self.assigned_object.status)
+        return DeviceStatusChoices.colors.get(self.device.status)

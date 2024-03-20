@@ -28,21 +28,17 @@ class NetBoxLifeCycle(PluginConfig):
 
         # Add Generic Relations to appropriate models
         GenericRelation(
-            to=SupportContractAssignment,
-            content_type_field='assigned_object_type',
-            object_id_field='assigned_object_id',
-            related_query_name='device'
-        ).contribute_to_class(Device, 'contracts')
-        GenericRelation(
             to=HardwareLifecycle,
             content_type_field='assigned_object_type',
             object_id_field='assigned_object_id',
+            related_name='device_type',
             related_query_name='device_type'
         ).contribute_to_class(DeviceType, 'hardware_lifecycle')
         GenericRelation(
             to=HardwareLifecycle,
             content_type_field='assigned_object_type',
             object_id_field='assigned_object_id',
+            related_name='module_type',
             related_query_name='module_type'
         ).contribute_to_class(ModuleType, 'hardware_lifecycle')
 
