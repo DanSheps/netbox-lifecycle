@@ -86,17 +86,6 @@ class SupportContractAssignmentForm(NetBoxModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-
-        # Initialize helper selectors
-        instance = kwargs.get('instance')
-        initial = kwargs.get('initial', {}).copy()
-        if instance:
-            if type(instance.assigned_object) is Device:
-                initial['device'] = instance.assigned_object
-            elif type(instance.assigned_object) is LicenseAssignment:
-                initial['license'] = instance.assigned_object
-        kwargs['initial'] = initial
-
         super().__init__(*args, **kwargs)
 
     def clean(self):
@@ -107,14 +96,13 @@ class SupportContractAssignmentForm(NetBoxModelForm):
             field for field in ('device', 'license') if self.cleaned_data[field]
         ]
 
-        if len(selected_objects) > 1:
-            raise forms.ValidationError({
-                selected_objects[1]: "You can only assign a device or license"
+        if len(selected_objects) == 0:
+            raise forms.ValidationErrr({
+                selected_objects[1]: "You must select at least a device or license"
             })
-        elif selected_objects:
-            self.instance.assigned_object = self.cleaned_data[selected_objects[0]]
-        else:
-            self.instance.assigned_object = None
+
+        if self.cleaned_data.get('license') and not self.cleaned_data.get('device'):
+            self.cleaned_data['device'] = self.cleaned_data.get('license').device
 
 
 class LicenseForm(NetBoxModelForm):

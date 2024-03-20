@@ -174,8 +174,6 @@ class SupportContractAssignment(NetBoxModel):
         return self.contract.end
 
     def get_device_status_color(self):
-        if self.assigned_object is None:
+        if self.device is None:
             return
-        if hasattr(self.assigned_object, 'device'):
-            return DeviceStatusChoices.colors.get(self.assigned_object.device.status)
-        return DeviceStatusChoices.colors.get(self.assigned_object.status)
+        return DeviceStatusChoices.colors.get(self.device.status)

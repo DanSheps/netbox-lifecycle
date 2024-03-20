@@ -69,14 +69,6 @@ class LicenseAssignment(NetBoxModel):
         blank=True,
     )
 
-    contracts = GenericRelation(
-        to='netbox_lifecycle.SupportContractAssignment',
-        content_type_field='assigned_object_type',
-        object_id_field='assigned_object_id',
-        related_query_name='license'
-
-    )
-
     clone_fields = (
         'vendor', 'license',
     )

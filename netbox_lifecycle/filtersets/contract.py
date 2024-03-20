@@ -5,7 +5,8 @@ from django.utils.translation import gettext as _
 
 from dcim.models import Manufacturer, Device
 from netbox.filtersets import NetBoxModelFilterSet
-from netbox_lifecycle.models import Vendor, SupportContract, SupportContractAssignment, SupportSKU, LicenseAssignment
+from netbox_lifecycle.models import Vendor, SupportContract, SupportContractAssignment, SupportSKU, LicenseAssignment, \
+    License
 
 __all__ = (
     'SupportContractFilterSet',
@@ -87,27 +88,24 @@ class SupportContractAssignmentFilterSet(NetBoxModelFilterSet):
         queryset=SupportContract.objects.all(),
         label=_('Contract'),
     )
-    assigned_object_type_id = django_filters.ModelMultipleChoiceFilter(
-        queryset=ContentType.objects.all()
-    )
-    device = MultiValueCharFilter(
-        method='filter_device',
-        field_name='name',
+    device = django_filters.ModelMultipleChoiceFilter(
+        field_name='device__name',
+        queryset=Device.objects.all(),
         label=_('Device (name)'),
     )
-    device_id = MultiValueNumberFilter(
-        method='filter_device',
-        field_name='pk',
+    device_id = django_filters.ModelMultipleChoiceFilter(
+        field_name='device',
+        queryset=Device.objects.all(),
         label=_('Device (ID)'),
     )
-    license = MultiValueCharFilter(
-        method='filter_license',
-        field_name='name',
+    license = django_filters.ModelMultipleChoiceFilter(
+        field_name='license__license__name',
+        queryset=License.objects.all(),
         label=_('License (SKU)'),
     )
-    license_id = MultiValueNumberFilter(
-        method='filter_license',
-        field_name='pk',
+    license_id = django_filters.ModelMultipleChoiceFilter(
+        field_name='license',
+        queryset=LicenseAssignment.objects.all(),
         label=_('License (ID)'),
     )
 
@@ -127,18 +125,3 @@ class SupportContractAssignmentFilterSet(NetBoxModelFilterSet):
             Q(license__license__name__icontains=value)
         )
         return queryset.filter(qs_filter).distinct()
-
-    def filter_device(self, queryset, name, value):
-        licenses = LicenseAssignment.objects.filter(**{'device__{}__in'.format(name): value})
-        devices = Device.objects.filter(**{'{}__in'.format(name): value})
-        device_ids = devices.values_list('id', flat=True)
-        license_ids = licenses.values_list('id', flat=True)
-
-        return queryset.filter(
-            Q(device__in=device_ids) | Q(license__in=license_ids)
-        )
-
-    def filter_license(self, queryset, name, value):
-        return queryset.filter(
-            license__in=value
-        )

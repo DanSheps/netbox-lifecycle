@@ -1,11 +1,7 @@
-from django.contrib.contenttypes.models import ContentType
-from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from dcim.api.nested_serializers import NestedManufacturerSerializer, NestedDeviceSerializer
-from netbox.api.fields import ContentTypeField
+from dcim.api.nested_serializers import NestedManufacturerSerializer
 from netbox.api.serializers import WritableNestedSerializer
-from netbox.constants import NESTED_SERIALIZER_PREFIX
 from netbox_lifecycle.models import Vendor, SupportContract, SupportContractAssignment, SupportSKU
 
 __all__ = (
@@ -14,8 +10,6 @@ __all__ = (
     'NestedSupportContractSerializer',
     'NestedSupportContractAssignmentSerializer',
 )
-
-from utilities.api import get_serializer_for_model
 
 
 class NestedVendorSerializer(WritableNestedSerializer):
@@ -48,17 +42,6 @@ class NestedSupportContractAssignmentSerializer(WritableNestedSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_lifecycle-api:licenseassignment-detail')
     contract = NestedSupportContractSerializer()
 
-    assigned_object_type = ContentTypeField(
-        queryset=ContentType.objects.all()
-    )
-    assigned_object = serializers.SerializerMethodField(read_only=True)
-
     class Meta:
         model = SupportContractAssignment
-        fields = ('url', 'id', 'display', 'contract', 'assigned_object_type', 'assigned_object_id', 'assigned_object')
-
-    @extend_schema_field(serializers.JSONField(allow_null=True))
-    def get_assigned_object(self, instance):
-        serializer = get_serializer_for_model(instance.assigned_object, prefix=NESTED_SERIALIZER_PREFIX)
-        context = {'request': self.context['request']}
-        return serializer(instance.assigned_object, context=context).data
+        fields = ('url', 'id', 'display', 'contract', 'device', 'license')
