@@ -1,5 +1,4 @@
-from extras.plugins import PluginMenu, PluginMenuButton, PluginMenuItem
-from utilities.choices import ButtonColorChoices
+from netbox.plugins import PluginMenuItem, PluginMenu
 
 lifecycle = PluginMenuItem(
     link='plugins:netbox_lifecycle:hardwarelifecycle_list',

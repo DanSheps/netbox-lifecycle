@@ -1,5 +1,6 @@
-from extras.plugins import PluginConfig
 from importlib.metadata import metadata
+
+from netbox.plugins import PluginConfig
 
 metadata = metadata('netbox_lifecycle')
 
@@ -13,7 +14,7 @@ class NetBoxLifeCycle(PluginConfig):
     author_email = metadata.get('Author-email')
     base_url = 'lifecycle'
     min_version = '3.5.0'
-    max_version = '3.7.99'
+    max_version = '4.0.99'
     required_settings = []
     default_settings = {}
     queues = []
