@@ -54,7 +54,11 @@ class LicenseAssignmentView(ObjectChildrenView):
     table = LicenseAssignmentTable
     filterset = LicenseAssignmentFilterSet
     viewname = None
-    actions = ['add', 'edit', 'delete']
+    actions = {
+        'add': {'add'},
+        'edit': {'change'},
+        'delete': {'delete'}
+    }
     tab = ViewTab(
         label='License Assignments',
         badge=lambda obj: LicenseAssignment.objects.filter(license=obj).count(),
