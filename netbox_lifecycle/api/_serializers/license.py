@@ -1,9 +1,9 @@
 from rest_framework import serializers
 
-from dcim.api.nested_serializers import NestedManufacturerSerializer, NestedDeviceSerializer
+from dcim.api.serializers_.devices import DeviceSerializer
+from dcim.api.serializers_.manufacturers import ManufacturerSerializer
 from netbox.api.serializers import NetBoxModelSerializer
-from netbox_lifecycle.api.nested_serializers import NestedVendorSerializer
-from netbox_lifecycle.api.nested_serializers.license import NestedLicenseSerializer
+from netbox_lifecycle.api._serializers.vendor import VendorSerializer
 from netbox_lifecycle.models import License, LicenseAssignment
 
 __all__ = (
@@ -14,7 +14,7 @@ __all__ = (
 
 class LicenseSerializer(NetBoxModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_lifecycle-api:license-detail')
-    manufacturer = NestedManufacturerSerializer()
+    manufacturer = ManufacturerSerializer()
 
     class Meta:
         model = License
@@ -23,9 +23,9 @@ class LicenseSerializer(NetBoxModelSerializer):
 
 class LicenseAssignmentSerializer(NetBoxModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_lifecycle-api:licenseassignment-detail')
-    license = NestedLicenseSerializer()
-    vendor = NestedVendorSerializer()
-    device = NestedDeviceSerializer()
+    license = LicenseSerializer(nested=True)
+    vendor = VendorSerializer(nested=True)
+    device = DeviceSerializer(nested=True)
 
     class Meta:
         model = LicenseAssignment
