@@ -1,32 +1,22 @@
 from rest_framework import serializers
 
-from dcim.api.nested_serializers import NestedManufacturerSerializer, NestedDeviceSerializer
+from dcim.api.serializers_.devices import DeviceSerializer
+from dcim.api.serializers_.manufacturers import ManufacturerSerializer
 from netbox.api.serializers import NetBoxModelSerializer
-from netbox_lifecycle.api.nested_serializers import NestedVendorSerializer, NestedSupportContractSerializer, \
-    NestedLicenseAssignmentSerializer
+from netbox_lifecycle.api._serializers.license import LicenseAssignmentSerializer
+from netbox_lifecycle.api._serializers.vendor import VendorSerializer
 from netbox_lifecycle.models import Vendor, SupportContract, SupportContractAssignment, SupportSKU
 
 __all__ = (
-    'VendorSerializer',
     'SupportSKUSerializer',
     'SupportContractSerializer',
     'SupportContractAssignmentSerializer',
 )
 
-from utilities.api import get_serializer_for_model
-
-
-class VendorSerializer(NetBoxModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_lifecycle-api:hardwarelifecycle-detail')
-
-    class Meta:
-        model = Vendor
-        fields = ('url', 'id', 'display', 'name')
-
 
 class SupportSKUSerializer(NetBoxModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_lifecycle-api:hardwarelifecycle-detail')
-    manufacturer = NestedManufacturerSerializer()
+    manufacturer = ManufacturerSerializer(nested=True)
 
     class Meta:
         model = SupportSKU
@@ -35,7 +25,7 @@ class SupportSKUSerializer(NetBoxModelSerializer):
 
 class SupportContractSerializer(NetBoxModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_lifecycle-api:hardwarelifecycle-detail')
-    vendor = NestedVendorSerializer()
+    vendor = VendorSerializer(nested=True)
     start = serializers.DateField()
     renewal = serializers.DateField()
     end = serializers.DateField()
@@ -47,10 +37,10 @@ class SupportContractSerializer(NetBoxModelSerializer):
 
 class SupportContractAssignmentSerializer(NetBoxModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_lifecycle-api:licenseassignment-detail')
-    contract = NestedSupportContractSerializer()
+    contract = SupportContractSerializer(nested=True)
 
-    device = NestedDeviceSerializer()
-    license = NestedLicenseAssignmentSerializer()
+    device = DeviceSerializer(nested=True)
+    license = LicenseAssignmentSerializer(nested=True)
 
     class Meta:
         model = SupportContractAssignment
