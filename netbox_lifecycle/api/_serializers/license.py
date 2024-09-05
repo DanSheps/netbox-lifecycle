@@ -14,7 +14,7 @@ __all__ = (
 
 class LicenseSerializer(NetBoxModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_lifecycle-api:license-detail')
-    manufacturer = ManufacturerSerializer()
+    manufacturer = ManufacturerSerializer(nested=True)
 
     class Meta:
         model = License
