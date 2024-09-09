@@ -8,6 +8,7 @@ from netbox_lifecycle.models import HardwareLifecycle, SupportContract, Vendor, 
     SupportContractAssignment, SupportSKU
 from utilities.filters import MultiValueCharFilter, MultiValueNumberFilter
 from utilities.forms.fields import DynamicModelMultipleChoiceField, TagFilterField
+from utilities.forms.rendering import FieldSet
 from utilities.forms.widgets import APISelectMultiple
 
 
@@ -25,8 +26,8 @@ __all__ = (
 class HardwareLifecycleFilterForm(NetBoxModelFilterSetForm):
     model = HardwareLifecycle
     fieldsets = (
-        (None, ('q', 'filter_id', 'tag')),
-        ('Hardware', ('assigned_object_type_id', ))
+        FieldSet('q', 'filter_id', 'tag'),
+        FieldSet('assigned_object_type_id', name=_('Hardware'))
     )
 
     assigned_object_type_id = DynamicModelMultipleChoiceField(
@@ -43,7 +44,7 @@ class HardwareLifecycleFilterForm(NetBoxModelFilterSetForm):
 class SupportSKUFilterForm(NetBoxModelFilterSetForm):
     model = SupportSKU
     fieldsets = (
-        (None, ('q', 'filter_id', 'tag', 'manufacturer_id')),
+        FieldSet('q', 'filter_id', 'tag', 'manufacturer_id'),
     )
     manufacturer_id = DynamicModelMultipleChoiceField(
         queryset=Manufacturer.objects.all(),
@@ -57,8 +58,8 @@ class SupportSKUFilterForm(NetBoxModelFilterSetForm):
 class SupportContractFilterForm(NetBoxModelFilterSetForm):
     model = SupportContract
     fieldsets = (
-        (None, ('q', 'filter_id', 'tag')),
-        ('Purchase Information', ('vendor_id', )),
+        FieldSet('q', 'filter_id', 'tag'),
+        FieldSet('vendor_id', name='Purchase Information'),
     )
     vendor_id = DynamicModelMultipleChoiceField(
         queryset=Vendor.objects.all(),
@@ -72,7 +73,7 @@ class SupportContractFilterForm(NetBoxModelFilterSetForm):
 class VendorFilterForm(NetBoxModelFilterSetForm):
     model = Vendor
     fieldsets = (
-        (None, ('q', 'filter_id', 'tag')),
+        FieldSet('q', 'filter_id', 'tag'),
     )
     tag = TagFilterField(model)
 
@@ -80,8 +81,8 @@ class VendorFilterForm(NetBoxModelFilterSetForm):
 class LicenseFilterForm(NetBoxModelFilterSetForm):
     model = License
     fieldsets = (
-        (None, ('q', 'filter_id', 'tag')),
-        ('License Information', ('manufacturer_id', )),
+        FieldSet('q', 'filter_id', 'tag'),
+        FieldSet('manufacturer_id', name='License Information'),
     )
     manufacturer_id = DynamicModelMultipleChoiceField(
         queryset=Manufacturer.objects.all(),
@@ -95,8 +96,8 @@ class LicenseFilterForm(NetBoxModelFilterSetForm):
 class SupportContractAssignmentFilterForm(NetBoxModelFilterSetForm):
     model = SupportContractAssignment
     fieldsets = (
-        (None, ('q', 'filter_id', 'tag')),
-        ('Assignment', ('contract_id', 'device_id', 'license_id', )),
+        FieldSet('q', 'filter_id', 'tag'),
+        FieldSet('contract_id', 'device_id', 'license_id', name='Assignment'),
     )
     contract_id = DynamicModelMultipleChoiceField(
         queryset=SupportContract.objects.all(),
@@ -122,8 +123,8 @@ class SupportContractAssignmentFilterForm(NetBoxModelFilterSetForm):
 class LicenseAssignmentFilterForm(NetBoxModelFilterSetForm):
     model = LicenseAssignment
     fieldsets = (
-        (None, ('q', 'filter_id', 'tag')),
-        ('Assignment', ('license_id', 'vendor_id', 'device_id', )),
+        FieldSet('q', 'filter_id', 'tag'),
+        FieldSet('license_id', 'vendor_id', 'device_id', name='Assignment'),
     )
     license_id = DynamicModelMultipleChoiceField(
         queryset=License.objects.all(),
