@@ -4,6 +4,7 @@ from netbox.forms import NetBoxModelBulkEditForm
 from utilities.forms.fields import DynamicModelChoiceField
 
 from netbox_lifecycle.models import SupportContract, SupportSKU, SupportContractAssignment, LicenseAssignment
+from utilities.forms.rendering import FieldSet
 
 
 class SupportContractAssignmentBulkEditForm(NetBoxModelBulkEditForm):
@@ -22,7 +23,7 @@ class SupportContractAssignmentBulkEditForm(NetBoxModelBulkEditForm):
 
     model = SupportContractAssignment
     fieldsets = (
-        (None, ('contract', 'sku')),
+        FieldSet('contract', 'sku'),
     )
     nullable_fields = ()
 
@@ -43,6 +44,6 @@ class LicenseAssignmentBulkEditForm(NetBoxModelBulkEditForm):
 
     model = LicenseAssignment
     fieldsets = (
-        (None, ('vendor', 'license', 'quantity')),
+        FieldSet('vendor', 'license', 'quantity'),
     )
     nullable_fields = ('quantity', )
