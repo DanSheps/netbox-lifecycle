@@ -1,7 +1,7 @@
-from _serializers.contract import *
-from _serializers.hardware import *
-from _serializers.license import *
-from _serializers.vendor import *
+from netbox_lifecycle.api._serializers.contract import *
+from netbox_lifecycle.api._serializers.hardware import *
+from netbox_lifecycle.api._serializers.license import *
+from netbox_lifecycle.api._serializers.vendor import *
 
 __all__ = (
     'VendorSerializer',
