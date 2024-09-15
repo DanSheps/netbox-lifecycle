@@ -21,7 +21,11 @@
     </tr>
     <tr>
       <th scope="row">End Date</th>
+      {% if support_contract.end == None %}
       <td><span {{ support_contract.contract.end|date_badge_class }}>{{ support_contract.contract.end }}</span></td>
+      {% else %}
+      <td><span {{ support_contract.end|date_badge_class }}>{{ support_contract.end }}</span></td>
+      {% endif %}
     </tr>
   </table>
   {% else %}
