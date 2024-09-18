@@ -15,16 +15,22 @@ __all__ = (
     'VendorListView',
     'VendorView',
     'VendorEditView',
+    'VendorBulkEditView',
     'VendorDeleteView',
+    'VendorBulkDeleteView',
     'SupportSKUListView',
     'SupportSKUView',
     'SupportSKUEditView',
+    'SupportSKUBulkEditView',
     'SupportSKUDeleteView',
+    'SupportSKUBulkDeleteView',
     'SupportContractListView',
     'SupportContractView',
     'SupportContractAssignmentView',
     'SupportContractEditView',
+    'SupportContractBulkEditView',
     'SupportContractDeleteView',
+    'SupportContractBulkDeleteView',
     'SupportContractAssignmentListView',
     'SupportContractAssignmentEditView',
     'SupportContractAssignmentDeleteView',
@@ -52,9 +58,24 @@ class VendorEditView(ObjectEditView):
     form = VendorForm
 
 
+@register_model_view(Vendor, 'bulk_edit')
+class VendorBulkEditView(BulkEditView):
+    queryset = Vendor.objects.all()
+    filterset = VendorFilterSet
+    table = VendorTable
+    form = VendorForm
+
+
 @register_model_view(Vendor, 'delete')
 class VendorDeleteView(ObjectDeleteView):
     queryset = Vendor.objects.all()
+
+
+@register_model_view(Vendor, 'bulk_delete')
+class VendorBulkDeleteView(BulkDeleteView):
+    queryset = Vendor.objects.all()
+    filterset = VendorFilterSet
+    table = VendorTable
 
 
 @register_model_view(SupportSKU, name='list')
@@ -76,8 +97,23 @@ class SupportSKUEditView(ObjectEditView):
     form = SupportSKUForm
 
 
+@register_model_view(SupportSKU, 'bulk_edit')
+class SupportSKUBulkEditView(BulkEditView):
+    queryset = SupportSKU.objects.all()
+    filterset = SupportSKUFilterSet
+    table = SupportSKUTable
+    form = SupportSKUForm
+
+
 @register_model_view(SupportSKU, 'delete')
 class SupportSKUDeleteView(ObjectDeleteView):
+    queryset = SupportSKU.objects.all()
+    filterset = SupportSKUFilterSet
+    table = SupportSKUTable
+
+
+@register_model_view(SupportSKU, 'bulk_delete')
+class SupportSKUBulkDeleteView(BulkDeleteView):
     queryset = SupportSKU.objects.all()
 
 
@@ -121,9 +157,24 @@ class SupportContractEditView(ObjectEditView):
     form = SupportContractForm
 
 
+@register_model_view(SupportContract, 'bulk_edit')
+class SupportContractBulkEditView(BulkEditView):
+    queryset = SupportContract.objects.all()
+    filterset = SupportContractFilterSet
+    table = SupportContractTable
+    form = SupportContractForm
+
+
 @register_model_view(SupportContract, 'delete')
 class SupportContractDeleteView(ObjectDeleteView):
     queryset = SupportContract.objects.all()
+
+
+@register_model_view(SupportContract, 'bulk_delete')
+class SupportContractBulkDeleteView(BulkDeleteView):
+    queryset = SupportContract.objects.all()
+    filterset = SupportContractFilterSet
+    table = SupportContractTable
 
 
 @register_model_view(SupportContractAssignment, 'edit')
