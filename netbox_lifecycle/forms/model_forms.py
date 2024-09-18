@@ -24,7 +24,7 @@ class VendorForm(NetBoxModelForm):
 
     class Meta:
         model = Vendor
-        fields = ('name', )
+        fields = ('name', 'tags')
 
 
 class SupportSKUForm(NetBoxModelForm):
@@ -35,7 +35,7 @@ class SupportSKUForm(NetBoxModelForm):
 
     class Meta:
         model = SupportSKU
-        fields = ('manufacturer', 'sku', 'description', 'comments', )
+        fields = ('manufacturer', 'sku', 'description', 'comments', 'tags', )
 
 
 class SupportContractForm(NetBoxModelForm):
@@ -46,7 +46,7 @@ class SupportContractForm(NetBoxModelForm):
 
     class Meta:
         model = SupportContract
-        fields = ('vendor', 'contract_id', 'start', 'renewal', 'end', 'description', 'comments', )
+        fields = ('vendor', 'contract_id', 'start', 'renewal', 'end', 'description', 'comments', 'tags', )
         widgets = {
             'start': DatePicker(),
             'renewal': DatePicker(),
@@ -80,7 +80,7 @@ class SupportContractAssignmentForm(NetBoxModelForm):
 
     class Meta:
         model = SupportContractAssignment
-        fields = ('contract', 'sku', 'device', 'license', 'end', 'description', 'comments', )
+        fields = ('contract', 'sku', 'device', 'license', 'end', 'description', 'comments', 'tags', )
         widgets = {
             'end': DatePicker(),
         }
@@ -113,7 +113,7 @@ class LicenseForm(NetBoxModelForm):
 
     class Meta:
         model = License
-        fields = ('manufacturer', 'name', 'description', 'comments', )
+        fields = ('manufacturer', 'name', 'description', 'comments', 'tags', )
 
 
 class LicenseAssignmentForm(NetBoxModelForm):
@@ -133,7 +133,7 @@ class LicenseAssignmentForm(NetBoxModelForm):
 
     class Meta:
         model = LicenseAssignment
-        fields = ('vendor', 'license', 'device', 'quantity', 'description', 'comments', )
+        fields = ('vendor', 'license', 'device', 'quantity', 'description', 'comments', 'tags', )
 
 
 class HardwareLifecycleForm(NetBoxModelForm):
@@ -154,7 +154,7 @@ class HardwareLifecycleForm(NetBoxModelForm):
         model = HardwareLifecycle
         fields = (
             'last_contract_date', 'end_of_sale', 'end_of_maintenance', 'end_of_security', 'end_of_support', 'notice',
-            'documentation', 'description', 'comments',
+            'documentation', 'description', 'comments', 'tags',
         )
         widgets = {
             'last_contract_date': DatePicker(),
