@@ -20,30 +20,36 @@ class SupportSKUSerializer(NetBoxModelSerializer):
 
     class Meta:
         model = SupportSKU
-        fields = ('url', 'id', 'display', 'manufacturer', 'sku')
+        fields = ('url', 'id', 'display', 'manufacturer', 'sku', 'description', 'comments', )
+        brief_fields = ('url', 'id', 'display', 'manufacturer', 'sku', )
 
 
 class SupportContractSerializer(NetBoxModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_lifecycle-api:hardwarelifecycle-detail')
     vendor = VendorSerializer(nested=True)
-    start = serializers.DateField()
-    renewal = serializers.DateField()
-    end = serializers.DateField()
+    start = serializers.DateField(required=False)
+    renewal = serializers.DateField(required=False)
+    end = serializers.DateField(required=False)
 
     class Meta:
         model = SupportContract
-        fields = ('url', 'id', 'display', 'vendor', 'contract_id', 'start', 'renewal', 'end', )
+        fields = (
+            'url', 'id', 'display', 'vendor', 'contract_id', 'start', 'renewal', 'end', 'description', 'comments',
+        )
+        brief_fields = ('url', 'id', 'display', 'vendor', 'contract_id', )
 
 
 class SupportContractAssignmentSerializer(NetBoxModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_lifecycle-api:licenseassignment-detail')
     contract = SupportContractSerializer(nested=True)
-
-    device = DeviceSerializer(nested=True)
-    license = LicenseAssignmentSerializer(nested=True)
+    sku = SupportSKUSerializer(nested=True, required=False, allow_null=True)
+    device = DeviceSerializer(nested=True, required=False, allow_null=True)
+    license = LicenseAssignmentSerializer(nested=True, required=False, allow_null=True)
 
     class Meta:
         model = SupportContractAssignment
         fields = (
-            'url', 'id', 'display', 'contract', 'device', 'license', 'end'
+            'url', 'id', 'display', 'contract', 'sku', 'device', 'license', 'end', 'description', 'comments',
         )
+
+        brief_fields = ('url', 'id', 'display', 'contract', 'sku', 'device', 'license', )

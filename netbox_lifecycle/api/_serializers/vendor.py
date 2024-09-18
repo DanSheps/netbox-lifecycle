@@ -13,4 +13,5 @@ class VendorSerializer(NetBoxModelSerializer):
 
     class Meta:
         model = Vendor
-        fields = ('url', 'id', 'display', 'name')
+        fields = ('url', 'id', 'display', 'name', 'description', 'comments', )
+        brief_fields = ('url', 'id', 'display', 'name', )
