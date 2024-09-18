@@ -12,7 +12,9 @@ __all__ = (
     'LicenseListView',
     'LicenseView',
     'LicenseEditView',
+    'LicenseBulkEditView',
     'LicenseDeleteView',
+    'LicenseBulkDeleteView',
     'LicenseAssignmentView',
     'LicenseAssignmentListView',
     'LicenseAssignmentEditView',
@@ -41,9 +43,24 @@ class LicenseEditView(ObjectEditView):
     form = LicenseForm
 
 
+@register_model_view(License, 'bulk_edit')
+class LicenseBulkEditView(BulkEditView):
+    queryset = License.objects.all()
+    filterset = LicenseFilterSet
+    table = LicenseTable
+    form = LicenseForm
+
+
 @register_model_view(License, 'delete')
 class LicenseDeleteView(ObjectDeleteView):
     queryset = License.objects.all()
+
+
+@register_model_view(License, 'bulk_delete')
+class LicenseBulkDeleteView(BulkDeleteView):
+    queryset = License.objects.all()
+    filterset = LicenseFilterSet
+    table = LicenseTable
 
 
 @register_model_view(License, 'assignments')
