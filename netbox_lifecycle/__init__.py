@@ -18,6 +18,7 @@ class NetBoxLifeCycle(PluginConfig):
     required_settings = []
     default_settings = {}
     queues = []
+    graphql_schema = 'graphql.schema.schema'
 
     def ready(self):
 
