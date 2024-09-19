@@ -1,0 +1,1 @@
+from netbox_lifecycle.constants.hardware import HARDWARE_LIFECYCLE_MODELS

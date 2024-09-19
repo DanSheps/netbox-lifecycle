@@ -1,11 +1,12 @@
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.db.models import Q
 from django.urls import reverse
 
 from dcim.models import DeviceType, ModuleType, Device, Module
 from netbox.models import PrimaryModel
+
+from netbox_lifecycle.constants import HARDWARE_LIFECYCLE_MODELS
 
 
 __all__ = (
@@ -13,10 +14,11 @@ __all__ = (
 )
 
 
+
 class HardwareLifecycle(PrimaryModel):
     assigned_object_type = models.ForeignKey(
         to=ContentType,
-        limit_choices_to=Q(app_label='dcim', model__in=('moduletype', 'devicetype',)),
+        limit_choices_to=HARDWARE_LIFECYCLE_MODELS,
         on_delete=models.PROTECT,
         related_name='+',
         blank=True,
