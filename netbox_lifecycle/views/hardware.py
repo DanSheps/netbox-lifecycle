@@ -1,7 +1,7 @@
 from netbox.views.generic import (ObjectListView, ObjectEditView, ObjectDeleteView, ObjectView, BulkEditView,
                                   BulkDeleteView)
 from netbox_lifecycle.filtersets import HardwareLifecycleFilterSet
-from netbox_lifecycle.forms import HardwareLifecycleFilterForm
+from netbox_lifecycle.forms import HardwareLifecycleFilterForm, HardwareLifecycleBulkEditForm
 from netbox_lifecycle.forms.model_forms import HardwareLifecycleForm
 from netbox_lifecycle.models import HardwareLifecycle
 from netbox_lifecycle.tables import HardwareLifecycleTable
@@ -45,11 +45,10 @@ class HardwareLifecycleEditView(ObjectEditView):
 
 @register_model_view(HardwareLifecycle, 'bulk_edit')
 class HardwareLifecycleBulkEditView(BulkEditView):
-    template_name = 'netbox_lifecycle/hardwarelifecycle_edit.html'
     queryset = HardwareLifecycle.objects.all()
     filterset = HardwareLifecycleFilterSet
     table = HardwareLifecycleTable
-    form = HardwareLifecycleForm
+    form = HardwareLifecycleBulkEditForm
 
 
 @register_model_view(HardwareLifecycle, 'delete')
