@@ -14,7 +14,6 @@ __all__ = (
 )
 
 
-
 class HardwareLifecycle(PrimaryModel):
     assigned_object_type = models.ForeignKey(
         to=ContentType,
