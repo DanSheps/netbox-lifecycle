@@ -12,7 +12,7 @@ on:
     branches:
       - 'master'
 concurrency:
-  group: ci-${{ github.action }}-${{ github.ref }}-${{ github.actor }}
+  group: ci-${{ github.event_name }}-${{ github.ref }}-${{ github.actor }}
   cancel-in-progress: true
 permissions:
   contents: read
