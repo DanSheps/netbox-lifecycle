@@ -18,16 +18,22 @@ class LicenseFilterSet(NetBoxModelFilterSet):
         queryset=Manufacturer.objects.all(),
         label=_('Manufacturer'),
     )
+    manufacturer = django_filters.ModelMultipleChoiceFilter(
+        field_name='manufacturer__slug',
+        queryset=Manufacturer.objects.all(),
+        to_field_name='slug',
+        label=_('Manufacturer (Slug)'),
+    )
 
     class Meta:
         model = License
-        fields = ('id', 'q', )
+        fields = ('id', 'q', 'name', )
 
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
         qs_filter = (
-            Q(manufacturer__name_icontains=value) |
+            Q(manufacturer__name__icontains=value) |
             Q(name__icontains=value)
         )
         return queryset.filter(qs_filter).distinct()
@@ -39,14 +45,32 @@ class LicenseAssignmentFilterSet(NetBoxModelFilterSet):
         queryset=License.objects.all(),
         label=_('License'),
     )
+    license = django_filters.ModelMultipleChoiceFilter(
+        field_name='license__name',
+        queryset=License.objects.all(),
+        to_field_name='name',
+        label=_('License'),
+    )
     vendor_id = django_filters.ModelMultipleChoiceFilter(
-        field_name='license',
+        field_name='vendor',
         queryset=Vendor.objects.all(),
         label=_('Vendor'),
     )
+    vendor = django_filters.ModelMultipleChoiceFilter(
+        field_name='vendor__name',
+        queryset=Vendor.objects.all(),
+        to_field_name='name',
+        label=_('Vendor'),
+    )
     device_id = django_filters.ModelMultipleChoiceFilter(
-        field_name='license',
+        field_name='device',
         queryset=Device.objects.all(),
+        label=_('Device'),
+    )
+    device = django_filters.ModelMultipleChoiceFilter(
+        field_name='device__name',
+        queryset=Device.objects.all(),
+        to_field_name='name',
         label=_('Device'),
     )
 
@@ -58,7 +82,7 @@ class LicenseAssignmentFilterSet(NetBoxModelFilterSet):
         if not value.strip():
             return queryset
         qs_filter = (
-            Q(license__manufacturer__name_icontains=value) |
+            Q(license__manufacturer__name__icontains=value) |
             Q(license__name__icontains=value) |
             Q(vendor__name__icontains=value) |
             Q(device__name__icontains=value)
