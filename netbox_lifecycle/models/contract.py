@@ -165,7 +165,7 @@ class SupportContractAssignment(PrimaryModel):
         return f'{self.device}: {self.contract.contract_id}'
 
     def get_absolute_url(self):
-        return reverse('plugins:netbox_lifecycle:supportcontract_assignments', args=[self.contract.pk])
+        return reverse('plugins:netbox_lifecycle:supportcontractassignment', args=[self.pk])
 
     @property
     def end_date(self):
