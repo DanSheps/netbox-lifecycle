@@ -7,8 +7,8 @@ metadata = metadata('netbox_lifecycle')
 
 class NetBoxLifeCycle(PluginConfig):
     name = metadata.get('Name').replace('-', '_')
-    verbose_name = metadata.get('Summary')
-    description = metadata.get('Description')
+    verbose_name = metadata.get('Name').replace('-', ' ').title()
+    description = metadata.get('Summary')
     version = metadata.get('Version')
     author = metadata.get('Author')
     author_email = metadata.get('Author-email')
