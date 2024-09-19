@@ -2,7 +2,7 @@ from netbox.views.generic import ObjectListView, ObjectEditView, ObjectDeleteVie
     BulkEditView, BulkDeleteView
 from netbox_lifecycle.filtersets import LicenseFilterSet, LicenseAssignmentFilterSet
 from netbox_lifecycle.forms import LicenseFilterForm, LicenseForm, LicenseAssignmentForm, \
-    LicenseAssignmentBulkEditForm, LicenseAssignmentFilterForm
+    LicenseAssignmentBulkEditForm, LicenseAssignmentFilterForm, LicenseBulkEditForm
 from netbox_lifecycle.models import License, LicenseAssignment
 from netbox_lifecycle.tables import LicenseTable, LicenseAssignmentTable
 from utilities.views import ViewTab, register_model_view
@@ -15,8 +15,9 @@ __all__ = (
     'LicenseBulkEditView',
     'LicenseDeleteView',
     'LicenseBulkDeleteView',
-    'LicenseAssignmentView',
+    'LicenseAssignmentsView',
     'LicenseAssignmentListView',
+    'LicenseAssignmentView',
     'LicenseAssignmentEditView',
     'LicenseAssignmentDeleteView',
     'LicenseAssignmentBulkEditView',
@@ -48,7 +49,7 @@ class LicenseBulkEditView(BulkEditView):
     queryset = License.objects.all()
     filterset = LicenseFilterSet
     table = LicenseTable
-    form = LicenseForm
+    form = LicenseBulkEditForm
 
 
 @register_model_view(License, 'delete')
@@ -64,7 +65,7 @@ class LicenseBulkDeleteView(BulkDeleteView):
 
 
 @register_model_view(License, 'assignments')
-class LicenseAssignmentView(ObjectChildrenView):
+class LicenseAssignmentsView(ObjectChildrenView):
     template_name = 'netbox_lifecycle/license/assignments.html'
     queryset = License.objects.all()
     child_model = LicenseAssignment
@@ -93,6 +94,11 @@ class LicenseAssignmentListView(ObjectListView):
     filterset_form = LicenseAssignmentFilterForm
 
 
+@register_model_view(LicenseAssignment)
+class LicenseAssignmentView(ObjectView):
+    queryset = LicenseAssignment.objects.all()
+
+
 @register_model_view(LicenseAssignment, 'edit')
 class LicenseAssignmentEditView(ObjectEditView):
     queryset = LicenseAssignment.objects.all()
@@ -104,6 +110,7 @@ class LicenseAssignmentDeleteView(ObjectDeleteView):
     queryset = LicenseAssignment.objects.all()
 
 
+@register_model_view(LicenseAssignment, 'bulk_edit')
 class LicenseAssignmentBulkEditView(BulkEditView):
     queryset = LicenseAssignment.objects.all()
     filterset = LicenseAssignmentFilterSet
@@ -111,6 +118,7 @@ class LicenseAssignmentBulkEditView(BulkEditView):
     form = LicenseAssignmentBulkEditForm
 
 
+@register_model_view(LicenseAssignment, 'bulk_delete')
 class LicenseAssignmentBulkDeleteView(BulkDeleteView):
     queryset = LicenseAssignment.objects.all()
     filterset = LicenseAssignmentFilterSet

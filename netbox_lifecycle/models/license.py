@@ -91,7 +91,7 @@ class LicenseAssignment(PrimaryModel):
         return f'{self.device.name}: {self.license.name}'
 
     def get_absolute_url(self):
-        return reverse('plugins:netbox_lifecycle:license_assignments', args=[self.license.pk])
+        return reverse('plugins:netbox_lifecycle:licenseassignment', args=[self.pk])
 
     @property
     def name(self):

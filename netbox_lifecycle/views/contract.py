@@ -4,7 +4,7 @@ from netbox_lifecycle.filtersets import SupportContractFilterSet, VendorFilterSe
     SupportContractAssignmentFilterSet, SupportSKUFilterSet
 from netbox_lifecycle.forms import SupportContractFilterForm, VendorFilterForm, SupportContractForm, VendorForm, \
     SupportContractAssignmentForm, SupportSKUFilterForm, SupportSKUForm, SupportContractAssignmentBulkEditForm, \
-    SupportContractAssignmentFilterForm
+    SupportContractAssignmentFilterForm, VendorBulkEditForm, SupportSKUBulkEditForm, SupportContractBulkEditForm
 from netbox_lifecycle.models import SupportContract, Vendor, LicenseAssignment, SupportContractAssignment, SupportSKU
 from netbox_lifecycle.tables import SupportContractTable, VendorTable, LicenseAssignmentTable, \
     SupportContractAssignmentTable, SupportSKUTable
@@ -12,26 +12,34 @@ from utilities.views import ViewTab, register_model_view
 
 
 __all__ = (
+    # Vendor
     'VendorListView',
     'VendorView',
     'VendorEditView',
     'VendorBulkEditView',
     'VendorDeleteView',
     'VendorBulkDeleteView',
+
+    # SupportSKU
     'SupportSKUListView',
     'SupportSKUView',
     'SupportSKUEditView',
     'SupportSKUBulkEditView',
     'SupportSKUDeleteView',
     'SupportSKUBulkDeleteView',
+
+    # SupportContract
     'SupportContractListView',
     'SupportContractView',
-    'SupportContractAssignmentView',
     'SupportContractEditView',
     'SupportContractBulkEditView',
     'SupportContractDeleteView',
     'SupportContractBulkDeleteView',
+    'SupportContractAssignmentsView',
+
+    # SupportContractAssignment
     'SupportContractAssignmentListView',
+    'SupportContractAssignmentView',
     'SupportContractAssignmentEditView',
     'SupportContractAssignmentDeleteView',
     'SupportContractAssignmentBulkEditView',
@@ -63,7 +71,7 @@ class VendorBulkEditView(BulkEditView):
     queryset = Vendor.objects.all()
     filterset = VendorFilterSet
     table = VendorTable
-    form = VendorForm
+    form = VendorBulkEditForm
 
 
 @register_model_view(Vendor, 'delete')
@@ -102,7 +110,7 @@ class SupportSKUBulkEditView(BulkEditView):
     queryset = SupportSKU.objects.all()
     filterset = SupportSKUFilterSet
     table = SupportSKUTable
-    form = SupportSKUForm
+    form = SupportSKUBulkEditForm
 
 
 @register_model_view(SupportSKU, 'delete')
@@ -115,6 +123,8 @@ class SupportSKUDeleteView(ObjectDeleteView):
 @register_model_view(SupportSKU, 'bulk_delete')
 class SupportSKUBulkDeleteView(BulkDeleteView):
     queryset = SupportSKU.objects.all()
+    filterset = SupportSKUFilterSet
+    table = SupportSKUTable
 
 
 @register_model_view(SupportContract, name='list')
@@ -131,7 +141,7 @@ class SupportContractView(ObjectView):
 
 
 @register_model_view(SupportContract, name='assignments')
-class SupportContractAssignmentView(ObjectChildrenView):
+class SupportContractAssignmentsView(ObjectChildrenView):
     template_name = 'netbox_lifecycle/supportcontract/assignments.html'
     queryset = SupportContract.objects.all()
     child_model = SupportContractAssignment
@@ -162,7 +172,7 @@ class SupportContractBulkEditView(BulkEditView):
     queryset = SupportContract.objects.all()
     filterset = SupportContractFilterSet
     table = SupportContractTable
-    form = SupportContractForm
+    form = SupportContractBulkEditForm
 
 
 @register_model_view(SupportContract, 'delete')
@@ -175,18 +185,6 @@ class SupportContractBulkDeleteView(BulkDeleteView):
     queryset = SupportContract.objects.all()
     filterset = SupportContractFilterSet
     table = SupportContractTable
-
-
-@register_model_view(SupportContractAssignment, 'edit')
-class SupportContractAssignmentEditView(ObjectEditView):
-    template_name = 'netbox_lifecycle/supportcontractassignment_edit.html'
-    queryset = SupportContractAssignment.objects.all()
-    form = SupportContractAssignmentForm
-
-
-@register_model_view(SupportContractAssignment, 'delete')
-class SupportContractAssignmentDeleteView(ObjectDeleteView):
-    queryset = SupportContractAssignment.objects.all()
 
 
 @register_model_view(SupportContractAssignment, name='list')
@@ -202,6 +200,23 @@ class SupportContractAssignmentListView(ObjectListView):
         'bulk_edit': {'change'},
         'bulk_delete': {'delete'}
     }
+
+
+@register_model_view(SupportContract)
+class SupportContractAssignmentView(ObjectView):
+    queryset = SupportContractAssignment.objects.all()
+
+
+@register_model_view(SupportContractAssignment, 'edit')
+class SupportContractAssignmentEditView(ObjectEditView):
+    template_name = 'netbox_lifecycle/supportcontractassignment_edit.html'
+    queryset = SupportContractAssignment.objects.all()
+    form = SupportContractAssignmentForm
+
+
+@register_model_view(SupportContractAssignment, 'delete')
+class SupportContractAssignmentDeleteView(ObjectDeleteView):
+    queryset = SupportContractAssignment.objects.all()
 
 
 class SupportContractAssignmentBulkEditView(BulkEditView):
