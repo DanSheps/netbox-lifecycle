@@ -196,7 +196,6 @@ class SupportContractTest(APIViewTestCases.APIViewTestCase):
         ]
         SupportContract.objects.bulk_create(supportcontract)
 
-
         cls.create_data = [
             {
                 'contract_id': 'NB1000-4',
@@ -299,10 +298,10 @@ class HardwareLifecycleTest(DateFieldMixin, APIViewTestCases.APIViewTestCase):
                 assigned_object=device_types[0], end_of_sale='2030-01-01', end_of_support='2030-01-01'
             ),
             HardwareLifecycle(
-                assigned_object=device_types[1], end_of_sale='2030-01-01',  end_of_support='2040-01-01'
+                assigned_object=device_types[1], end_of_sale='2030-01-01', end_of_support='2040-01-01'
             ),
             HardwareLifecycle(
-                assigned_object=device_types[2], end_of_sale='2030-01-01',  end_of_support='2050-01-01'
+                assigned_object=device_types[2], end_of_sale='2030-01-01', end_of_support='2050-01-01'
             ),
         ]
         HardwareLifecycle.objects.bulk_create(hardware_lifecycles)

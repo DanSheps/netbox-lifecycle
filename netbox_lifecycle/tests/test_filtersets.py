@@ -297,9 +297,23 @@ class HardwareLifecycleTestCase(TestCase):
         HardwareLifecycle.objects.bulk_create(lifecycles)
 
     def test_q(self):
-        params = {'q': 'License 1'}
+        params = {'q': 'Device Type 1'}
         self.assertEqual(self.filterset(params, self.queryset).qs.count(), 1)
 
-    def test_name(self):
-        params = {'name': ['License 1', 'License 2']}
+    def test_device_type(self):
+        assigned_objects = DeviceType.objects.all()[0:2]
+
+        params = {'device_type_id': [assigned_objects[0].pk, assigned_objects[1].pk]}
+        self.assertEqual(self.filterset(params, self.queryset).qs.count(), 2)
+
+        params = {'device_type': [assigned_objects[0].model, assigned_objects[1].model]}
+        self.assertEqual(self.filterset(params, self.queryset).qs.count(), 2)
+
+    def test_module_type(self):
+        assigned_objects = ModuleType.objects.all()[0:2]
+
+        params = {'module_type_id': [assigned_objects[0].pk, assigned_objects[1].pk]}
+        self.assertEqual(self.filterset(params, self.queryset).qs.count(), 2)
+
+        params = {'module_type': [assigned_objects[0].model, assigned_objects[1].model]}
         self.assertEqual(self.filterset(params, self.queryset).qs.count(), 2)

@@ -101,8 +101,8 @@ class HardwareLifecycleType(NetBoxObjectType):
     assigned_object_id: int
     assigned_object: Annotated[Union[
         Annotated["DeviceType", strawberry.lazy('dcim.graphql.types')],
-        Annotated["ModuleType", strawberry.lazy('dcim.graphql.types')],
-        ], strawberry.union("HardwareLifecycleObjectTypes")] | None
+        Annotated["ModuleType", strawberry.lazy('dcim.graphql.types')],],
+        strawberry.union("HardwareLifecycleObjectTypes")] | None
     end_of_sale: str
     end_of_maintenance: str | None
     end_of_security: str | None

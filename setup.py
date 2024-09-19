@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='netbox-lifecycle',
-    version='1.1.2',
+    version='1.1.3-beta1',
     description='NetBox Lifecycle',
     long_description='NetBox Support Contract and EOL/EOS management',
     url='https://github.com/dansheps/netbox-lifecycle/',
