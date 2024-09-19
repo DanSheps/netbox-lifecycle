@@ -1,5 +1,14 @@
 name: CI
-on: [push, pull_request]
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+    branches:
+      - 'master'
+concurrency:
+  group: ci-${{ github.actor }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
@@ -30,6 +39,13 @@ jobs:
           - 5432:5432
 
     steps:
+    - name: Echo Github Variables
+      run: |
+        echo "${{ github.event_name }}"
+        echo "${{ github.action }}"
+        echo "${{ github.action_path }}"
+        echo "${{ github.action_ref }}"
+
     - name: Check out NetBox
       uses: actions/checkout@v4
       with:
