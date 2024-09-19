@@ -1,5 +1,3 @@
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
@@ -8,7 +6,7 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from dcim.choices import DeviceStatusChoices
-from netbox.models import NetBoxModel
+from netbox.models import PrimaryModel
 
 
 __all__ = (
@@ -19,7 +17,7 @@ __all__ = (
 )
 
 
-class Vendor(NetBoxModel):
+class Vendor(PrimaryModel):
     name = models.CharField(max_length=100)
 
     clone_fields = ()
@@ -42,7 +40,7 @@ class Vendor(NetBoxModel):
         return reverse('plugins:netbox_lifecycle:vendor', args=[self.pk])
 
 
-class SupportSKU(NetBoxModel):
+class SupportSKU(PrimaryModel):
     manufacturer = models.ForeignKey(
         to='dcim.Manufacturer',
         on_delete=models.CASCADE,
@@ -74,7 +72,7 @@ class SupportSKU(NetBoxModel):
         return reverse('plugins:netbox_lifecycle:supportsku', args=[self.pk])
 
 
-class SupportContract(NetBoxModel):
+class SupportContract(PrimaryModel):
     vendor = models.ForeignKey(
         to='netbox_lifecycle.Vendor',
         on_delete=models.SET_NULL,
@@ -111,7 +109,7 @@ class SupportContract(NetBoxModel):
         return reverse('plugins:netbox_lifecycle:supportcontract', args=[self.pk])
 
 
-class SupportContractAssignment(NetBoxModel):
+class SupportContractAssignment(PrimaryModel):
     contract = models.ForeignKey(
         to='netbox_lifecycle.SupportContract',
         on_delete=models.SET_NULL,
@@ -167,7 +165,7 @@ class SupportContractAssignment(NetBoxModel):
         return f'{self.device}: {self.contract.contract_id}'
 
     def get_absolute_url(self):
-        return reverse('plugins:netbox_lifecycle:supportcontract_assignments', args=[self.contract.pk])
+        return reverse('plugins:netbox_lifecycle:supportcontractassignment', args=[self.pk])
 
     @property
     def end_date(self):

@@ -40,12 +40,12 @@
       </div>
     </div>
     <div class="field-group my-5">
+      {% render_field form.tags %}
+    </div>
+    <div class="field-group my-5">
       <div class="row mb-2">
         <h5 class="offset-sm-3">Dates</h5>
       </div>
       {% render_field form.end %}
-    </div>
-    <div class="field-group my-5">
-      {% render_field form.tags %}
     </div>
 {% endblock %}

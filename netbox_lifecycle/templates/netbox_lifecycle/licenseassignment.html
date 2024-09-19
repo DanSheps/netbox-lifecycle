@@ -14,39 +14,20 @@
         <div class="card-body">
           <table class="table table-hover attr-table">
             <tr>
-              <th>Manufacturer</th>
-              <td>{{ object.manufacturer|linkify }}</td>
+              <th>License</th>
+              <td>{{ object.license|linkify }}</td>
             </tr>
             <tr>
               <th>Vendor</th>
               <td>{{ object.vendor|linkify }}</td>
             </tr>
             <tr>
-              <th>Contract ID</th>
-              <td>{{ object.contract_id }}</td>
+              <th>Device</th>
+              <td>{{ object.device|linkify }}</td>
             </tr>
             <tr>
-              <th>Description</th>
-              <td>{{ object.description }}</td>
-            </tr>
-          </table>
-        </div>
-      </div>
-      <div class="card">
-        <h5 class="card-header">Dates</h5>
-        <div class="card-body">
-          <table class="table table-hover attr-table">
-            <tr>
-              <th>Start</th>
-              <td>{{ object.start }}</td>
-            </tr>
-            <tr>
-              <th>Last renewal</th>
-              <td>{{ object.renewal }}</td>
-            </tr>
-            <tr>
-              <th>End</th>
-              <td>{{ object.end }}</td>
+              <th>Quantity</th>
+              <td>{{ object.quantity }}</td>
             </tr>
           </table>
         </div>
