@@ -97,12 +97,19 @@ class SupportContractAssignmentForm(NetBoxModelForm):
         ]
 
         if len(selected_objects) == 0:
-            raise forms.ValidationErrr({
-                selected_objects[1]: "You must select at least a device or license"
+            raise forms.ValidationError({
+                'device': "You must select at least a device or license",
+                'license': "You must select at least a device or license"
             })
 
         if self.cleaned_data.get('license') and not self.cleaned_data.get('device'):
             self.cleaned_data['device'] = self.cleaned_data.get('license').device
+
+        if self.cleaned_data.get('license') and self.cleaned_data.get('device'):
+            if self.cleaned_data.get('license').device != self.cleaned_data.get('device'):
+                raise forms.ValidationError({
+                    'device': 'Device assigned to license must match device assignment'
+                })
 
 
 class LicenseForm(NetBoxModelForm):
