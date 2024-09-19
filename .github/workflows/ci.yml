@@ -1,13 +1,18 @@
 name: CI
 on:
+  push:
+    branches:
+      - 'develop'
+      - 'master'
   pull_request:
     types:
       - opened
+      - synchronize
       - reopened
     branches:
       - 'master'
 concurrency:
-  group: ci-${{ github.actor }}-${{ github.ref }}
+  group: ci-${{ github.action }}-${{ github.ref }}-${{ github.actor }}
   cancel-in-progress: true
 permissions:
   contents: read
