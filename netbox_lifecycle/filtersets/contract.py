@@ -19,7 +19,7 @@ class VendorFilterSet(NetBoxModelFilterSet):
 
     class Meta:
         model = Vendor
-        fields = ('id', 'q', )
+        fields = ('id', 'q', 'name', )
 
     def search(self, queryset, name, value):
         if not value.strip():
@@ -45,7 +45,7 @@ class SupportSKUFilterSet(NetBoxModelFilterSet):
 
     class Meta:
         model = SupportSKU
-        fields = ('id', 'q', )
+        fields = ('id', 'q', 'sku', )
 
     def search(self, queryset, name, value):
         if not value.strip():
@@ -63,10 +63,16 @@ class SupportContractFilterSet(NetBoxModelFilterSet):
         queryset=Vendor.objects.all(),
         label=_('Vendor'),
     )
+    vendor = django_filters.ModelMultipleChoiceFilter(
+        field_name='vendor__name',
+        queryset=Vendor.objects.all(),
+        to_field_name='name',
+        label=_('Vendor (Name)'),
+    )
 
     class Meta:
         model = SupportContract
-        fields = ('id', 'q', )
+        fields = ('id', 'q', 'contract_id', )
 
     def search(self, queryset, name, value):
         if not value.strip():
@@ -84,25 +90,44 @@ class SupportContractAssignmentFilterSet(NetBoxModelFilterSet):
         queryset=SupportContract.objects.all(),
         label=_('Contract'),
     )
-    device = django_filters.ModelMultipleChoiceFilter(
-        field_name='device__name',
-        queryset=Device.objects.all(),
-        label=_('Device (name)'),
+    contract = django_filters.ModelMultipleChoiceFilter(
+        field_name='contract__contract_id',
+        queryset=SupportContract.objects.all(),
+        to_field_name='contract_id',
+        label=_('Contract'),
+    )
+    sku_id = django_filters.ModelMultipleChoiceFilter(
+        field_name='sku',
+        queryset=SupportSKU.objects.all(),
+        label=_('SKU'),
+    )
+    sku = django_filters.ModelMultipleChoiceFilter(
+        field_name='sku__sku',
+        queryset=SupportSKU.objects.all(),
+        to_field_name='sku',
+        label=_('SKU'),
     )
     device_id = django_filters.ModelMultipleChoiceFilter(
         field_name='device',
         queryset=Device.objects.all(),
         label=_('Device (ID)'),
     )
+    device = django_filters.ModelMultipleChoiceFilter(
+        field_name='device__name',
+        queryset=Device.objects.all(),
+        to_field_name='name',
+        label=_('Device (name)'),
+    )
+    license_id = django_filters.ModelMultipleChoiceFilter(
+        field_name='license__license',
+        queryset=LicenseAssignment.objects.all(),
+        label=_('License (ID)'),
+    )
     license = django_filters.ModelMultipleChoiceFilter(
         field_name='license__license__name',
         queryset=License.objects.all(),
+        to_field_name='name',
         label=_('License (SKU)'),
-    )
-    license_id = django_filters.ModelMultipleChoiceFilter(
-        field_name='license',
-        queryset=LicenseAssignment.objects.all(),
-        label=_('License (ID)'),
     )
 
     class Meta:
