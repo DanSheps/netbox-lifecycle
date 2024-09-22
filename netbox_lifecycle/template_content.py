@@ -8,35 +8,58 @@ from netbox.plugins import PluginTemplateExtension
 from .models import hardware, contract
 
 class DeviceHardwareInfoExtension(PluginTemplateExtension):
-    model = 'dcim.device'
-
     def right_page(self):
         object = self.context.get('object')
         support_contract = contract.SupportContractAssignment.objects.filter(device_id=self.context['object'].id).first()
-        hardware_lifecycle = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].device_type.id).first()
-        context = {'support_contract': support_contract, 'hardware_lifecycle': hardware_lifecycle}
+        match self.kind:
+            case "device":       
+                lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].device_type_id).first()
+            case "module":       
+                lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].module_type_id).first()
+            case _:       
+                lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].id).first()
+        context = {'support_contract': support_contract, 'lifecycle_info': lifecycle_info}
         return self.render('netbox_lifecycle/inc/support_contract_info.html', extra_context=context)
-        
+
+
+class TypeInfoExtension(PluginTemplateExtension):
+    def right_page(self):
+        object = self.context.get('object')
+        match self.kind:
+            case "device":       
+                lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].device_type_id).first()
+            case "module":       
+                lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].module_type_id).first()
+            case _:       
+                lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].id).first()
+            
+        context = {'lifecycle_info': lifecycle_info}
+        return self.render('netbox_lifecycle/inc/hardware_lifecycle_info.html', extra_context=context)
+
+
 class DeviceHardwareLifecycleInfo(DeviceHardwareInfoExtension):
     model = 'dcim.device'
     kind = 'device'
 
 
-class DeviceTypeInfoExtension(PluginTemplateExtension):
-    model = 'dcim.devicetype'
+class ModuleHardwareLifecycleInfo(TypeInfoExtension):
+    model = 'dcim.module'
+    kind = 'module'
 
-    def right_page(self):
-        object = self.context.get('object')
-        hardware_lifecycle = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].id).first()
-        context = {'hardware_lifecycle': hardware_lifecycle}
-        return self.render('netbox_lifecycle/inc/device_lifecycle_info.html', extra_context=context)
 
-class DeviceTypeHardwareLifecycleInfo(DeviceTypeInfoExtension):
+class DeviceTypeHardwareLifecycleInfo(TypeInfoExtension):
     model = 'dcim.devicetype'
     kind = 'devicetype'
 
 
+class ModuleTypeHardwareLifecycleInfo(TypeInfoExtension):
+    model = 'dcim.moduletype'
+    kind = 'moduletype'
+
+
 template_extensions = (
     DeviceHardwareLifecycleInfo,
+    ModuleHardwareLifecycleInfo,
     DeviceTypeHardwareLifecycleInfo,
+    ModuleTypeHardwareLifecycleInfo,
 )

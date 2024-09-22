@@ -2,6 +2,7 @@
 {% load buttons %}
 {% load custom_links %}
 {% load helpers %}
+{% load filters %}
 {% load perms %}
 {% load plugins %}
 {% load tabs %}
@@ -14,12 +15,16 @@
         <div class="card-body">
           <table class="table table-hover attr-table">
             <tr>
-              <td>Manufacturer</td>
+              <th>Manufacturer</th>
               <td>{{ object.assigned_object.manufacturer|linkify }}</td>
             </tr>
             <tr>
-              <td>Object</td>
+              <th>Object</th>
               <td>{{ object.assigned_object|linkify }}</td>
+            </tr>
+            <tr>
+              <th>Description</th>
+              <td>{{ object.assigned_object.description }}</td>
             </tr>
           </table>
         </div>
@@ -30,23 +35,23 @@
           <table class="table table-hover attr-table">
             <tr>
               <td>End of Sale</td>
-              <td>{{ object.end_of_sale }}</td>
+              <td><span {{ object.end_of_sale|date_badge_class }}>{{ object.end_of_sale }}</span></td>
             </tr>
             <tr>
               <td>End of Maintenance Updates</td>
-              <td>{{ object.end_of_maintenance }}</td>
+              <td><span {{ object.end_of_maintenance|date_badge_class }}>{{ object.end_of_maintenance }}</span></td>
             </tr>
             <tr>
               <td>End of Security Updates</td>
-              <td>{{ object.end_of_security }}</td>
+              <td><span {{ object.end_of_security|date_badge_class }}>{{ object.end_of_security }}</span></td>
             </tr>
             <tr>
               <td>Last Support Contract Purchase Date</td>
-              <td>{{ object.last_contract_date }}</td>
+              <td><span {{ object.last_contract_date|date_badge_class }}>{{ object.last_contract_date }}</span></td>
             </tr>
             <tr>
               <td>End of Support</td>
-              <td>{{ object.end_of_support }}</td>
+              <td><span {{ object.end_of_support|date_badge_class }}>{{ object.end_of_support }}</span></td>
             </tr>
           </table>
         </div>
