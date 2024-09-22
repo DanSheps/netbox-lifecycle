@@ -24,7 +24,7 @@ class VendorForm(NetBoxModelForm):
 
     class Meta:
         model = Vendor
-        fields = ('name', )
+        fields = ('name', 'tags')
 
 
 class SupportSKUForm(NetBoxModelForm):
@@ -35,7 +35,7 @@ class SupportSKUForm(NetBoxModelForm):
 
     class Meta:
         model = SupportSKU
-        fields = ('manufacturer', 'sku', )
+        fields = ('manufacturer', 'sku', 'description', 'comments', 'tags', )
 
 
 class SupportContractForm(NetBoxModelForm):
@@ -46,7 +46,7 @@ class SupportContractForm(NetBoxModelForm):
 
     class Meta:
         model = SupportContract
-        fields = ('vendor', 'contract_id', 'start', 'renewal', 'end', )
+        fields = ('vendor', 'contract_id', 'start', 'renewal', 'end', 'description', 'comments', 'tags', )
         widgets = {
             'start': DatePicker(),
             'renewal': DatePicker(),
@@ -80,7 +80,7 @@ class SupportContractAssignmentForm(NetBoxModelForm):
 
     class Meta:
         model = SupportContractAssignment
-        fields = ('contract', 'sku', 'device', 'license', 'end')
+        fields = ('contract', 'sku', 'device', 'license', 'end', 'description', 'comments', 'tags', )
         widgets = {
             'end': DatePicker(),
         }
@@ -97,12 +97,19 @@ class SupportContractAssignmentForm(NetBoxModelForm):
         ]
 
         if len(selected_objects) == 0:
-            raise forms.ValidationErrr({
-                selected_objects[1]: "You must select at least a device or license"
+            raise forms.ValidationError({
+                'device': "You must select at least a device or license",
+                'license': "You must select at least a device or license"
             })
 
         if self.cleaned_data.get('license') and not self.cleaned_data.get('device'):
             self.cleaned_data['device'] = self.cleaned_data.get('license').device
+
+        if self.cleaned_data.get('license') and self.cleaned_data.get('device'):
+            if self.cleaned_data.get('license').device != self.cleaned_data.get('device'):
+                raise forms.ValidationError({
+                    'device': 'Device assigned to license must match device assignment'
+                })
 
 
 class LicenseForm(NetBoxModelForm):
@@ -113,7 +120,7 @@ class LicenseForm(NetBoxModelForm):
 
     class Meta:
         model = License
-        fields = ('manufacturer', 'name', )
+        fields = ('manufacturer', 'name', 'description', 'comments', 'tags', )
 
 
 class LicenseAssignmentForm(NetBoxModelForm):
@@ -133,7 +140,7 @@ class LicenseAssignmentForm(NetBoxModelForm):
 
     class Meta:
         model = LicenseAssignment
-        fields = ('vendor', 'license', 'device', 'quantity')
+        fields = ('vendor', 'license', 'device', 'quantity', 'description', 'comments', 'tags', )
 
 
 class HardwareLifecycleForm(NetBoxModelForm):
@@ -154,7 +161,7 @@ class HardwareLifecycleForm(NetBoxModelForm):
         model = HardwareLifecycle
         fields = (
             'last_contract_date', 'end_of_sale', 'end_of_maintenance', 'end_of_security', 'end_of_support', 'notice',
-            'documentation'
+            'documentation', 'description', 'comments', 'tags',
         )
         widgets = {
             'last_contract_date': DatePicker(),

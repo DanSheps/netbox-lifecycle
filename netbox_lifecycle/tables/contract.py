@@ -34,7 +34,7 @@ class SupportSKUTable(NetBoxTable):
     class Meta(NetBoxTable.Meta):
         model = SupportSKU
         fields = (
-            'pk', 'manufacturer', 'sku'
+            'pk', 'manufacturer', 'sku', 'description', 'comments',
         )
         default_columns = (
             'pk', 'manufacturer', 'sku',
@@ -50,7 +50,7 @@ class SupportContractTable(NetBoxTable):
     class Meta(NetBoxTable.Meta):
         model = SupportContract
         fields = (
-            'pk', 'contract_id', 'start', 'renewal', 'end'
+            'pk', 'contract_id', 'start', 'renewal', 'end', 'description', 'comments',
         )
         default_columns = (
             'pk', 'contract_id',
@@ -112,7 +112,7 @@ class SupportContractAssignmentTable(NetBoxTable):
         model = SupportContractAssignment
         fields = (
             'pk', 'contract', 'sku', 'device_name', 'license_name', 'device_model', 'device_serial', 'quantity',
-            'renewal', 'end'
+            'renewal', 'end', 'description', 'comments',
         )
         default_columns = (
             'pk', 'contract', 'sku', 'device_name', 'license_name', 'device_model', 'device_serial'

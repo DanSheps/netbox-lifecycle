@@ -1,11 +1,8 @@
-from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
-from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models.functions import Lower
 from django.urls import reverse
 
-from dcim.models import DeviceType, ModuleType
-from netbox.models import NetBoxModel
+from netbox.models import PrimaryModel
 
 
 __all__ = (
@@ -14,7 +11,7 @@ __all__ = (
 )
 
 
-class License(NetBoxModel):
+class License(PrimaryModel):
     manufacturer = models.ForeignKey(
         to='dcim.Manufacturer',
         on_delete=models.CASCADE,
@@ -46,7 +43,7 @@ class License(NetBoxModel):
         return reverse('plugins:netbox_lifecycle:license', args=[self.pk])
 
 
-class LicenseAssignment(NetBoxModel):
+class LicenseAssignment(PrimaryModel):
     license = models.ForeignKey(
         to='netbox_lifecycle.License',
         on_delete=models.CASCADE,
@@ -94,7 +91,7 @@ class LicenseAssignment(NetBoxModel):
         return f'{self.device.name}: {self.license.name}'
 
     def get_absolute_url(self):
-        return reverse('plugins:netbox_lifecycle:license_assignments', args=[self.license.pk])
+        return reverse('plugins:netbox_lifecycle:licenseassignment', args=[self.pk])
 
     @property
     def name(self):

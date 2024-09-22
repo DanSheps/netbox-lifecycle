@@ -1,5 +1,4 @@
-from rest_framework.viewsets import ModelViewSet
-
+from netbox.api.viewsets import NetBoxModelViewSet
 from netbox_lifecycle.api.serializers import HardwareLifecycleSerializer
 from netbox_lifecycle.models import HardwareLifecycle
 
@@ -9,6 +8,6 @@ __all__ = (
 )
 
 
-class HardwareLifecycleViewSet(ModelViewSet):
+class HardwareLifecycleViewSet(NetBoxModelViewSet):
     queryset = HardwareLifecycle.objects.all()
     serializer_class = HardwareLifecycleSerializer

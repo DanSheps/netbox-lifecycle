@@ -22,7 +22,7 @@ class LicenseTable(NetBoxTable):
     class Meta(NetBoxTable.Meta):
         model = License
         fields = (
-            'pk', 'name',
+            'pk', 'name', 'description', 'comments',
         )
         default_columns = (
             'pk', 'name',
@@ -43,7 +43,7 @@ class LicenseAssignmentTable(NetBoxTable):
     class Meta(NetBoxTable.Meta):
         model = LicenseAssignment
         fields = (
-            'pk', 'license', 'vendor', 'device', 'quantity'
+            'pk', 'license', 'vendor', 'device', 'quantity', 'description', 'comments',
         )
         default_columns = (
             'pk', 'license', 'vendor', 'device'

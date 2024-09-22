@@ -18,19 +18,22 @@ class HardwareLifecycleSerializer(NetBoxModelSerializer):
     assigned_object_type = ContentTypeField(
         queryset=ContentType.objects.all()
     )
-    assigned_object = serializers.SerializerMethodField(read_only=True)
 
     end_of_sale = serializers.DateField()
-    end_of_maintenance = serializers.DateField()
-    end_of_security = serializers.DateField()
-    last_contract_date = serializers.DateField()
+    end_of_maintenance = serializers.DateField(required=False)
+    end_of_security = serializers.DateField(required=False)
+    last_contract_date = serializers.DateField(required=False)
     end_of_support = serializers.DateField()
 
     class Meta:
         model = HardwareLifecycle
         fields = (
-            'url', 'id', 'display', 'assigned_object_type', 'assigned_object_id', 'assigned_object', 'end_of_sale',
-            'end_of_maintenance', 'end_of_security', 'last_contract_date', 'end_of_support', 'notice', 'documentation'
+            'url', 'id', 'display', 'assigned_object_type', 'assigned_object_id', 'end_of_sale',
+            'end_of_maintenance', 'end_of_security', 'last_contract_date', 'end_of_support', 'notice', 'documentation',
+            'description', 'comments',
+        )
+        brief_fields = (
+            'url', 'id', 'display', 'assigned_object_type', 'assigned_object_id', 'end_of_sale',
         )
 
     @extend_schema_field(serializers.JSONField(allow_null=True))

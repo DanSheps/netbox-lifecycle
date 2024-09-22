@@ -1,6 +1,7 @@
-from netbox.views.generic import ObjectListView, ObjectEditView, ObjectDeleteView, ObjectView
+from netbox.views.generic import (ObjectListView, ObjectEditView, ObjectDeleteView, ObjectView, BulkEditView,
+                                  BulkDeleteView)
 from netbox_lifecycle.filtersets import HardwareLifecycleFilterSet
-from netbox_lifecycle.forms import HardwareLifecycleFilterForm
+from netbox_lifecycle.forms import HardwareLifecycleFilterForm, HardwareLifecycleBulkEditForm
 from netbox_lifecycle.forms.model_forms import HardwareLifecycleForm
 from netbox_lifecycle.models import HardwareLifecycle
 from netbox_lifecycle.tables import HardwareLifecycleTable
@@ -11,7 +12,9 @@ __all__ = (
     'HardwareLifecycleListView',
     'HardwareLifecycleView',
     'HardwareLifecycleEditView',
+    'HardwareLifecycleBulkEditView',
     'HardwareLifecycleDeleteView',
+    'HardwareLifecycleBulkDeleteView',
 )
 
 
@@ -40,6 +43,21 @@ class HardwareLifecycleEditView(ObjectEditView):
     form = HardwareLifecycleForm
 
 
+@register_model_view(HardwareLifecycle, 'bulk_edit')
+class HardwareLifecycleBulkEditView(BulkEditView):
+    queryset = HardwareLifecycle.objects.all()
+    filterset = HardwareLifecycleFilterSet
+    table = HardwareLifecycleTable
+    form = HardwareLifecycleBulkEditForm
+
+
 @register_model_view(HardwareLifecycle, 'delete')
 class HardwareLifecycleDeleteView(ObjectDeleteView):
     queryset = HardwareLifecycle.objects.all()
+
+
+@register_model_view(HardwareLifecycle, 'bulk_delete')
+class HardwareLifecycleBulkDeleteView(BulkDeleteView):
+    queryset = HardwareLifecycle.objects.all()
+    filterset = HardwareLifecycleFilterSet
+    table = HardwareLifecycleTable
