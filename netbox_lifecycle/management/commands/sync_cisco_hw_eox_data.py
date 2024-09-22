@@ -53,7 +53,7 @@ class Command(BaseCommand):
                     hw_obj = DeviceType.objects.get(part_number=pid)
                 except MultipleObjectsReturned:
                     # Error if Netbox returns multiple duplicate PN's
-                    self.stdout.write(self.style.NOTICE( f"ERROR: Multiple objects exist with Part Number {pid}" ))
+                    self.stdout.write(self.style.NOTICE(f"ERROR: Multiple objects exist with Part Number {pid}"))
                     return
 
             case "moduletype":
@@ -63,22 +63,21 @@ class Command(BaseCommand):
                     hw_obj = ModuleType.objects.get(part_number=pid)
                 except MultipleObjectsReturned:
                     # Error if Netbox returns multiple duplicate PN's
-                    self.stdout.write(self.style.NOTICE( f"ERROR: Multiple objects exist with Part Number {pid}" ))
+                    self.stdout.write(self.style.NOTICE(f"ERROR: Multiple objects exist with Part Number {pid}"))
                     return
-            
+
             case _:
-                raise CommandError( f'Invalid hardware_type argument defined.' )
+                raise CommandError('Invalid hardware_type argument defined.')
                 exit
-        
 
         # Check if a HardwareLifecycle record already exists
         try:
             hw_lifecycle = hardware.HardwareLifecycle.objects.get(assigned_object_id=hw_obj.id)
-            self.stdout.write(self.style.SUCCESS( f"{pid} - has an existing NetBox hardware lifecycle record" ))
+            self.stdout.write(self.style.SUCCESS(f"{pid} - has an existing NetBox hardware lifecycle record"))
         # If not, create a new one for this Device Type
         except hardware.HardwareLifecycle.DoesNotExist:
             hw_lifecycle = hardware.HardwareLifecycle(assigned_object_id=hw_obj.id, assigned_object_type_id=content_type.id)
-            self.stdout.write(self.style.NOTICE( f"{pid} - has an existing NetBox hardware lifecycle record" ))
+            self.stdout.write(self.style.NOTICE(f"{pid} - has an existing NetBox hardware lifecycle record"))
 
         # Only save if something has changed
         value_changed = False
@@ -89,12 +88,12 @@ class Command(BaseCommand):
         try:
             # Check if JSON contains EndOfSaleDate with a value defined
             if not eox_data["EOXRecord"][0]["EndOfSaleDate"]["value"]:
-                self.stdout.write(self.style.NOTICE( f"{pid} - has no end_of_sale_date" ))
+                self.stdout.write(self.style.NOTICE(f"{pid} - has no end_of_sale_date"))
             else:
                 end_of_sale_date_string = eox_data["EOXRecord"][0]["EndOfSaleDate"]["value"]
                 # Cast this value to datetime.date object
                 end_of_sale_date = datetime.strptime(end_of_sale_date_string, '%Y-%m-%d').date()
-                self.stdout.write(self.style.SUCCESS( f"{pid} - end_of_sale_date: {end_of_sale_date}" ))
+                self.stdout.write(self.style.SUCCESS(f"{pid} - end_of_sale_date: {end_of_sale_date}"))
                 # Check if our HardwareLifecycle object has a different date to that returned from api
                 if hw_lifecycle.end_of_sale != end_of_sale_date:
                     hw_lifecycle.end_of_sale = end_of_sale_date
@@ -103,71 +102,69 @@ class Command(BaseCommand):
 
         # Do nothing when JSON field does not exist
         except KeyError:
-            self.stdout.write(self.style.NOTICE( f"{pid} - has no end_of_sale_date" ))
-
+            self.stdout.write(self.style.NOTICE(f"{pid} - has no end_of_sale_date"))
 
         try:
             if not eox_data["EOXRecord"][0]["EndOfSWMaintenanceReleases"]["value"]:
-                self.stdout.write(self.style.NOTICE( f"{pid} - has no end_of_sw_maintenance_releases" ))
+                self.stdout.write(self.style.NOTICE(f"{pid} - has no end_of_sw_maintenance_releases"))
             else:
                 end_of_maintenance_string = eox_data["EOXRecord"][0]["EndOfSWMaintenanceReleases"]["value"]
                 end_of_maintenance = datetime.strptime(end_of_maintenance_string, '%Y-%m-%d').date()
-                self.stdout.write(self.style.SUCCESS( f"{pid} - end_of_sw_maintenance_releases: {end_of_maintenance}" ))
+                self.stdout.write(self.style.SUCCESS(f"{pid} - end_of_sw_maintenance_releases: {end_of_maintenance}"))
 
                 if hw_lifecycle.end_of_maintenance != end_of_maintenance:
                     hw_lifecycle.end_of_maintenance = end_of_maintenance
                     value_changed = True
         except KeyError:
-            self.stdout.write(self.style.NOTICE( f"{pid} - has no end_of_sw_maintenance_releases" ))
+            self.stdout.write(self.style.NOTICE(f"{pid} - has no end_of_sw_maintenance_releases"))
 
         try:
             if not eox_data["EOXRecord"][0]["EndOfSecurityVulSupportDate"]["value"]:
-                self.stdout.write(self.style.NOTICE( f"{pid} - has no end_of_security_vul_support_date" ))
+                self.stdout.write(self.style.NOTICE(f"{pid} - has no end_of_security_vul_support_date"))
             else:
                 end_of_security_string = eox_data["EOXRecord"][0]["EndOfSecurityVulSupportDate"]["value"]
                 end_of_security_date = datetime.strptime(end_of_security_string, '%Y-%m-%d').date()
-                self.stdout.write(self.style.SUCCESS( f"{pid} - end_of_security_vul_support_date: {end_of_security_date}" ))
+                self.stdout.write(self.style.SUCCESS(f"{pid} - end_of_security_vul_support_date: {end_of_security_date}"))
 
                 if hw_lifecycle.end_of_security != end_of_security_date:
                     hw_lifecycle.end_of_security = end_of_security_date
                     value_changed = True
         except KeyError:
-            self.stdout.write(self.style.NOTICE( f"{pid} - has no end_of_security_vul_support_date"))
+            self.stdout.write(self.style.NOTICE(f"{pid} - has no end_of_security_vul_support_date"))
 
         try:
             if not eox_data["EOXRecord"][0]["EndOfServiceContractRenewal"]["value"]:
-                self.stdout.write(self.style.NOTICE( f"{pid} - has no end_of_service_contract_renewal" ))
+                self.stdout.write(self.style.NOTICE(f"{pid} - has no end_of_service_contract_renewal"))
             else:
                 last_contract_date_string = eox_data["EOXRecord"][0]["EndOfServiceContractRenewal"]["value"]
                 last_contract_date_date = datetime.strptime(last_contract_date_string, '%Y-%m-%d').date()
-                self.stdout.write(self.style.SUCCESS( f"{pid} - end_of_service_contract_renewal: {last_contract_date_date}" ))
+                self.stdout.write(self.style.SUCCESS(f"{pid} - end_of_service_contract_renewal: {last_contract_date_date}"))
 
                 if hw_lifecycle.last_contract_date != last_contract_date_date:
                     hw_lifecycle.last_contract_date = last_contract_date_date
                     value_changed = True
         except KeyError:
-            self.stdout.write(self.style.NOTICE( f"{pid} - has no end_of_service_contract_renewal" ))
+            self.stdout.write(self.style.NOTICE(f"{pid} - has no end_of_service_contract_renewal"))
 
         try:
             if not eox_data["EOXRecord"][0]["LastDateOfSupport"]["value"]:
-                self.stdout.write(self.style.NOTICE( f"{pid} - has no last_date_of_support" ))
+                self.stdout.write(self.style.NOTICE(f"{pid} - has no last_date_of_support"))
             else:
                 end_of_support_string = eox_data["EOXRecord"][0]["LastDateOfSupport"]["value"]
                 end_of_support_date = datetime.strptime(end_of_support_string, '%Y-%m-%d').date()
-                self.stdout.write(self.style.SUCCESS( f"{pid} - last_date_of_support: {end_of_support_date}" ))
+                self.stdout.write(self.style.SUCCESS(f"{pid} - last_date_of_support: {end_of_support_date}"))
 
                 if hw_lifecycle.end_of_support != end_of_support_date:
                     hw_lifecycle.end_of_support = end_of_support_date
                     value_changed = True
                     end_of_support_defined = True
         except KeyError:
-            self.stdout.write(self.style.NOTICE( f"{pid} - has no last_date_of_support" ))
+            self.stdout.write(self.style.NOTICE(f"{pid} - has no last_date_of_support"))
 
         if (value_changed and end_of_sale_defined and end_of_support_defined):
             hw_lifecycle.save()
 
         return
-
 
     def get_product_ids(self, manufacturer):
         results = {}
@@ -176,40 +173,38 @@ class Command(BaseCommand):
         try:
             manufacturer_results = Manufacturer.objects.get(name=manufacturer)
         except Manufacturer.DoesNotExist:
-            raise CommandError( f'Manufacturer "{manufacturer}" does not exist' )
+            raise CommandError(f'Manufacturer "{manufacturer}" does not exist')
 
-        self.stdout.write(self.style.SUCCESS( f'Found manufacturer "{manufacturer_results}"' ))
+        self.stdout.write(self.style.SUCCESS(f'Found manufacturer "{manufacturer_results}"'))
 
         # trying to get all device types and base PIDs associated with this manufacturer
         try:
             devicetype_results = DeviceType.objects.filter(manufacturer=manufacturer_results)
             for devicetype in devicetype_results:
                 if not devicetype.part_number:
-                    self.stdout.write(self.style.WARNING( f'Found device type "{devicetype}" WITHOUT Part Number - SKIPPING' ))
+                    self.stdout.write(self.style.WARNING(f'Found device type "{devicetype}" WITHOUT Part Number - SKIPPING'))
                     continue
-            
-                self.stdout.write(self.style.SUCCESS( f'Found device type "{devicetype}" with Part Number "{devicetype.part_number}"' ))
-                results[devicetype.part_number] =  'devicetype'
+
+                self.stdout.write(self.style.SUCCESS(f'Found device type "{devicetype}" with Part Number "{devicetype.part_number}"'))
+                results[devicetype.part_number] = 'devicetype'
 
         except DeviceType.DoesNotExist:
-            raise CommandError( f'Manufacturer "{manufacturer_results}" has no Device Types' )
-            devicetype_results = None
+            raise CommandError(f'Manufacturer "{manufacturer_results}" has no Device Types')
 
         # trying to get all module types and base PIDs associated with this manufacturer
         try:
             moduletype_results = ModuleType.objects.filter(manufacturer=manufacturer_results)
             for moduletype in moduletype_results:
                 if not moduletype.part_number:
-                    self.stdout.write(self.style.WARNING( f'Found device type "{moduletype}" WITHOUT Part Number - SKIPPING' ))
+                    self.stdout.write(self.style.WARNING(f'Found device type "{moduletype}" WITHOUT Part Number - SKIPPING'))
                     continue
-            
-                self.stdout.write(self.style.SUCCESS( f'Found device type "{moduletype}" with Part Number "{moduletype.part_number}"' ))
-                results[moduletype.part_number] =  'moduletype'
+
+                self.stdout.write(self.style.SUCCESS(f'Found device type "{moduletype}" with Part Number "{moduletype.part_number}"'))
+                results[moduletype.part_number] = 'moduletype'
         except DeviceType.DoesNotExist:
-            raise CommandError( f'Manufacturer "{manufacturer_results}" has no Module Types' )
-        
+            raise CommandError(f'Manufacturer "{manufacturer_results}" has no Module Types')
+
         return results
-    
 
     # Main entry point for the sync_cisco_hw_eox_data command of manage.py
     def handle(self, *args, **kwargs):
@@ -220,7 +215,7 @@ class Command(BaseCommand):
 
         # Step 1: Get all PIDs for all Device Types of that particular manufacturer
         product_ids = self.get_product_ids(MANUFACTURER)
-        self.stdout.write(self.style.SUCCESS( f'Querying API for these PIDs: ' + ', '.join(product_ids)))
+        self.stdout.write(self.style.SUCCESS(f'Querying API for these PIDs: ' + ', '.join(product_ids)))
 
         for pid, hw_type in product_ids.items():
             url = f'https://apix.cisco.com/supporttools/eox/rest/5/EOXByProductID/1/{pid}?responseencoding=json'
@@ -228,13 +223,13 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS('Call ' + url))
 
             # sanatize file name
-            filename = django.utils.text.get_valid_filename( f'{pid}.json' )
+            filename = django.utils.text.get_valid_filename(f'{pid}.json')
 
             # debug API answer to text file
-            #with open('/opt/netbox_Lifecycle_cisco_xapi_results/%s' % filename, 'w') as outfile:
+            # with open('/opt/netbox_Lifecycle_cisco_xapi_results/%s' % filename, 'w') as outfile:
             #    outfile.write(api_call_response.text)
 
-            # Validate response from Cisco 
+            # Validate response from Cisco
             if api_call_response.status_code == 200:
 
                 # Deserialize JSON API Response into Python object "data"
