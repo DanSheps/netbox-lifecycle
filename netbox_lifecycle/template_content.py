@@ -7,16 +7,17 @@ from netbox.plugins import PluginTemplateExtension
 
 from .models import hardware, contract
 
+
 class DeviceHardwareInfoExtension(PluginTemplateExtension):
     def right_page(self):
         object = self.context.get('object')
         support_contract = contract.SupportContractAssignment.objects.filter(device_id=self.context['object'].id).first()
         match self.kind:
-            case "device":       
+            case "device":
                 lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].device_type_id).first()
-            case "module":       
+            case "module":
                 lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].module_type_id).first()
-            case _:       
+            case _:
                 lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].id).first()
         context = {'support_contract': support_contract, 'lifecycle_info': lifecycle_info}
         return self.render('netbox_lifecycle/inc/support_contract_info.html', extra_context=context)
@@ -26,13 +27,13 @@ class TypeInfoExtension(PluginTemplateExtension):
     def right_page(self):
         object = self.context.get('object')
         match self.kind:
-            case "device":       
+            case "device":
                 lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].device_type_id).first()
-            case "module":       
+            case "module":
                 lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].module_type_id).first()
-            case _:       
+            case _:
                 lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].id).first()
-            
+
         context = {'lifecycle_info': lifecycle_info}
         return self.render('netbox_lifecycle/inc/hardware_lifecycle_info.html', extra_context=context)
 
