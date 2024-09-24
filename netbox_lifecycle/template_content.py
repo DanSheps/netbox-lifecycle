@@ -1,7 +1,5 @@
 
-from datetime import datetime
-
-from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.contenttypes.models import ContentType
 from django.template import Template
 from netbox.plugins import PluginTemplateExtension
 
@@ -14,11 +12,20 @@ class DeviceHardwareInfoExtension(PluginTemplateExtension):
         support_contract = contract.SupportContractAssignment.objects.filter(device_id=self.context['object'].id).first()
         match self.kind:
             case "device":
-                lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].device_type_id).first()
+                content_type = ContentType.objects.get(app_label="dcim", model="devicetype")
+                lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].device_type_id,
+                                                                           assigned_object_type_id=content_type.id).first()
             case "module":
-                lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].module_type_id).first()
+                content_type = ContentType.objects.get(app_label="dcim", model="moduletype")
+                lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].module_type_id,
+                                                                           assigned_object_type_id=content_type.id).first()
             case _:
-                lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].id).first()
+                if (self.kind == "devicetype"):
+                    content_type = ContentType.objects.get(app_label="dcim", model="devicetype")
+                else:
+                    content_type = ContentType.objects.get(app_label="dcim", model="moduletype")
+                lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].id,
+                                                                           assigned_object_type_id=content_type.id).first()
         context = {'support_contract': support_contract, 'lifecycle_info': lifecycle_info}
         return self.render('netbox_lifecycle/inc/support_contract_info.html', extra_context=context)
 
@@ -28,11 +35,20 @@ class TypeInfoExtension(PluginTemplateExtension):
         object = self.context.get('object')
         match self.kind:
             case "device":
-                lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].device_type_id).first()
+                content_type = ContentType.objects.get(app_label="dcim", model="devicetype")
+                lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].device_type_id,
+                                                                           assigned_object_type_id=content_type.id).first()
             case "module":
-                lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].module_type_id).first()
+                content_type = ContentType.objects.get(app_label="dcim", model="moduletype")
+                lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].module_type_id,
+                                                                           assigned_object_type_id=content_type.id).first()
             case _:
-                lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].id).first()
+                if (self.kind == "devicetype"):
+                    content_type = ContentType.objects.get(app_label="dcim", model="devicetype")
+                else:
+                    content_type = ContentType.objects.get(app_label="dcim", model="moduletype")
+                lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].id,
+                                                                           assigned_object_type_id=content_type.id).first()
 
         context = {'lifecycle_info': lifecycle_info}
         return self.render('netbox_lifecycle/inc/hardware_lifecycle_info.html', extra_context=context)
