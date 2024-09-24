@@ -77,7 +77,7 @@ class Command(BaseCommand):
         # If not, create a new one for this Device Type
         except hardware.HardwareLifecycle.DoesNotExist:
             hw_lifecycle = hardware.HardwareLifecycle(assigned_object_id=hw_obj.id, assigned_object_type_id=content_type.id)
-            self.stdout.write(self.style.NOTICE(f"{pid} - has an existing NetBox hardware lifecycle record"))
+            self.stdout.write(self.style.NOTICE(f"{pid} - has no existing NetBox hardware lifecycle record"))
 
         # Only save if something has changed
         value_changed = False
