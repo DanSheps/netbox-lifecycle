@@ -72,7 +72,7 @@ class Command(BaseCommand):
 
         # Check if a HardwareLifecycle record already exists
         try:
-            hw_lifecycle = hardware.HardwareLifecycle.objects.get(assigned_object_id=hw_obj.id)
+            hw_lifecycle = hardware.HardwareLifecycle.objects.get(assigned_object_id=hw_obj.id, assigned_object_type_id=content_type.id)
             self.stdout.write(self.style.SUCCESS(f"{pid} - has an existing NetBox hardware lifecycle record"))
         # If not, create a new one for this Device Type
         except hardware.HardwareLifecycle.DoesNotExist:
