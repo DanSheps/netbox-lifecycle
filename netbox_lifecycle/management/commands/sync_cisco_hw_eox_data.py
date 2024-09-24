@@ -133,18 +133,18 @@ class Command(BaseCommand):
             self.stdout.write(self.style.NOTICE(f"{pid} - has no end_of_security_vul_support_date"))
 
         try:
-            if not eox_data["EOXRecord"][0]["EndOfServiceContractRenewal"]["value"]:
-                self.stdout.write(self.style.NOTICE(f"{pid} - has no end_of_service_contract_renewal"))
+            if not eox_data["EOXRecord"][0]["EndOfSvcAttachDate"]["value"]:
+                self.stdout.write(self.style.NOTICE(f"{pid} - has no end_of_service_attach_date"))
             else:
-                last_contract_date_string = eox_data["EOXRecord"][0]["EndOfServiceContractRenewal"]["value"]
+                last_contract_date_string = eox_data["EOXRecord"][0]["EndOfSvcAttachDate"]["value"]
                 last_contract_date_date = datetime.strptime(last_contract_date_string, '%Y-%m-%d').date()
-                self.stdout.write(self.style.SUCCESS(f"{pid} - end_of_service_contract_renewal: {last_contract_date_date}"))
+                self.stdout.write(self.style.SUCCESS(f"{pid} - end_of_service_attach_date: {last_contract_date_date}"))
 
                 if hw_lifecycle.last_contract_date != last_contract_date_date:
                     hw_lifecycle.last_contract_date = last_contract_date_date
                     value_changed = True
         except KeyError:
-            self.stdout.write(self.style.NOTICE(f"{pid} - has no end_of_service_contract_renewal"))
+            self.stdout.write(self.style.NOTICE(f"{pid} - has no end_of_service_attach_date"))
 
         try:
             if not eox_data["EOXRecord"][0]["LastDateOfSupport"]["value"]:
