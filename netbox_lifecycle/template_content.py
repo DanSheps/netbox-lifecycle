@@ -19,11 +19,8 @@ class DeviceHardwareInfoExtension(PluginTemplateExtension):
                 content_type = ContentType.objects.get(app_label="dcim", model="moduletype")
                 lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].module_type_id,
                                                                            assigned_object_type_id=content_type.id).first()
-            case _:
-                if (self.kind == "devicetype"):
-                    content_type = ContentType.objects.get(app_label="dcim", model="devicetype")
-                else:
-                    content_type = ContentType.objects.get(app_label="dcim", model="moduletype")
+            case "devicetype"|"moduletype":
+                content_type = ContentType.objects.get(app_label="dcim", model=self.kind)
                 lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].id,
                                                                            assigned_object_type_id=content_type.id).first()
         context = {'support_contract': support_contract, 'lifecycle_info': lifecycle_info}
@@ -42,11 +39,8 @@ class TypeInfoExtension(PluginTemplateExtension):
                 content_type = ContentType.objects.get(app_label="dcim", model="moduletype")
                 lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].module_type_id,
                                                                            assigned_object_type_id=content_type.id).first()
-            case _:
-                if (self.kind == "devicetype"):
-                    content_type = ContentType.objects.get(app_label="dcim", model="devicetype")
-                else:
-                    content_type = ContentType.objects.get(app_label="dcim", model="moduletype")
+            case "devicetype" | "moduletype":
+                content_type = ContentType.objects.get(app_label="dcim", model=self.kind)
                 lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].id,
                                                                            assigned_object_type_id=content_type.id).first()
 
