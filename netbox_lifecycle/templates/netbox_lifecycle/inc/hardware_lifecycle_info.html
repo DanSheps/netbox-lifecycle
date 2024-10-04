@@ -1,0 +1,34 @@
+
+{% load filters %}
+{% load helpers %}
+{# renders panel on object with lifecycle info assigned to it #}
+
+<div class="card">
+  <h5 class="card-header">Lifecycle Dates</h5>
+  {% if lifecycle_info %}
+  <table class="table table-hover attr-table">
+    <tr>
+      <td>End of Sale</td>
+      <td><span {{ lifecycle_info.end_of_sale|date_badge_class }}>{{ lifecycle_info.end_of_sale }}</span></td>
+    </tr>
+    <tr>
+      <td>End of Maintenance Updates</td>
+      <td><span {{ lifecycle_info.end_of_maintenance|date_badge_class }}>{{ lifecycle_info.end_of_maintenance }}</span></td>
+    </tr>
+    <tr>
+      <td>End of Security Updates</td>
+      <td><span {{ lifecycle_info.end_of_security|date_badge_class }}>{{ lifecycle_info.end_of_security }}</span></td>
+    </tr>
+    <tr>
+      <td>Last Support Contract Purchase Date</td>
+      <td><span {{ lifecycle_info.last_contract_date|date_badge_class }}>{{ lifecycle_info.last_contract_date }}</span></td>
+    </tr>
+    <tr>
+      <td>End of Support</td>
+      <td><span {{ lifecycle_info.end_of_support|date_badge_class }}>{{ lifecycle_info.end_of_support }}</span></td>
+    </tr>
+  </table>
+  {% else %}
+  <div class="card-body"><span class="text-muted">No Lifecycle Dates Defined</span></div>
+  {% endif %}
+</div>
