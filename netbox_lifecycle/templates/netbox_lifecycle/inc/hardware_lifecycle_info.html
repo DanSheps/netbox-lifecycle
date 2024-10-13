@@ -20,8 +20,12 @@
       <td><span {{ lifecycle_info.end_of_security|date_badge_class }}>{{ lifecycle_info.end_of_security }}</span></td>
     </tr>
     <tr>
-      <td>Last Support Contract Purchase Date</td>
-      <td><span {{ lifecycle_info.last_contract_date|date_badge_class }}>{{ lifecycle_info.last_contract_date }}</span></td>
+      <td>Last Support Contract Attach</td>
+      <td><span {{ lifecycle_info.last_contract_attach|date_badge_class }}>{{ lifecycle_info.last_contract_attach }}</span></td>
+    </tr>
+    <tr>
+      <td>Last Support Contract Renewal</td>
+      <td><span {{ lifecycle_info.last_contract_renewal|date_badge_class }}>{{ lifecycle_info.last_contract_renewal }}</span></td>
     </tr>
     <tr>
       <td>End of Support</td>
