@@ -24,7 +24,7 @@ class VendorForm(NetBoxModelForm):
 
     class Meta:
         model = Vendor
-        fields = ('name', 'tags')
+        fields = ('name', 'description', 'comments', 'tags', )
 
 
 class SupportSKUForm(NetBoxModelForm):
