@@ -35,7 +35,8 @@ class HardwareLifecycle(PrimaryModel):
     end_of_sale = models.DateField()
     end_of_maintenance = models.DateField(blank=True, null=True)
     end_of_security = models.DateField(blank=True, null=True)
-    last_contract_date = models.DateField(blank=True, null=True)
+    last_contract_attach = models.DateField(blank=True, null=True)
+    last_contract_renewal = models.DateField(blank=True, null=True)
     end_of_support = models.DateField()
 
     notice = models.CharField(max_length=500, blank=True, null=True)
