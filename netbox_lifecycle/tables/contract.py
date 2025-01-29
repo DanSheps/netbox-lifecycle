@@ -30,6 +30,14 @@ class VendorTable(NetBoxTable):
 
 
 class SupportSKUTable(NetBoxTable):
+    sku = tables.Column(
+        verbose_name=_('SKU'),
+        linkify=True,
+    )
+    manufacturer = tables.Column(
+        verbose_name=_('Manufacturer'),
+        linkify=True,
+    )
 
     class Meta(NetBoxTable.Meta):
         model = SupportSKU
