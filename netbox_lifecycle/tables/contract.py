@@ -67,9 +67,9 @@ class SupportContractAssignmentTable(NetBoxTable):
         linkify=True,
     )
     device_name = tables.Column(
-        verbose_name=_('Device Name'),
-        accessor='device__name',
-        linkify=False,
+        verbose_name=_("Device Name"),
+        accessor="device__name",
+        linkify={"viewname": "dcim:device", "args": [tables.A("device_id")]},
         orderable=True,
     )
     device_serial = tables.Column(
