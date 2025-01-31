@@ -6,6 +6,15 @@
 {% load plugins %}
 {% load tabs %}
 
+{% if perms.netbox_lifecycle.add_supportcontractassignment %}
+  {% block extra_controls %}
+    <a href="{% url 'plugins:netbox_lifecycle:supportcontractassignment_add' %}?contract={{ object.pk }}"
+      class="btn btn-primary">
+      <span class="mdi mdi-plus-thick" aria-hidden="true"></span> Add Assignment
+    </a>
+  {% endblock %}
+{% endif %}
+
 {% block content %}
   <div class="row">
     <div class="col col-md-6">
