@@ -3,14 +3,14 @@ on:
   push:
     branches:
       - 'develop'
-      - 'master'
+      - 'main'
   pull_request:
     types:
       - opened
       - synchronize
       - reopened
     branches:
-      - 'master'
+      - 'main'
 concurrency:
   group: ci-${{ github.event_name }}-${{ github.ref }}-${{ github.actor }}
   cancel-in-progress: true
@@ -55,7 +55,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: 'netbox-community/netbox'
-        ref: 'master'
+        ref: 'main'
         path: 'netbox'
 
 
