@@ -77,7 +77,7 @@ class SupportContractAssignmentTable(NetBoxTable):
     device_name = tables.Column(
         verbose_name=_('Device Name'),
         accessor='device__name',
-        linkify=False,
+        linkify=True,
         orderable=True,
     )
     device_serial = tables.Column(
