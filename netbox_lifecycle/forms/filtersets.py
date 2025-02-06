@@ -1,6 +1,7 @@
 from django.utils.translation import gettext as _
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
+from django.forms import DateField
 
 from dcim.models import Device, Manufacturer
 from netbox.forms import NetBoxModelFilterSetForm
@@ -9,7 +10,7 @@ from netbox_lifecycle.models import HardwareLifecycle, SupportContract, Vendor, 
 from utilities.filters import MultiValueCharFilter, MultiValueNumberFilter
 from utilities.forms.fields import DynamicModelMultipleChoiceField, TagFilterField
 from utilities.forms.rendering import FieldSet
-from utilities.forms.widgets import APISelectMultiple
+from utilities.forms.widgets import APISelectMultiple, DatePicker
 
 
 __all__ = (
@@ -27,7 +28,8 @@ class HardwareLifecycleFilterForm(NetBoxModelFilterSetForm):
     model = HardwareLifecycle
     fieldsets = (
         FieldSet('q', 'filter_id', 'tag'),
-        FieldSet('assigned_object_type_id', name=_('Hardware'))
+        FieldSet('assigned_object_type_id', name=_('Hardware')),
+        FieldSet('end_of_sale__lt', 'end_of_maintenance__lt', 'end_of_security__lt', 'end_of_support__lt', name=_('Dates'))
     )
 
     assigned_object_type_id = DynamicModelMultipleChoiceField(
@@ -37,6 +39,25 @@ class HardwareLifecycleFilterForm(NetBoxModelFilterSetForm):
         widget=APISelectMultiple(
             api_url='/api/extras/content-types/',
         )
+    )
+    end_of_sale__lt = DateField(
+        required=False,
+        label=_('End of sale before'),
+        widget=DatePicker,
+    )
+    end_of_sale__lt = DateField(
+        required=False,
+        label=_('End of sale before'),
+    )
+    end_of_sale__lt = DateField(
+        required=False,
+        label=_('End of sale before'),
+        widget=DatePicker,
+    )
+    end_of_sale__lt = DateField(
+        required=False,
+        label=_('End of sale before'),
+        widget=DatePicker,
     )
     tag = TagFilterField(model)
 
