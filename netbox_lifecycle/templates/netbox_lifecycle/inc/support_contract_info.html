@@ -4,8 +4,12 @@
 {# renders panel on object (device) with support contract info assigned to it #}
 
 <div class="card">
-  <h5 class="card-header">Support Contract</h5>
+  <h5 class="card-header">Support Contract
   {% if support_contract %}
+    <div class="card-actions"><a href="{% url 'plugins:netbox_lifecycle:supportcontractassignment' support_contract.pk %}" class="btn btn-sm btn-ghost-primary">
+      <i class="mdi mdi-chevron-right-box-outline" aria-hidden="true"></i> View Details
+      </a></div>
+  </h5>
   <table class="table table-hover attr-table">
     <tr>
       <th scope="row">Vendor</th>
@@ -33,6 +37,7 @@
     </tr>
   </table>
   {% else %}
+  </h5>
   <div class="card-body"><span class="text-muted">No Support Contract Assigned<span></div>
   {% endif %}
 </div>
