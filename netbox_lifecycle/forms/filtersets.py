@@ -45,16 +45,16 @@ class HardwareLifecycleFilterForm(NetBoxModelFilterSetForm):
         label=_('End of sale before'),
         widget=DatePicker,
     )
-    end_of_sale__lt = DateField(
+    end_of_maintenance__lt = DateField(
         required=False,
         label=_('End of sale before'),
     )
-    end_of_sale__lt = DateField(
+    end_of_security__lt = DateField(
         required=False,
         label=_('End of sale before'),
         widget=DatePicker,
     )
-    end_of_sale__lt = DateField(
+    end_of_support__lt = DateField(
         required=False,
         label=_('End of sale before'),
         widget=DatePicker,
