@@ -47,7 +47,7 @@ class HardwareLifecycleFilterSet(NetBoxModelFilterSet):
     class Meta:
         model = HardwareLifecycle
         fields = (
-            'id', 'assigned_object_type_id', 'assigned_object_id',
+            'id', 'assigned_object_type_id', 'assigned_object_id', 'end_of_sale', 'end_of_maintenance', 'end_of_security', 'end_of_support',
         )
 
     def search(self, queryset, name, value):
