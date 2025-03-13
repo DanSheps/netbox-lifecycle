@@ -3,7 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.forms import DateField
 
-from dcim.models import Device, Manufacturer
+from dcim.models import Device, Manufacturer, Module
 from netbox.forms import NetBoxModelFilterSetForm
 from netbox_lifecycle.models import HardwareLifecycle, SupportContract, Vendor, License, LicenseAssignment, \
     SupportContractAssignment, SupportSKU
@@ -137,6 +137,12 @@ class SupportContractAssignmentFilterForm(NetBoxModelFilterSetForm):
         required=False,
         selector=True,
         label=_('Devices'),
+    )
+    module_id = DynamicModelMultipleChoiceField(
+        queryset=Module.objects.all(),
+        required=False,
+        selector=True,
+        label=_('Modules'),
     )
     tag = TagFilterField(model)
 

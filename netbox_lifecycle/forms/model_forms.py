@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.translation import gettext as _
 
-from dcim.models import DeviceType, ModuleType, Manufacturer, Device
+from dcim.models import DeviceType, ModuleType, Manufacturer, Device, Module
 from netbox.forms import NetBoxModelForm
 from netbox_lifecycle.models import HardwareLifecycle, Vendor, SupportContract, LicenseAssignment, License, \
     SupportContractAssignment, SupportSKU
@@ -77,10 +77,16 @@ class SupportContractAssignmentForm(NetBoxModelForm):
         selector=True,
         label=_('License Assignment'),
     )
+    module = DynamicModelChoiceField(
+        queryset=Module.objects.all(),
+        required=False,
+        selector=True,
+        label=_('Module'),
+    )
 
     class Meta:
         model = SupportContractAssignment
-        fields = ('contract', 'sku', 'device', 'license', 'end', 'description', 'comments', 'tags', )
+        fields = ('contract', 'sku', 'device', 'license', 'module', 'end', 'description', 'comments', 'tags', )
         widgets = {
             'end': DatePicker(),
         }
@@ -93,13 +99,14 @@ class SupportContractAssignmentForm(NetBoxModelForm):
 
         # Handle object assignment
         selected_objects = [
-            field for field in ('device', 'license') if self.cleaned_data[field]
+            field for field in ('device', 'license', 'module') if self.cleaned_data[field]
         ]
 
         if len(selected_objects) == 0:
             raise forms.ValidationError({
-                'device': "You must select at least a device or license",
-                'license': "You must select at least a device or license"
+                'device': "You must select at least a device, a license, or a module",
+                'license': "You must select at least a device, a license, or a module",
+                'module': "You must select at least a device, a license, or a module"
             })
 
         if self.cleaned_data.get('license') and not self.cleaned_data.get('device'):

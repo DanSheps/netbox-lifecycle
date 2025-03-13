@@ -5,7 +5,7 @@ from django.db.models.functions import Lower
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from dcim.choices import DeviceStatusChoices
+from dcim.choices import DeviceStatusChoices, ModuleStatusChoices
 from netbox.models import PrimaryModel
 
 
@@ -138,6 +138,13 @@ class SupportContractAssignment(PrimaryModel):
         blank=True,
         related_name='contracts',
     )
+    module = models.ForeignKey(
+        to='dcim.Module',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='contracts',
+    )
     end = models.DateField(
         null=True,
         blank=True,
@@ -153,16 +160,20 @@ class SupportContractAssignment(PrimaryModel):
         'netbox_lifecycle.SupportSKU',
         'netbox_lifecycle.License',
         'dcim.Device',
+        'dcim.Module',
     )
 
     class Meta:
-        ordering = ['contract', 'device', 'license']
+        ordering = ['contract', 'device', 'license', 'module']
         constraints = ()
 
     def __str__(self):
         if self.license and self.device:
             return f'{self.device} ({self.license}): {self.contract.contract_id}'
-        return f'{self.device}: {self.contract.contract_id}'
+        if self.device:
+            return f'{self.device}: {self.contract.contract_id}'
+        if self.module:
+            return f'{self.module}: {self.contract.contract_id}'
 
     def get_absolute_url(self):
         return reverse('plugins:netbox_lifecycle:supportcontractassignment', args=[self.pk])
@@ -178,16 +189,25 @@ class SupportContractAssignment(PrimaryModel):
             return
         return DeviceStatusChoices.colors.get(self.device.status)
 
+    def get_module_status_color(self):
+        if self.module is None:
+            return
+        return ModuleStatusChoices.colors.get(self.module.status)
+
     def clean(self):
-        if self.device and self.license and SupportContractAssignment.objects.filter(
-                contract=self.contract, device=self.device, license=self.license, sku=self.sku
+        if self.device and self.license and not self.module and SupportContractAssignment.objects.filter(
+                contract=self.contract, device=self.device, license=self.license, sku=self.sku, module=self.module
         ).exclude(pk=self.pk).count() > 0:
             raise ValidationError('Device or License must be unique')
-        elif self.device and not self.license and SupportContractAssignment.objects.filter(
-                contract=self.contract, device=self.device, license=self.license
+        elif self.device and not self.license and not self.module and SupportContractAssignment.objects.filter(
+                contract=self.contract, device=self.device, license=self.license, module=self.module
         ).exclude(pk=self.pk).count() > 0:
             raise ValidationError('Device must be unique')
-        elif not self.device and self.license and SupportContractAssignment.objects.filter(
-                contract=self.contract, device=self.device, license=self.license
+        elif not self.device and self.license and not self.module and SupportContractAssignment.objects.filter(
+                contract=self.contract, device=self.device, license=self.license, module=self.module
         ).exclude(pk=self.pk).count() > 0:
             raise ValidationError('License must be unique')
+        elif not self.device and not self.license and self.module and SupportContractAssignment.objects.filter(
+                contract=self.contract, device=self.device, license=self.license, module=self.module
+        ).exclude(pk=self.pk).count() > 0:
+            raise ValidationError('Module must be unique')

@@ -27,6 +27,11 @@
                 License
               </button>
             </li>
+            <li role="presentation" class="nav-item">
+              <button role="tab" type="button" id="module_tab" data-bs-toggle="tab" aria-controls="module" data-bs-target="#module" class="nav-link {% if form.initial.license %}active{% endif %}">
+                Module
+              </button>
+            </li>
           </ul>
         </div>
       </div>
@@ -36,6 +41,9 @@
         </div>
         <div class="tab-pane {% if form.initial.license %}active{% endif %}" id="license" role="tabpanel" aria-labeled-by="vm_tab">
           {% render_field form.license %}
+        </div>
+        <div class="tab-pane {% if form.initial.license %}active{% endif %}" id="module" role="tabpanel" aria-labeled-by="module_tab">
+          {% render_field form.module %}
         </div>
       </div>
     </div>
