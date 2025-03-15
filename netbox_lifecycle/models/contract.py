@@ -170,9 +170,9 @@ class SupportContractAssignment(PrimaryModel):
     def __str__(self):
         if self.license and self.device:
             return f'{self.device} ({self.license}): {self.contract.contract_id}'
-        if self.device:
+        elif self.device:
             return f'{self.device}: {self.contract.contract_id}'
-        if self.module:
+        elif self.module:
             return f'{self.module}: {self.contract.contract_id}'
 
     def get_absolute_url(self):
