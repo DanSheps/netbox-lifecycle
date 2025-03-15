@@ -1,0 +1,70 @@
+
+{% load filters %}
+{% load helpers %}
+{# renders panel on object (device) with licenses assigned to it #}
+
+<div class="card">
+  <h5 class="card-header">
+    Licenses
+    <div class="card-actions">
+		  <a href="{% url 'plugins:netbox_lifecycle:licenseassignment_add' %}?device={{ object.pk }}&return_url={% url 'dcim:device' pk=object.pk %}" class="btn btn-ghost-primary btn-sm">
+		    <span class="mdi mdi-plus-thick" aria-hidden="true"></span> Assign License
+		  </a>
+	  </div>
+  </h5>
+  <table class="table table-hover object-list">
+    <thead hx-target="closest">
+        <tr>
+            <th>Vendor</th>
+            <th>Manufacturer</th>
+            <th>Name</th>
+            <th>Quantity</th>
+            <th>Description</th>
+            <th></th>
+        </tr>
+    </thead>
+    {% if licenses %}
+    <tbody>
+      {% for license in licenses %}
+      <tr class="even">
+        <td>{{ license.vendor|linkify|placeholder }}</td>
+        <td>{{ license.license.manufacturer|linkify|placeholder }}</td>
+        <td>{{ license.license|linkify|placeholder }}</td>
+        <td>{{ license.quantity|placeholder }}</td>
+        <td>{{ license.description|placeholder }}</td>
+        <td class="noprint text-end text-nowrap">
+          <span class="btn-group dropdown">
+            <a class="btn btn-sm btn-warning" href="{% url 'plugins:netbox_lifecycle:licenseassignment_edit' pk=license.pk %}?return_url={% url 'dcim:device' pk=object.pk %}" type="button" aria-label="Edit">
+              <i class="mdi mdi-pencil"></i>
+            </a>  
+            <a class="btn btn-sm btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown" style="padding-left: 2px">  
+              <span class="visually-hidden">Toggle Dropdown</span>
+            </a> 
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item" href="{% url 'plugins:netbox_lifecycle:licenseassignment_delete' pk=license.pk %}?return_url={% url 'dcim:device' pk=object.pk %}">
+                  <i class="mdi mdi-trash-can-outline"></i> Delete
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="{% url 'plugins:netbox_lifecycle:licenseassignment_changelog' pk=license.pk %}?return_url={% url 'dcim:device' pk=object.pk %}">
+                  <i class="mdi mdi-history"></i> Changelog
+                </a>
+              </li>
+            </ul>
+          </span>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    {% else %}
+    <tbody>
+        <tr>
+            <td colspan="6" class="text-center text-muted">— No License Assigned —</td>
+        </tr>
+    </tbody>
+    {% endif %}
+  </table>
+</div>
+
+{% include "netbox_lifecycle/inc/support_contract_info.html" %}
