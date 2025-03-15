@@ -37,7 +37,7 @@
             <a class="btn btn-sm btn-warning" href="{% url 'plugins:netbox_lifecycle:licenseassignment_edit' pk=license.pk %}?return_url={% url 'dcim:device' pk=object.pk %}" type="button" aria-label="Edit">
               <i class="mdi mdi-pencil"></i>
             </a>  
-            <a class="btn btn-sm btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown" style="padding-left: 2px">  
+            <a class="btn btn-sm btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown" style="padding-left: 2px">
               <span class="visually-hidden">Toggle Dropdown</span>
             </a> 
             <ul class="dropdown-menu">
@@ -56,6 +56,13 @@
         </td>
       </tr>
       {% endfor %}
+      {% if licenses|length == max_items_display %}
+      <tr class="even">
+        <td colspan="6">
+          <small class="text-end text-muted">Max Licenses display reached: <a href="{% url 'plugins:netbox_lifecycle:licenseassignment_list'%}?device_id={{ object.pk }}">Show all Licenses</a></small>
+        </td>
+      </tr>
+      {% endif %}
     </tbody>
     {% else %}
     <tbody>

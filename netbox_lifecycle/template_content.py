@@ -9,7 +9,8 @@ from .models import hardware, contract, license
 class DeviceHardwareInfoExtension(PluginTemplateExtension):
     def right_page(self):
         object = self.context.get('object')
-        licenses = license.LicenseAssignment.objects.filter(device_id=self.context['object'].id)
+        max_items_display = 5
+        licenses = license.LicenseAssignment.objects.filter(device_id=self.context['object'].id)[:max_items_display]
         support_contract = contract.SupportContractAssignment.objects.filter(device_id=self.context['object'].id).first()
         match self.kind:
             case "device":
@@ -24,7 +25,8 @@ class DeviceHardwareInfoExtension(PluginTemplateExtension):
                 content_type = ContentType.objects.get(app_label="dcim", model=self.kind)
                 lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].id,
                                                                            assigned_object_type_id=content_type.id).first()
-        context = {'licenses': licenses, 'support_contract': support_contract, 'lifecycle_info': lifecycle_info}
+        context = {'max_items_display': max_items_display, 'licenses': licenses, 'support_contract': support_contract,
+                   'lifecycle_info': lifecycle_info}
         return self.render('netbox_lifecycle/inc/licenses_info.html', extra_context=context)
 
 
