@@ -10,18 +10,20 @@ class DeviceHardwareInfoExtension(PluginTemplateExtension):
     def right_page(self):
         object = self.context.get('object')
         max_items_display = 5
-        licenses = license.LicenseAssignment.objects.filter(device_id=self.context['object'].id)[:max_items_display]
-        support_contract = contract.SupportContractAssignment.objects.filter(device_id=self.context['object'].id).first()
         match self.kind:
             case "device":
+                licenses = license.LicenseAssignment.objects.filter(device_id=self.context['object'].id)[:max_items_display]
+                support_contract = contract.SupportContractAssignment.objects.filter(device_id=self.context['object'].id).first()
                 content_type = ContentType.objects.get(app_label="dcim", model="devicetype")
                 lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].device_type_id,
                                                                            assigned_object_type_id=content_type.id).first()
             case "module":
+                licenses = None
                 content_type = ContentType.objects.get(app_label="dcim", model="moduletype")
                 lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].module_type_id,
                                                                            assigned_object_type_id=content_type.id).first()
             case "devicetype" | "moduletype":
+                licenses = None
                 content_type = ContentType.objects.get(app_label="dcim", model=self.kind)
                 lifecycle_info = hardware.HardwareLifecycle.objects.filter(assigned_object_id=self.context['object'].id,
                                                                            assigned_object_type_id=content_type.id).first()
