@@ -81,7 +81,7 @@ class SupportContractAssignmentTable(NetBoxTable):
         orderable=True,
     )
     device_serial = tables.Column(
-        verbose_name=_('Serial Number'),
+        verbose_name=_('Device Serial Number'),
         accessor='device__serial',
         orderable=True,
     )
@@ -100,6 +100,22 @@ class SupportContractAssignmentTable(NetBoxTable):
         verbose_name=_('License'),
         accessor='license__license__name',
         linkify=False,
+        orderable=True,
+    )
+    module = tables.Column(
+        verbose_name=_('Module'),
+        accessor='module',
+        linkify=True,
+        orderable=True,
+    )
+    module_serial = tables.Column(
+        verbose_name=_('Module Serial Number'),
+        accessor='module__serial',
+        orderable=True,
+    )
+    module_status = ChoiceFieldColumn(
+        verbose_name=_('Module Status'),
+        accessor='module__status',
         orderable=True,
     )
     quantity = tables.Column(
@@ -121,8 +137,8 @@ class SupportContractAssignmentTable(NetBoxTable):
         model = SupportContractAssignment
         fields = (
             'pk', 'contract', 'sku', 'device_name', 'license_name', 'device_model', 'device_serial', 'quantity',
-            'renewal', 'end', 'description', 'comments',
+            'renewal', 'end', 'description', 'comments', 'module', 'module_serial', 'module_status'
         )
         default_columns = (
-            'pk', 'contract', 'sku', 'device_name', 'license_name', 'device_model', 'device_serial'
+            'pk', 'contract', 'sku', 'device_name', 'license_name', 'module', 'device_model', 'device_serial'
         )

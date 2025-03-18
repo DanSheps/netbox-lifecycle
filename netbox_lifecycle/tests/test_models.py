@@ -3,10 +3,14 @@ import datetime
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from dcim.models import Manufacturer, Site, DeviceRole, DeviceType, Device
+from dcim.models import (
+    Manufacturer, Site, DeviceRole, DeviceType, Device, Module, ModuleBay, ModuleType
+)
+from dcim.choices import ModuleStatusChoices
 from netbox_lifecycle.models import (
     Vendor, SupportContract, SupportSKU, SupportContractAssignment, License, LicenseAssignment
 )
+from netbox_lifecycle.utilities.testing import create_test_module
 
 
 class SupportContractTestCase(TestCase):
@@ -123,6 +127,8 @@ class SupportContractAssignmentTestCase(TestCase):
         vendor = Vendor.objects.create(name='Vendor 1')
         license = License.objects.create(manufacturer=manufacturer, name='Test License')
 
+        module = create_test_module()
+
         skus = (
             SupportSKU(
                 manufacturer=manufacturer,
@@ -164,6 +170,51 @@ class SupportContractAssignmentTestCase(TestCase):
         contract.full_clean()
         contract.save()
 
+    def test_module_contractassignment_creation(self):
+        contract = SupportContract.objects.first()
+        sku = SupportSKU.objects.first()
+        module = Module.objects.first()
+
+        contract = SupportContractAssignment(
+            contract=contract,
+            sku=sku,
+            module=module
+        )
+        contract.full_clean()
+        contract.save()
+
+    def test_module_and_license_contractassignment_creation(self):
+        contract = SupportContract.objects.first()
+        sku = SupportSKU.objects.first()
+        license = LicenseAssignment.objects.first()
+        module = Module.objects.first()
+
+        contract = SupportContractAssignment(
+            contract=contract,
+            sku=sku,
+            license=license,
+            module=module
+        )
+
+        with self.assertRaises(ValidationError):
+            contract.full_clean()
+
+    def test_module_and_device_contractassignment_creation(self):
+        contract = SupportContract.objects.first()
+        sku = SupportSKU.objects.first()
+        device = Device.objects.first()
+        module = Module.objects.first()
+
+        contract = SupportContractAssignment(
+            contract=contract,
+            sku=sku,
+            device=device,
+            module=module
+        )
+
+        with self.assertRaises(ValidationError):
+            contract.full_clean()
+
     def test_supportcontract_duplicate_ids(self):
         contract = SupportContract.objects.first()
         sku = SupportSKU.objects.first()
@@ -190,3 +241,25 @@ class SupportContractAssignmentTestCase(TestCase):
         contract2.license = license
         contract2.full_clean()
         contract2.save()
+
+    def test_module_supportcontract_duplicate_ids(self):
+        contract = SupportContract.objects.first()
+        sku = SupportSKU.objects.first()
+        module = Module.objects.first()
+
+        contract1 = SupportContractAssignment(
+            contract=contract,
+            sku=sku,
+            module=module
+        )
+        contract1.full_clean()
+        contract1.save()
+
+        contract2 = SupportContractAssignment(
+            contract=contract,
+            sku=sku,
+            module=module
+        )
+
+        with self.assertRaises(ValidationError):
+            contract2.full_clean()

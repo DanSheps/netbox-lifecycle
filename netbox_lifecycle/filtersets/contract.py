@@ -2,7 +2,7 @@ import django_filters
 from django.db.models import Q
 from django.utils.translation import gettext as _
 
-from dcim.models import Manufacturer, Device
+from dcim.models import Manufacturer, Device, Module
 from netbox.filtersets import NetBoxModelFilterSet
 from netbox_lifecycle.models import Vendor, SupportContract, SupportContractAssignment, SupportSKU, LicenseAssignment, \
     License
@@ -128,6 +128,11 @@ class SupportContractAssignmentFilterSet(NetBoxModelFilterSet):
         queryset=License.objects.all(),
         to_field_name='name',
         label=_('License (SKU)'),
+    )
+    module_id = django_filters.ModelMultipleChoiceFilter(
+        field_name='module',
+        queryset=Module.objects.all(),
+        label=_('Module (ID)'),
     )
 
     class Meta:

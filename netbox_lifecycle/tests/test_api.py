@@ -1,11 +1,13 @@
 from django.urls import reverse
 from rest_framework import status
 
-from dcim.models import Manufacturer, DeviceType
+from dcim.models import Manufacturer, DeviceType, Module, ModuleBay, ModuleType
+from dcim.choices import ModuleStatusChoices
 from utilities.testing import APIViewTestCases, APITestCase, create_test_device
 
 from netbox_lifecycle.models import *
 from netbox_lifecycle.utilities.gfk_mixins import DateFieldMixin
+from netbox_lifecycle.utilities.testing import create_test_module
 
 
 class AppTest(APITestCase):
@@ -215,9 +217,9 @@ class SupportContractTest(APIViewTestCases.APIViewTestCase):
 class SupportContractAssignmentTest(APIViewTestCases.APIViewTestCase):
     model = SupportContractAssignment
     view_namespace = "plugins-api:netbox_lifecycle"
-    brief_fields = ['contract', 'device', 'display', 'id', 'license', 'sku', 'url', ]
+    brief_fields = ['contract', 'device', 'display', 'id', 'license', 'module', 'sku', 'url', ]
 
-    user_permissions = ('netbox_lifecycle.view_supportcontract', 'netbox_lifecycle.view_vendor', 'dcim.view_device', )
+    user_permissions = ('netbox_lifecycle.view_supportcontract', 'netbox_lifecycle.view_vendor', 'dcim.view_device', 'dcim.view_module', )
 
     bulk_update_data = {
         'description': "A assignment description"
@@ -228,6 +230,7 @@ class SupportContractAssignmentTest(APIViewTestCases.APIViewTestCase):
         manufacturer = Manufacturer.objects.create(name='Manufacturer', slug='manufacturer')
         vendor = Vendor.objects.create(name='Vendor')
         device = create_test_device(name='Test Device')
+        module = create_test_module()
 
         sku = SupportSKU.objects.create(sku='SKU', manufacturer=manufacturer)
 
@@ -238,6 +241,8 @@ class SupportContractAssignmentTest(APIViewTestCases.APIViewTestCase):
             SupportContract(vendor=vendor, contract_id='NB1000-4'),
             SupportContract(vendor=vendor, contract_id='NB1000-5'),
             SupportContract(vendor=vendor, contract_id='NB1000-6'),
+            SupportContract(vendor=vendor, contract_id='NB1000-7'),
+            SupportContract(vendor=vendor, contract_id='NB1000-8'),
         ]
 
         SupportContract.objects.bulk_create(contracts)
@@ -245,16 +250,12 @@ class SupportContractAssignmentTest(APIViewTestCases.APIViewTestCase):
         assignments = [
             SupportContractAssignment(contract=contracts[0], device=device, sku=sku),
             SupportContractAssignment(contract=contracts[1], device=device, sku=sku),
-            SupportContractAssignment(contract=contracts[2], device=device, sku=sku),
+            SupportContractAssignment(contract=contracts[2], module=module, sku=sku),
+            SupportContractAssignment(contract=contracts[3], module=module, sku=sku),
         ]
         SupportContractAssignment.objects.bulk_create(assignments)
 
         cls.create_data = [
-            {
-                'contract': contracts[3].pk,
-                'device': device.pk,
-                'sku': sku.pk,
-            },
             {
                 'contract': contracts[4].pk,
                 'device': device.pk,
@@ -263,6 +264,16 @@ class SupportContractAssignmentTest(APIViewTestCases.APIViewTestCase):
             {
                 'contract': contracts[5].pk,
                 'device': device.pk,
+                'sku': sku.pk,
+            },
+            {
+                'contract': contracts[6].pk,
+                'module': module.pk,
+                'sku': sku.pk,
+            },
+            {
+                'contract': contracts[7].pk,
+                'module': module.pk,
                 'sku': sku.pk,
             },
         ]

@@ -1,10 +1,12 @@
 from django.test import TestCase
 
-from dcim.models import Device, Manufacturer
+from dcim.models import Device, Manufacturer, Module, ModuleBay, ModuleType
+from dcim.choices import ModuleStatusChoices
 from utilities.testing import create_test_device
 
 from netbox_lifecycle.forms import *
 from netbox_lifecycle.models import *
+from netbox_lifecycle.utilities.testing import create_test_module
 
 
 class VendorTestCase(TestCase):
@@ -96,8 +98,9 @@ class SupportContractAssignmentTestCase(TestCase):
         SupportContract.objects.create(vendor=vendor, contract_id='Contract')
         license = License.objects.create(manufacturer=manufacturer)
         license_assignment = LicenseAssignment.objects.create(license=license, vendor=vendor, device=device)
+        module = create_test_module()
 
-    def test_assignment_fail_without_device_or_license(self):
+    def test_assignment_fail_without_device_or_license_or_module(self):
         form = SupportContractAssignmentForm(data={
             'contract': SupportContract.objects.first().pk,
             'sku': SupportSKU.objects.first().pk,
@@ -127,6 +130,16 @@ class SupportContractAssignmentTestCase(TestCase):
         self.assertTrue(form.is_valid())
         self.assertTrue(form.save())
 
+    def test_assignment_with_module(self):
+        form = SupportContractAssignmentForm(data={
+            'contract': SupportContract.objects.first().pk,
+            'sku': SupportSKU.objects.first().pk,
+            'vendor': Vendor.objects.first().pk,
+            'module': Module.objects.first().pk,
+        })
+        self.assertTrue(form.is_valid())
+        self.assertTrue(form.save())
+
     def test_assignment_with_device_and_license(self):
         form = SupportContractAssignmentForm(data={
             'contract': SupportContract.objects.first().pk,
@@ -145,6 +158,56 @@ class SupportContractAssignmentTestCase(TestCase):
             'vendor': Vendor.objects.first().pk,
             'device': create_test_device(name='New Test Device'),
             'license': LicenseAssignment.objects.first().pk,
+        })
+        self.assertFalse(form.is_valid())
+        with self.assertRaises(ValueError):
+            form.save()
+
+    def test_assignment_with_device_and_license_and_module_with_different_device(self):
+        form = SupportContractAssignmentForm(data={
+            'contract': SupportContract.objects.first().pk,
+            'sku': SupportSKU.objects.first().pk,
+            'vendor': Vendor.objects.first().pk,
+            'device': create_test_device(name='New Test Device'),
+            'license': LicenseAssignment.objects.first().pk,
+            'module': Module.objects.first().pk,
+        })
+        self.assertFalse(form.is_valid())
+        with self.assertRaises(ValueError):
+            form.save()
+
+    def test_assignment_with_device_and_module(self):
+        form = SupportContractAssignmentForm(data={
+            'contract': SupportContract.objects.first().pk,
+            'sku': SupportSKU.objects.first().pk,
+            'vendor': Vendor.objects.first().pk,
+            'device': create_test_device(name='New Test Device'),
+            'module': Module.objects.first().pk,
+        })
+        self.assertFalse(form.is_valid())
+        with self.assertRaises(ValueError):
+            form.save()
+
+    def test_assignment_with_license_and_module(self):
+        form = SupportContractAssignmentForm(data={
+            'contract': SupportContract.objects.first().pk,
+            'sku': SupportSKU.objects.first().pk,
+            'vendor': Vendor.objects.first().pk,
+            'license': LicenseAssignment.objects.first().pk,
+            'module': Module.objects.first().pk,
+        })
+        self.assertFalse(form.is_valid())
+        with self.assertRaises(ValueError):
+            form.save()
+
+    def test_assignment_with_device_and_license_and_module(self):
+        form = SupportContractAssignmentForm(data={
+            'contract': SupportContract.objects.first().pk,
+            'sku': SupportSKU.objects.first().pk,
+            'vendor': Vendor.objects.first().pk,
+            'device': Device.objects.first().pk,
+            'license': LicenseAssignment.objects.first().pk,
+            'module': Module.objects.first().pk,
         })
         self.assertFalse(form.is_valid())
         with self.assertRaises(ValueError):
