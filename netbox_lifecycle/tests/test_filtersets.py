@@ -1,6 +1,7 @@
 from django.test import TestCase
 
-from dcim.models import Manufacturer, Device, DeviceType, ModuleType
+from dcim.models import Manufacturer, Device, DeviceType, ModuleBay, ModuleType, Module
+from dcim.choices import ModuleStatusChoices
 from utilities.testing import create_test_device
 
 from netbox_lifecycle.filtersets import *
@@ -111,6 +112,7 @@ class SupportContractAssignmentTestCase(TestCase):
         device = create_test_device(name='Device')
         license = License.objects.create(name='License', manufacturer=manufacturer)
         license_assignment = LicenseAssignment.objects.create(license=license, vendor=vendor)
+        module = create_test_module()
 
         skus = (
             create_test_supportsku(sku='SKU 1', manufacturer=manufacturer),
@@ -123,6 +125,7 @@ class SupportContractAssignmentTestCase(TestCase):
             create_test_supportcontract(contract_id='Contract 1', vendor=vendor),
             create_test_supportcontract(contract_id='Contract 2', vendor=vendor),
             create_test_supportcontract(contract_id='Contract 3', vendor=vendor),
+            create_test_supportcontract(contract_id='Contract 4', vendor=vendor),
         )
 
         assignments = (
@@ -132,6 +135,8 @@ class SupportContractAssignmentTestCase(TestCase):
             SupportContractAssignment(contract=contracts[1], sku=skus[1], device=device),
             SupportContractAssignment(contract=contracts[2], sku=skus[2], license=license_assignment),
             SupportContractAssignment(contract=contracts[2], sku=skus[3], license=license_assignment),
+            SupportContractAssignment(contract=contracts[3], sku=skus[2], module=module),
+            SupportContractAssignment(contract=contracts[3], sku=skus[3], module=module),
         )
         SupportContractAssignment.objects.bulk_create(assignments)
 
@@ -175,6 +180,12 @@ class SupportContractAssignmentTestCase(TestCase):
         license = License.objects.first()
 
         params = {'license': [license.name, ]}
+        self.assertEqual(self.filterset(params, self.queryset).qs.count(), 2)
+
+    def test_module(self):
+        module = Module.objects.first()
+
+        params = {'module_id': [module.pk, ]}
         self.assertEqual(self.filterset(params, self.queryset).qs.count(), 2)
 
 

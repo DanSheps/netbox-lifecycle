@@ -109,6 +109,12 @@ class SupportContractAssignmentForm(NetBoxModelForm):
                 'module': "You must select at least a device, a license, or a module"
             })
 
+        if self.cleaned_data.get('module'):
+            if self.cleaned_data.get('license') or self.cleaned_data.get('device'):
+                raise forms.ValidationError({
+                    'module': 'Selecting a Module excludes the selection of a Device or License'
+                })
+
         if self.cleaned_data.get('license') and not self.cleaned_data.get('device'):
             self.cleaned_data['device'] = self.cleaned_data.get('license').device
 

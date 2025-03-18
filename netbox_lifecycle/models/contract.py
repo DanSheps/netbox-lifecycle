@@ -170,9 +170,9 @@ class SupportContractAssignment(PrimaryModel):
     def __str__(self):
         if self.license and self.device:
             return f'{self.device} ({self.license}): {self.contract.contract_id}'
-        elif self.device:
+        if self.device:
             return f'{self.device}: {self.contract.contract_id}'
-        elif self.module:
+        if self.module:
             return f'{self.module}: {self.contract.contract_id}'
 
     def get_absolute_url(self):
@@ -195,19 +195,22 @@ class SupportContractAssignment(PrimaryModel):
         return ModuleStatusChoices.colors.get(self.module.status)
 
     def clean(self):
-        if self.device and self.license and not self.module and SupportContractAssignment.objects.filter(
-                contract=self.contract, device=self.device, license=self.license, sku=self.sku, module=self.module
+        if self.module:
+            if self.license or self.device:
+                raise ValidationError('Assigning a Module excludes the assigment of a Device or License')
+            elif SupportContractAssignment.objects.filter(
+                    contract=self.contract, module=self.module
+            ).exclude(pk=self.pk).count() > 0:
+                raise ValidationError('Module must be unique')
+        elif self.device and self.license and not self.module and SupportContractAssignment.objects.filter(
+                contract=self.contract, device=self.device, license=self.license, sku=self.sku
         ).exclude(pk=self.pk).count() > 0:
             raise ValidationError('Device or License must be unique')
         elif self.device and not self.license and not self.module and SupportContractAssignment.objects.filter(
-                contract=self.contract, device=self.device, license=self.license, module=self.module
+                contract=self.contract, device=self.device, license=self.license
         ).exclude(pk=self.pk).count() > 0:
             raise ValidationError('Device must be unique')
         elif not self.device and self.license and not self.module and SupportContractAssignment.objects.filter(
-                contract=self.contract, device=self.device, license=self.license, module=self.module
+                contract=self.contract, device=self.device, license=self.license
         ).exclude(pk=self.pk).count() > 0:
             raise ValidationError('License must be unique')
-        elif not self.device and not self.license and self.module and SupportContractAssignment.objects.filter(
-                contract=self.contract, device=self.device, license=self.license, module=self.module
-        ).exclude(pk=self.pk).count() > 0:
-            raise ValidationError('Module must be unique')
