@@ -1,3 +1,5 @@
+import logging
+
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
@@ -179,15 +181,18 @@ class SupportContractAssignment(PrimaryModel):
         return DeviceStatusChoices.colors.get(self.device.status)
 
     def clean(self):
+        logger = logging.getLogger('netbox_lifecycle.models.contract.SupportContractAssignment')
+        logger.info(f'Cleaning start')
         if self.device and self.license and SupportContractAssignment.objects.filter(
                 contract=self.contract, device=self.device, license=self.license, sku=self.sku
         ).exclude(pk=self.pk).count() > 0:
             raise ValidationError('Device or License must be unique')
         elif self.device and not self.license and SupportContractAssignment.objects.filter(
-                contract=self.contract, device=self.device, license=self.license
+                contract=self.contract, device=self.device, sku=self.sku, license=self.license
         ).exclude(pk=self.pk).count() > 0:
+            logger.warning(f'Device unique constraint validation error: {self.device}|{self.license}|{self.contract}')
             raise ValidationError('Device must be unique')
         elif not self.device and self.license and SupportContractAssignment.objects.filter(
-                contract=self.contract, device=self.device, license=self.license
+                contract=self.contract, device=self.device, license=self.license, sku=self.sku
         ).exclude(pk=self.pk).count() > 0:
             raise ValidationError('License must be unique')

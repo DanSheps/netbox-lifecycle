@@ -7,6 +7,7 @@ from utilities.forms.fields import DynamicModelChoiceField, CommentField
 from netbox_lifecycle.models import SupportContract, SupportSKU, SupportContractAssignment, LicenseAssignment, \
     License, HardwareLifecycle, Vendor
 from utilities.forms.rendering import FieldSet
+from utilities.forms.widgets import DatePicker
 
 
 class VendorBulkEditForm(NetBoxModelBulkEditForm):
@@ -71,6 +72,11 @@ class SupportContractAssignmentBulkEditForm(NetBoxModelBulkEditForm):
         label=_('Description'),
         max_length=200,
         required=False
+    )
+    end = forms.DateField(
+        label=_('End date'),
+        required=False,
+        widget=DatePicker(),
     )
     comments = CommentField()
 
