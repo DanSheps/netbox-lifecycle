@@ -76,7 +76,7 @@ class SupportContractAssignmentBulkEditForm(NetBoxModelBulkEditForm):
 
     model = SupportContractAssignment
     fieldsets = (
-        FieldSet('contract', 'sku', 'description', ),
+        FieldSet('contract', 'sku', 'description', 'end', ),
     )
     nullable_fields = ()
 
