@@ -129,6 +129,12 @@ class SupportContractAssignmentFilterSet(NetBoxModelFilterSet):
         to_field_name='name',
         label=_('License (SKU)'),
     )
+    device_status = django_filters.ModelMultipleChoiceFilter(
+        field_name='device__status',
+        queryset=Device.objects.all(),
+        to_field_name='status',
+        label=_('Device Status'),
+    )
 
     class Meta:
         model = SupportContractAssignment
