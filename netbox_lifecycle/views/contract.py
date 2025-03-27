@@ -195,6 +195,7 @@ class SupportContractAssignmentListView(ObjectListView):
     filterset_form = SupportContractAssignmentFilterForm
     actions = {
         'add': {'add'},
+        'export': {'view'},
         'edit': {'change'},
         'delete': {'delete'},
         'bulk_edit': {'change'},
