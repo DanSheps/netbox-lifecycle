@@ -20,7 +20,7 @@ class SupportSKUSerializer(NetBoxModelSerializer):
 
     class Meta:
         model = SupportSKU
-        fields = ('url', 'id', 'display', 'manufacturer', 'sku', 'description', 'comments', )
+        fields = ('url', 'id', 'display', 'manufacturer', 'sku', 'description', 'comments', 'custom_fields', )
         brief_fields = ('url', 'id', 'display', 'manufacturer', 'sku', )
 
 
@@ -34,7 +34,7 @@ class SupportContractSerializer(NetBoxModelSerializer):
     class Meta:
         model = SupportContract
         fields = (
-            'url', 'id', 'display', 'vendor', 'contract_id', 'start', 'renewal', 'end', 'description', 'comments',
+            'url', 'id', 'display', 'vendor', 'contract_id', 'start', 'renewal', 'end', 'description', 'comments', 'custom_fields', 
         )
         brief_fields = ('url', 'id', 'display', 'vendor', 'contract_id', )
 
@@ -49,7 +49,7 @@ class SupportContractAssignmentSerializer(NetBoxModelSerializer):
     class Meta:
         model = SupportContractAssignment
         fields = (
-            'url', 'id', 'display', 'contract', 'sku', 'device', 'license', 'end', 'description', 'comments',
+            'url', 'id', 'display', 'contract', 'sku', 'device', 'license', 'end', 'description', 'comments', 'custom_fields', 
         )
 
         brief_fields = ('url', 'id', 'display', 'contract', 'sku', 'device', 'license', )
