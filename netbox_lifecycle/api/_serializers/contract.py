@@ -15,7 +15,7 @@ __all__ = (
 
 
 class SupportSKUSerializer(NetBoxModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_lifecycle-api:hardwarelifecycle-detail')
+    url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_lifecycle-api:supportsku-detail')
     manufacturer = ManufacturerSerializer(nested=True)
 
     class Meta:
@@ -25,7 +25,7 @@ class SupportSKUSerializer(NetBoxModelSerializer):
 
 
 class SupportContractSerializer(NetBoxModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_lifecycle-api:hardwarelifecycle-detail')
+    url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_lifecycle-api:supportcontract-detail')
     vendor = VendorSerializer(nested=True)
     start = serializers.DateField(required=False)
     renewal = serializers.DateField(required=False)
@@ -40,7 +40,7 @@ class SupportContractSerializer(NetBoxModelSerializer):
 
 
 class SupportContractAssignmentSerializer(NetBoxModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_lifecycle-api:licenseassignment-detail')
+    url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_lifecycle-api:supportcontractassignment-detail')
     contract = SupportContractSerializer(nested=True)
     sku = SupportSKUSerializer(nested=True, required=False, allow_null=True)
     device = DeviceSerializer(nested=True, required=False, allow_null=True)
