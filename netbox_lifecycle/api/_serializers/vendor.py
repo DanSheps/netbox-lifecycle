@@ -9,9 +9,9 @@ __all__ = (
 
 
 class VendorSerializer(NetBoxModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_lifecycle-api:hardwarelifecycle-detail')
+    url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_lifecycle-api:vendor-detail')
 
     class Meta:
         model = Vendor
-        fields = ('url', 'id', 'display', 'name', 'description', 'comments', )
+        fields = ('url', 'id', 'display', 'name', 'description', 'comments', 'custom_fields', )
         brief_fields = ('url', 'id', 'display', 'name', )

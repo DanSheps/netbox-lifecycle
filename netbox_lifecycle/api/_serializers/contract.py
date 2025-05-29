@@ -15,17 +15,17 @@ __all__ = (
 
 
 class SupportSKUSerializer(NetBoxModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_lifecycle-api:hardwarelifecycle-detail')
+    url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_lifecycle-api:supportsku-detail')
     manufacturer = ManufacturerSerializer(nested=True)
 
     class Meta:
         model = SupportSKU
-        fields = ('url', 'id', 'display', 'manufacturer', 'sku', 'description', 'comments', )
+        fields = ('url', 'id', 'display', 'manufacturer', 'sku', 'description', 'comments', 'custom_fields', )
         brief_fields = ('url', 'id', 'display', 'manufacturer', 'sku', )
 
 
 class SupportContractSerializer(NetBoxModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_lifecycle-api:hardwarelifecycle-detail')
+    url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_lifecycle-api:supportcontract-detail')
     vendor = VendorSerializer(nested=True)
     start = serializers.DateField(required=False)
     renewal = serializers.DateField(required=False)
@@ -34,13 +34,13 @@ class SupportContractSerializer(NetBoxModelSerializer):
     class Meta:
         model = SupportContract
         fields = (
-            'url', 'id', 'display', 'vendor', 'contract_id', 'start', 'renewal', 'end', 'description', 'comments',
+            'url', 'id', 'display', 'vendor', 'contract_id', 'start', 'renewal', 'end', 'description', 'comments', 'custom_fields', 
         )
         brief_fields = ('url', 'id', 'display', 'vendor', 'contract_id', )
 
 
 class SupportContractAssignmentSerializer(NetBoxModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_lifecycle-api:licenseassignment-detail')
+    url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_lifecycle-api:supportcontractassignment-detail')
     contract = SupportContractSerializer(nested=True)
     sku = SupportSKUSerializer(nested=True, required=False, allow_null=True)
     device = DeviceSerializer(nested=True, required=False, allow_null=True)
@@ -49,7 +49,7 @@ class SupportContractAssignmentSerializer(NetBoxModelSerializer):
     class Meta:
         model = SupportContractAssignment
         fields = (
-            'url', 'id', 'display', 'contract', 'sku', 'device', 'license', 'end', 'description', 'comments',
+            'url', 'id', 'display', 'contract', 'sku', 'device', 'license', 'end', 'description', 'comments', 'custom_fields', 
         )
 
         brief_fields = ('url', 'id', 'display', 'contract', 'sku', 'device', 'license', )
