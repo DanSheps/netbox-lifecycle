@@ -1,0 +1,12 @@
+repos:
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.6.9
+  hooks:
+    - id: ruff
+      name: "Ruff linter"
+      args: [ netbox_lifecycle/ ]
+- repo: https://github.com/psf/black-pre-commit-mirror
+  rev: 25.1.0
+  hooks:
+    - id: black
+      name: "Black"
