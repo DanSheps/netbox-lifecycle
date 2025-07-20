@@ -73,11 +73,8 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r netbox/requirements.txt
-        pip install pycodestyle coverage tblib
+        pip install ruff black coverage tblib
         pip install -e netbox-lifecycle
-
-    - name: Copy configuration
-      run: |
         cp netbox-lifecycle/contrib/configuration_lifecycle.py netbox/netbox/netbox/configuration_lifecycle.py
 
     - name: Collect static files
@@ -87,7 +84,13 @@ jobs:
       run: python netbox/netbox/manage.py makemigrations --check
 
     - name: Check PEP8 compliance
-      run: pycodestyle --ignore=W504,E501 netbox-lifecycle/netbox_lifecycle
+      run: |
+        ruff check netbox-routing/netbox_routing/
+
+    - name: Check Black
+      uses: psf/black@stable
+      src: "netbox-routing/netbox_routing"
+      use_pyproject: true
 
     - name: Run tests
       run: coverage run --source="netbox-lifecycle/netbox_lifecycle/" netbox/netbox/manage.py test netbox-lifecycle/netbox_lifecycle/ --parallel
