@@ -28,6 +28,7 @@ class LicenseSerializer(NetBoxModelSerializer):
             'manufacturer',
             'description',
             'comments',
+            'custom_fields',
         )
         brief_fields = (
             'url',
@@ -56,6 +57,7 @@ class LicenseAssignmentSerializer(NetBoxModelSerializer):
             'device',
             'description',
             'comments',
+            'custom_fields',
         )
         brief_fields = (
             'url',

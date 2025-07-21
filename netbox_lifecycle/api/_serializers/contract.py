@@ -34,6 +34,7 @@ class SupportSKUSerializer(NetBoxModelSerializer):
             'sku',
             'description',
             'comments',
+            'custom_fields',
         )
         brief_fields = (
             'url',
@@ -66,6 +67,7 @@ class SupportContractSerializer(NetBoxModelSerializer):
             'end',
             'description',
             'comments',
+            'custom_fields',
         )
         brief_fields = (
             'url',
@@ -98,6 +100,7 @@ class SupportContractAssignmentSerializer(NetBoxModelSerializer):
             'end',
             'description',
             'comments',
+            'custom_fields',
         )
 
         brief_fields = (
