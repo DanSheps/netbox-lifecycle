@@ -9,7 +9,6 @@ from netbox_lifecycle.models import (
     SupportContract,
     SupportContractAssignment,
     SupportSKU,
-    LicenseAssignment,
     License,
 )
 
@@ -130,7 +129,7 @@ class SupportContractAssignmentFilterSet(NetBoxModelFilterSet):
     )
     license_id = django_filters.ModelMultipleChoiceFilter(
         field_name='license__license',
-        queryset=LicenseAssignment.objects.all(),
+        queryset=License.objects.all(),
         label=_('License (ID)'),
     )
     license = django_filters.ModelMultipleChoiceFilter(
