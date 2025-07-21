@@ -89,8 +89,9 @@ jobs:
 
     - name: Check Black
       uses: psf/black@stable
-      src: "netbox-routing/netbox_routing"
-      use_pyproject: true
+      with:
+        src: "netbox-routing/netbox_routing"
+        use_pyproject: true
 
     - name: Run tests
       run: coverage run --source="netbox-lifecycle/netbox_lifecycle/" netbox/netbox/manage.py test netbox-lifecycle/netbox_lifecycle/ --parallel
