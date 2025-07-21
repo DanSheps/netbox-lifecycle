@@ -7,13 +7,18 @@ import utilities.json
 
 def migrate_to_assignments(apps, schema_editor):
     from django.contrib.contenttypes.models import ContentType
-    SupportContractDeviceAssignment = apps.get_model('netbox_lifecycle', 'SupportContractDeviceAssignment')
-    SupportContractAssignment = apps.get_model('netbox_lifecycle', 'SupportContractAssignment')
+
+    SupportContractDeviceAssignment = apps.get_model(
+        'netbox_lifecycle', 'SupportContractDeviceAssignment'
+    )
+    SupportContractAssignment = apps.get_model(
+        'netbox_lifecycle', 'SupportContractAssignment'
+    )
     Device = apps.get_model('dcim', 'Device')
     assigned_object_type = ContentType.objects.get_for_model(Device)
 
     for contract in SupportContractDeviceAssignment.objects.all():
-        assignment = SupportContractAssignment.objects.create(
+        SupportContractAssignment.objects.create(
             id=contract.id,
             created=contract.created,
             last_updated=contract.last_updated,
@@ -25,12 +30,16 @@ def migrate_to_assignments(apps, schema_editor):
 
 
 def migrate_from_assignments(apps, schema_editor):
-    SupportContractDeviceAssignment = apps.get_model('netbox_lifecycle', 'SupportContractDeviceAssignment')
-    SupportContractAssignment = apps.get_model('netbox_lifecycle', 'SupportContractAssignment')
+    SupportContractDeviceAssignment = apps.get_model(
+        'netbox_lifecycle', 'SupportContractDeviceAssignment'
+    )
+    SupportContractAssignment = apps.get_model(
+        'netbox_lifecycle', 'SupportContractAssignment'
+    )
     Device = apps.get_model('dcim', 'Device')
     for contract in SupportContractAssignment.objects.all():
         if isinstance(contract.assigned_object, Device):
-            assignment = SupportContractDeviceAssignment.objects.create(
+            SupportContractDeviceAssignment.objects.create(
                 id=contract.id,
                 created=contract.created,
                 last_updated=contract.last_updated,
@@ -52,14 +61,50 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SupportContractAssignment',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False
+                    ),
+                ),
                 ('created', models.DateTimeField(auto_now_add=True, null=True)),
                 ('last_updated', models.DateTimeField(auto_now=True, null=True)),
-                ('custom_field_data', models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder)),
-                ('assigned_object_id', models.PositiveBigIntegerField(blank=True, null=True)),
-                ('assigned_object_type', models.ForeignKey(blank=True, limit_choices_to=('dcim.Device', 'netbox_lifecycle.License'), null=True, on_delete=django.db.models.deletion.PROTECT, related_name='+', to='contenttypes.contenttype')),
-                ('contract', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='netbox_lifecycle.supportcontract')),
-                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+                (
+                    'custom_field_data',
+                    models.JSONField(
+                        blank=True,
+                        default=dict,
+                        encoder=utilities.json.CustomFieldJSONEncoder,
+                    ),
+                ),
+                (
+                    'assigned_object_id',
+                    models.PositiveBigIntegerField(blank=True, null=True),
+                ),
+                (
+                    'assigned_object_type',
+                    models.ForeignKey(
+                        blank=True,
+                        limit_choices_to=('dcim.Device', 'netbox_lifecycle.License'),
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name='+',
+                        to='contenttypes.contenttype',
+                    ),
+                ),
+                (
+                    'contract',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to='netbox_lifecycle.supportcontract',
+                    ),
+                ),
+                (
+                    'tags',
+                    taggit.managers.TaggableManager(
+                        through='extras.TaggedItem', to='extras.Tag'
+                    ),
+                ),
             ],
             options={
                 'ordering': ['contract', 'assigned_object_type', 'assigned_object_id'],

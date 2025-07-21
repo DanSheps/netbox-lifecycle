@@ -4,9 +4,7 @@ from netbox_lifecycle.filtersets import HardwareLifecycleFilterSet
 from netbox_lifecycle.models import HardwareLifecycle
 
 
-__all__ = (
-    'HardwareLifecycleViewSet',
-)
+__all__ = ('HardwareLifecycleViewSet',)
 
 
 class HardwareLifecycleViewSet(NetBoxModelViewSet):

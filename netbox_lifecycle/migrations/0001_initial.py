@@ -22,12 +22,29 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Vendor',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False
+                    ),
+                ),
                 ('created', models.DateTimeField(auto_now_add=True, null=True)),
                 ('last_updated', models.DateTimeField(auto_now=True, null=True)),
-                ('custom_field_data', models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder)),
+                (
+                    'custom_field_data',
+                    models.JSONField(
+                        blank=True,
+                        default=dict,
+                        encoder=utilities.json.CustomFieldJSONEncoder,
+                    ),
+                ),
                 ('name', models.CharField(max_length=100)),
-                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+                (
+                    'tags',
+                    taggit.managers.TaggableManager(
+                        through='extras.TaggedItem', to='extras.Tag'
+                    ),
+                ),
             ],
             options={
                 'ordering': ['name'],
@@ -36,18 +53,52 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SupportContract',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False
+                    ),
+                ),
                 ('created', models.DateTimeField(auto_now_add=True, null=True)),
                 ('last_updated', models.DateTimeField(auto_now=True, null=True)),
-                ('custom_field_data', models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder)),
+                (
+                    'custom_field_data',
+                    models.JSONField(
+                        blank=True,
+                        default=dict,
+                        encoder=utilities.json.CustomFieldJSONEncoder,
+                    ),
+                ),
                 ('contract_id', models.CharField(max_length=100)),
                 ('start', models.DateField()),
                 ('renewal', models.DateField()),
                 ('end', models.DateField()),
-                ('devices', models.ManyToManyField(blank=True, related_name='contracts', to='dcim.device')),
-                ('manufacturer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='dcim.manufacturer')),
-                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
-                ('vendor', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='netbox_lifecycle.vendor')),
+                (
+                    'devices',
+                    models.ManyToManyField(
+                        blank=True, related_name='contracts', to='dcim.device'
+                    ),
+                ),
+                (
+                    'manufacturer',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to='dcim.manufacturer',
+                    ),
+                ),
+                (
+                    'tags',
+                    taggit.managers.TaggableManager(
+                        through='extras.TaggedItem', to='extras.Tag'
+                    ),
+                ),
+                (
+                    'vendor',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to='netbox_lifecycle.vendor',
+                    ),
+                ),
             ],
             options={
                 'ordering': ['contract_id'],
@@ -56,20 +107,56 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='HardwareLifecycle',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False
+                    ),
+                ),
                 ('created', models.DateTimeField(auto_now_add=True, null=True)),
                 ('last_updated', models.DateTimeField(auto_now=True, null=True)),
-                ('custom_field_data', models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder)),
-                ('assigned_object_id', models.PositiveBigIntegerField(blank=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(
+                        blank=True,
+                        default=dict,
+                        encoder=utilities.json.CustomFieldJSONEncoder,
+                    ),
+                ),
+                (
+                    'assigned_object_id',
+                    models.PositiveBigIntegerField(blank=True, null=True),
+                ),
                 ('end_of_sale', models.DateField()),
                 ('end_of_maintenance', models.DateField(blank=True, null=True)),
                 ('end_of_security', models.DateField(blank=True, null=True)),
                 ('last_contract_date', models.DateField(blank=True, null=True)),
                 ('end_of_support', models.DateField()),
                 ('notice', models.CharField(blank=True, max_length=500, null=True)),
-                ('documentation', models.CharField(blank=True, max_length=500, null=True)),
-                ('assigned_object_type', models.ForeignKey(blank=True, limit_choices_to=(dcim.models.devices.DeviceType, dcim.models.modules.ModuleType), null=True, on_delete=django.db.models.deletion.PROTECT, related_name='+', to='contenttypes.contenttype')),
-                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+                (
+                    'documentation',
+                    models.CharField(blank=True, max_length=500, null=True),
+                ),
+                (
+                    'assigned_object_type',
+                    models.ForeignKey(
+                        blank=True,
+                        limit_choices_to=(
+                            dcim.models.devices.DeviceType,
+                            dcim.models.modules.ModuleType,
+                        ),
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name='+',
+                        to='contenttypes.contenttype',
+                    ),
+                ),
+                (
+                    'tags',
+                    taggit.managers.TaggableManager(
+                        through='extras.TaggedItem', to='extras.Tag'
+                    ),
+                ),
             ],
             options={
                 'abstract': False,

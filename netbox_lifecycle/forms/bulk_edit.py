@@ -4,55 +4,62 @@ from django.utils.translation import gettext as _
 from netbox.forms import NetBoxModelBulkEditForm
 from utilities.forms.fields import DynamicModelChoiceField, CommentField
 
-from netbox_lifecycle.models import SupportContract, SupportSKU, SupportContractAssignment, LicenseAssignment, \
-    License, HardwareLifecycle, Vendor
+from netbox_lifecycle.models import (
+    SupportContract,
+    SupportSKU,
+    SupportContractAssignment,
+    LicenseAssignment,
+    License,
+    HardwareLifecycle,
+    Vendor,
+)
 from utilities.forms.rendering import FieldSet
 from utilities.forms.widgets import DatePicker
 
 
 class VendorBulkEditForm(NetBoxModelBulkEditForm):
     description = forms.CharField(
-        label=_('Description'),
-        max_length=200,
-        required=False
+        label=_('Description'), max_length=200, required=False
     )
     comments = CommentField()
 
     model = Vendor
     fieldsets = (
-        FieldSet('description', ),
+        FieldSet(
+            'description',
+        ),
     )
-    nullable_fields = ('description', )
+    nullable_fields = ('description',)
 
 
 class SupportSKUBulkEditForm(NetBoxModelBulkEditForm):
     description = forms.CharField(
-        label=_('Description'),
-        max_length=200,
-        required=False
+        label=_('Description'), max_length=200, required=False
     )
     comments = CommentField()
 
     model = SupportSKU
     fieldsets = (
-        FieldSet('description', ),
+        FieldSet(
+            'description',
+        ),
     )
-    nullable_fields = ('description', )
+    nullable_fields = ('description',)
 
 
 class SupportContractBulkEditForm(NetBoxModelBulkEditForm):
     description = forms.CharField(
-        label=_('Description'),
-        max_length=200,
-        required=False
+        label=_('Description'), max_length=200, required=False
     )
     comments = CommentField()
 
     model = SupportContract
     fieldsets = (
-        FieldSet('description', ),
+        FieldSet(
+            'description',
+        ),
     )
-    nullable_fields = ('description', )
+    nullable_fields = ('description',)
 
 
 class SupportContractAssignmentBulkEditForm(NetBoxModelBulkEditForm):
@@ -60,18 +67,13 @@ class SupportContractAssignmentBulkEditForm(NetBoxModelBulkEditForm):
         queryset=SupportContract.objects.all(),
         label=_('Contract'),
         required=False,
-        selector=True
+        selector=True,
     )
     sku = DynamicModelChoiceField(
-        queryset=SupportSKU.objects.all(),
-        label=_('SKU'),
-        required=False,
-        selector=True
+        queryset=SupportSKU.objects.all(), label=_('SKU'), required=False, selector=True
     )
     description = forms.CharField(
-        label=_('Description'),
-        max_length=200,
-        required=False
+        label=_('Description'), max_length=200, required=False
     )
     end = forms.DateField(
         label=_('End date'),
@@ -82,63 +84,68 @@ class SupportContractAssignmentBulkEditForm(NetBoxModelBulkEditForm):
 
     model = SupportContractAssignment
     fieldsets = (
-        FieldSet('contract', 'sku', 'description', 'end', ),
+        FieldSet(
+            'contract',
+            'sku',
+            'description',
+            'end',
+        ),
     )
     nullable_fields = ()
 
 
 class LicenseBulkEditForm(NetBoxModelBulkEditForm):
     description = forms.CharField(
-        label=_('Description'),
-        max_length=200,
-        required=False
+        label=_('Description'), max_length=200, required=False
     )
     comments = CommentField()
 
     model = License
     fieldsets = (
-        FieldSet('description', ),
+        FieldSet(
+            'description',
+        ),
     )
-    nullable_fields = ('description', )
+    nullable_fields = ('description',)
 
 
 class LicenseAssignmentBulkEditForm(NetBoxModelBulkEditForm):
     vendor = DynamicModelChoiceField(
-        queryset=SupportSKU.objects.all(),
-        label=_('SKU'),
-        required=False,
-        selector=True
+        queryset=SupportSKU.objects.all(), label=_('SKU'), required=False, selector=True
     )
     license = DynamicModelChoiceField(
         queryset=SupportContract.objects.all(),
         label=_('Contract'),
         required=False,
-        selector=True
+        selector=True,
     )
     description = forms.CharField(
-        label=_('Description'),
-        max_length=200,
-        required=False
+        label=_('Description'), max_length=200, required=False
     )
     comments = CommentField()
 
     model = LicenseAssignment
     fieldsets = (
-        FieldSet('vendor', 'license', 'quantity', 'description', ),
+        FieldSet(
+            'vendor',
+            'license',
+            'quantity',
+            'description',
+        ),
     )
-    nullable_fields = ('quantity', )
+    nullable_fields = ('quantity',)
 
 
 class HardwareLifecycleBulkEditForm(NetBoxModelBulkEditForm):
     description = forms.CharField(
-        label=_('Description'),
-        max_length=200,
-        required=False
+        label=_('Description'), max_length=200, required=False
     )
     comments = CommentField()
 
     model = HardwareLifecycle
     fieldsets = (
-        FieldSet('description', ),
+        FieldSet(
+            'description',
+        ),
     )
-    nullable_fields = ('description', )
+    nullable_fields = ('description',)

@@ -1,4 +1,4 @@
-from dcim.models import Device, Manufacturer, DeviceType, ModuleType
+from dcim.models import Manufacturer, DeviceType, ModuleType
 from netbox_lifecycle.utilities.gfk_mixins import HardwareLifecycleViewMixin
 from netbox_lifecycle.utilities.testing import create_test_vendor
 from utilities.testing import ViewTestCases, create_test_device
@@ -7,14 +7,14 @@ from netbox_lifecycle.models import *
 
 
 class VendorTestCase(
-        ViewTestCases.GetObjectViewTestCase,
-        ViewTestCases.GetObjectChangelogViewTestCase,
-        ViewTestCases.CreateObjectViewTestCase,
-        ViewTestCases.EditObjectViewTestCase,
-        ViewTestCases.DeleteObjectViewTestCase,
-        ViewTestCases.ListObjectsViewTestCase,
-        ViewTestCases.BulkEditObjectsViewTestCase,
-        ViewTestCases.BulkDeleteObjectsViewTestCase
+    ViewTestCases.GetObjectViewTestCase,
+    ViewTestCases.GetObjectChangelogViewTestCase,
+    ViewTestCases.CreateObjectViewTestCase,
+    ViewTestCases.EditObjectViewTestCase,
+    ViewTestCases.DeleteObjectViewTestCase,
+    ViewTestCases.ListObjectsViewTestCase,
+    ViewTestCases.BulkEditObjectsViewTestCase,
+    ViewTestCases.BulkDeleteObjectsViewTestCase,
 ):
     # ViewTestCases.BulkImportObjectsViewTestCase,
     model = Vendor
@@ -42,14 +42,14 @@ class VendorTestCase(
 
 
 class LicenseTestCase(
-        ViewTestCases.GetObjectViewTestCase,
-        ViewTestCases.GetObjectChangelogViewTestCase,
-        ViewTestCases.CreateObjectViewTestCase,
-        ViewTestCases.EditObjectViewTestCase,
-        ViewTestCases.DeleteObjectViewTestCase,
-        ViewTestCases.ListObjectsViewTestCase,
-        ViewTestCases.BulkEditObjectsViewTestCase,
-        ViewTestCases.BulkDeleteObjectsViewTestCase
+    ViewTestCases.GetObjectViewTestCase,
+    ViewTestCases.GetObjectChangelogViewTestCase,
+    ViewTestCases.CreateObjectViewTestCase,
+    ViewTestCases.EditObjectViewTestCase,
+    ViewTestCases.DeleteObjectViewTestCase,
+    ViewTestCases.ListObjectsViewTestCase,
+    ViewTestCases.BulkEditObjectsViewTestCase,
+    ViewTestCases.BulkDeleteObjectsViewTestCase,
 ):
     # ViewTestCases.BulkImportObjectsViewTestCase,
     model = License
@@ -65,10 +65,7 @@ class LicenseTestCase(
         )
         License.objects.bulk_create(licenses)
 
-        cls.form_data = {
-            'name': 'License X',
-            'manufacturer': manufacturer.pk
-        }
+        cls.form_data = {'name': 'License X', 'manufacturer': manufacturer.pk}
 
         cls.bulk_edit_data = {
             'description': "A Vendor Description",
@@ -79,14 +76,14 @@ class LicenseTestCase(
 
 
 class LicenseAssignmentTestCase(
-        ViewTestCases.GetObjectViewTestCase,
-        ViewTestCases.GetObjectChangelogViewTestCase,
-        ViewTestCases.CreateObjectViewTestCase,
-        ViewTestCases.EditObjectViewTestCase,
-        ViewTestCases.DeleteObjectViewTestCase,
-        ViewTestCases.ListObjectsViewTestCase,
-        ViewTestCases.BulkEditObjectsViewTestCase,
-        ViewTestCases.BulkDeleteObjectsViewTestCase
+    ViewTestCases.GetObjectViewTestCase,
+    ViewTestCases.GetObjectChangelogViewTestCase,
+    ViewTestCases.CreateObjectViewTestCase,
+    ViewTestCases.EditObjectViewTestCase,
+    ViewTestCases.DeleteObjectViewTestCase,
+    ViewTestCases.ListObjectsViewTestCase,
+    ViewTestCases.BulkEditObjectsViewTestCase,
+    ViewTestCases.BulkDeleteObjectsViewTestCase,
 ):
     # ViewTestCases.BulkImportObjectsViewTestCase,
     model = LicenseAssignment
@@ -105,7 +102,8 @@ class LicenseAssignmentTestCase(
         License.objects.bulk_create(licenses)
 
         assignments = (
-            LicenseAssignment(license=license, vendor=vendor, device=device) for license in licenses
+            LicenseAssignment(license=license, vendor=vendor, device=device)
+            for license in licenses
         )
         LicenseAssignment.objects.bulk_create(assignments)
 
@@ -114,7 +112,7 @@ class LicenseAssignmentTestCase(
         cls.form_data = {
             'license': license.pk,
             'vendor': vendor.pk,
-            'device': device.pk
+            'device': device.pk,
         }
 
         cls.bulk_edit_data = {
@@ -126,14 +124,14 @@ class LicenseAssignmentTestCase(
 
 
 class SupportContractTestCase(
-        ViewTestCases.GetObjectViewTestCase,
-        ViewTestCases.GetObjectChangelogViewTestCase,
-        ViewTestCases.CreateObjectViewTestCase,
-        ViewTestCases.EditObjectViewTestCase,
-        ViewTestCases.DeleteObjectViewTestCase,
-        ViewTestCases.ListObjectsViewTestCase,
-        ViewTestCases.BulkEditObjectsViewTestCase,
-        ViewTestCases.BulkDeleteObjectsViewTestCase
+    ViewTestCases.GetObjectViewTestCase,
+    ViewTestCases.GetObjectChangelogViewTestCase,
+    ViewTestCases.CreateObjectViewTestCase,
+    ViewTestCases.EditObjectViewTestCase,
+    ViewTestCases.DeleteObjectViewTestCase,
+    ViewTestCases.ListObjectsViewTestCase,
+    ViewTestCases.BulkEditObjectsViewTestCase,
+    ViewTestCases.BulkDeleteObjectsViewTestCase,
 ):
     # ViewTestCases.BulkImportObjectsViewTestCase,
     model = SupportContract
@@ -162,14 +160,14 @@ class SupportContractTestCase(
 
 
 class SupportSKUTestCase(
-        ViewTestCases.GetObjectViewTestCase,
-        ViewTestCases.GetObjectChangelogViewTestCase,
-        ViewTestCases.CreateObjectViewTestCase,
-        ViewTestCases.EditObjectViewTestCase,
-        ViewTestCases.DeleteObjectViewTestCase,
-        ViewTestCases.ListObjectsViewTestCase,
-        ViewTestCases.BulkEditObjectsViewTestCase,
-        ViewTestCases.BulkDeleteObjectsViewTestCase
+    ViewTestCases.GetObjectViewTestCase,
+    ViewTestCases.GetObjectChangelogViewTestCase,
+    ViewTestCases.CreateObjectViewTestCase,
+    ViewTestCases.EditObjectViewTestCase,
+    ViewTestCases.DeleteObjectViewTestCase,
+    ViewTestCases.ListObjectsViewTestCase,
+    ViewTestCases.BulkEditObjectsViewTestCase,
+    ViewTestCases.BulkDeleteObjectsViewTestCase,
 ):
     # ViewTestCases.BulkImportObjectsViewTestCase,
     model = SupportSKU
@@ -198,14 +196,14 @@ class SupportSKUTestCase(
 
 
 class SupportContractAssignmentTestCase(
-        ViewTestCases.GetObjectViewTestCase,
-        ViewTestCases.GetObjectChangelogViewTestCase,
-        ViewTestCases.CreateObjectViewTestCase,
-        ViewTestCases.EditObjectViewTestCase,
-        ViewTestCases.DeleteObjectViewTestCase,
-        ViewTestCases.ListObjectsViewTestCase,
-        ViewTestCases.BulkEditObjectsViewTestCase,
-        ViewTestCases.BulkDeleteObjectsViewTestCase
+    ViewTestCases.GetObjectViewTestCase,
+    ViewTestCases.GetObjectChangelogViewTestCase,
+    ViewTestCases.CreateObjectViewTestCase,
+    ViewTestCases.EditObjectViewTestCase,
+    ViewTestCases.DeleteObjectViewTestCase,
+    ViewTestCases.ListObjectsViewTestCase,
+    ViewTestCases.BulkEditObjectsViewTestCase,
+    ViewTestCases.BulkDeleteObjectsViewTestCase,
 ):
     # ViewTestCases.BulkImportObjectsViewTestCase,
     model = SupportContractAssignment
@@ -217,23 +215,28 @@ class SupportContractAssignmentTestCase(
         vendor = Vendor.objects.create(name='Vendor')
         sku = SupportSKU.objects.create(manufacturer=manufacturer, sku='SKU-123')
         license = License.objects.create(name='License 1', manufacturer=manufacturer)
-        la = LicenseAssignment.objects.create(license=license, vendor=vendor, device=device)
+        la = LicenseAssignment.objects.create(
+            license=license, vendor=vendor, device=device
+        )
 
         contracts = (
             SupportContract(vendor=vendor, contract_id='Contract-123'),
             SupportContract(vendor=vendor, contract_id='Contract-456'),
             SupportContract(vendor=vendor, contract_id='Contract-789'),
-
         )
         SupportContract.objects.bulk_create(contracts)
 
         sc_assignments = (
-            SupportContractAssignment(contract=contract, sku=sku, license=la, device=device)
+            SupportContractAssignment(
+                contract=contract, sku=sku, license=la, device=device
+            )
             for contract in contracts
         )
         SupportContractAssignment.objects.bulk_create(sc_assignments)
 
-        contract = SupportContract.objects.create(vendor=vendor, contract_id='Contract-X')
+        contract = SupportContract.objects.create(
+            vendor=vendor, contract_id='Contract-X'
+        )
 
         cls.form_data = {
             'contract': contract.pk,
@@ -251,25 +254,31 @@ class SupportContractAssignmentTestCase(
 
 
 class HardwareLifecycleTestCase(
-        HardwareLifecycleViewMixin,
-        ViewTestCases.GetObjectViewTestCase,
-        ViewTestCases.GetObjectChangelogViewTestCase,
-        ViewTestCases.CreateObjectViewTestCase,
-        ViewTestCases.EditObjectViewTestCase,
-        ViewTestCases.DeleteObjectViewTestCase,
-        ViewTestCases.ListObjectsViewTestCase,
-        ViewTestCases.BulkEditObjectsViewTestCase,
-        ViewTestCases.BulkDeleteObjectsViewTestCase
+    HardwareLifecycleViewMixin,
+    ViewTestCases.GetObjectViewTestCase,
+    ViewTestCases.GetObjectChangelogViewTestCase,
+    ViewTestCases.CreateObjectViewTestCase,
+    ViewTestCases.EditObjectViewTestCase,
+    ViewTestCases.DeleteObjectViewTestCase,
+    ViewTestCases.ListObjectsViewTestCase,
+    ViewTestCases.BulkEditObjectsViewTestCase,
+    ViewTestCases.BulkDeleteObjectsViewTestCase,
 ):
     # ViewTestCases.BulkImportObjectsViewTestCase,
     model = HardwareLifecycle
 
     @classmethod
     def setUpTestData(cls):
-        manufacturer = Manufacturer.objects.create(name="Manufacturer", slug="manufacturer")
+        manufacturer = Manufacturer.objects.create(
+            name="Manufacturer", slug="manufacturer"
+        )
         device_types = (
-            DeviceType(manufacturer=manufacturer, model='Device Type 1', slug="device-type-1"),
-            DeviceType(manufacturer=manufacturer, model='Device Type 2', slug="device-type-2"),
+            DeviceType(
+                manufacturer=manufacturer, model='Device Type 1', slug="device-type-1"
+            ),
+            DeviceType(
+                manufacturer=manufacturer, model='Device Type 2', slug="device-type-2"
+            ),
         )
         DeviceType.objects.bulk_create(device_types)
 
@@ -280,14 +289,32 @@ class HardwareLifecycleTestCase(
         ModuleType.objects.bulk_create(module_types)
 
         lifecycles = (
-            HardwareLifecycle(assigned_object=device_types[0], end_of_sale='2025-01-01', end_of_support='2030-01-01'),
-            HardwareLifecycle(assigned_object=device_types[1], end_of_sale='2025-01-01', end_of_support='2030-01-01'),
-            HardwareLifecycle(assigned_object=module_types[0], end_of_sale='2025-01-01', end_of_support='2030-01-01'),
-            HardwareLifecycle(assigned_object=module_types[1], end_of_sale='2025-01-01', end_of_support='2030-01-01'),
+            HardwareLifecycle(
+                assigned_object=device_types[0],
+                end_of_sale='2025-01-01',
+                end_of_support='2030-01-01',
+            ),
+            HardwareLifecycle(
+                assigned_object=device_types[1],
+                end_of_sale='2025-01-01',
+                end_of_support='2030-01-01',
+            ),
+            HardwareLifecycle(
+                assigned_object=module_types[0],
+                end_of_sale='2025-01-01',
+                end_of_support='2030-01-01',
+            ),
+            HardwareLifecycle(
+                assigned_object=module_types[1],
+                end_of_sale='2025-01-01',
+                end_of_support='2030-01-01',
+            ),
         )
         HardwareLifecycle.objects.bulk_create(lifecycles)
 
-        device_type = DeviceType.objects.create(manufacturer=manufacturer, model='Device Type X', slug='device-type-x')
+        device_type = DeviceType.objects.create(
+            manufacturer=manufacturer, model='Device Type X', slug='device-type-x'
+        )
 
         cls.form_data = {
             'device_type': device_type.pk,

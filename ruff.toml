@@ -9,6 +9,7 @@ preview = true
 
 [lint.per-file-ignores]
 "template_code.py" = ["E501"]
+"netbox_lifecycle/graphql/filters.py" = ["F821"]
 
 [format]
 quote-style = "single"

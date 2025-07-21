@@ -27,15 +27,16 @@ class LicenseFilterSet(NetBoxModelFilterSet):
 
     class Meta:
         model = License
-        fields = ('id', 'q', 'name', )
+        fields = (
+            'id',
+            'q',
+            'name',
+        )
 
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-        qs_filter = (
-            Q(manufacturer__name__icontains=value) |
-            Q(name__icontains=value)
-        )
+        qs_filter = Q(manufacturer__name__icontains=value) | Q(name__icontains=value)
         return queryset.filter(qs_filter).distinct()
 
 
@@ -76,15 +77,18 @@ class LicenseAssignmentFilterSet(NetBoxModelFilterSet):
 
     class Meta:
         model = LicenseAssignment
-        fields = ('id', 'q', )
+        fields = (
+            'id',
+            'q',
+        )
 
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
         qs_filter = (
-            Q(license__manufacturer__name__icontains=value) |
-            Q(license__name__icontains=value) |
-            Q(vendor__name__icontains=value) |
-            Q(device__name__icontains=value)
+            Q(license__manufacturer__name__icontains=value)
+            | Q(license__name__icontains=value)
+            | Q(vendor__name__icontains=value)
+            | Q(device__name__icontains=value)
         )
         return queryset.filter(qs_filter).distinct()

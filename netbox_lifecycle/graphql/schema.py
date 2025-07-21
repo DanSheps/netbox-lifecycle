@@ -26,8 +26,12 @@ class SupportContractQuery:
 
 @strawberry.type(name="Query")
 class SupportContractAssignmentQuery:
-    support_contract_assignment: SupportContractAssignmentType = strawberry_django.field()
-    support_contract_assignment_list: List[SupportContractAssignmentType] = strawberry_django.field()
+    support_contract_assignment: SupportContractAssignmentType = (
+        strawberry_django.field()
+    )
+    support_contract_assignment_list: List[SupportContractAssignmentType] = (
+        strawberry_django.field()
+    )
 
 
 @strawberry.type(name="Query")

@@ -1,8 +1,21 @@
-from netbox.views.generic import ObjectListView, ObjectEditView, ObjectDeleteView, ObjectView, ObjectChildrenView, \
-    BulkEditView, BulkDeleteView
+from netbox.views.generic import (
+    ObjectListView,
+    ObjectEditView,
+    ObjectDeleteView,
+    ObjectView,
+    ObjectChildrenView,
+    BulkEditView,
+    BulkDeleteView,
+)
 from netbox_lifecycle.filtersets import LicenseFilterSet, LicenseAssignmentFilterSet
-from netbox_lifecycle.forms import LicenseFilterForm, LicenseForm, LicenseAssignmentForm, \
-    LicenseAssignmentBulkEditForm, LicenseAssignmentFilterForm, LicenseBulkEditForm
+from netbox_lifecycle.forms import (
+    LicenseFilterForm,
+    LicenseForm,
+    LicenseAssignmentForm,
+    LicenseAssignmentBulkEditForm,
+    LicenseAssignmentFilterForm,
+    LicenseBulkEditForm,
+)
 from netbox_lifecycle.models import License, LicenseAssignment
 from netbox_lifecycle.tables import LicenseTable, LicenseAssignmentTable
 from utilities.views import ViewTab, register_model_view
@@ -72,11 +85,7 @@ class LicenseAssignmentsView(ObjectChildrenView):
     table = LicenseAssignmentTable
     filterset = LicenseAssignmentFilterSet
     viewname = None
-    actions = {
-        'add': {'add'},
-        'edit': {'change'},
-        'delete': {'delete'}
-    }
+    actions = {'add': {'add'}, 'edit': {'change'}, 'delete': {'delete'}}
     tab = ViewTab(
         label='License Assignments',
         badge=lambda obj: LicenseAssignment.objects.filter(license=obj).count(),

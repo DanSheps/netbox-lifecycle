@@ -1,11 +1,16 @@
-from typing import Annotated, Any, Union
+from typing import Annotated, Union
 
 import strawberry
 import strawberry_django
 
-from dcim.graphql.types import ManufacturerType, DeviceType, DeviceTypeType, ModuleTypeType, ModuleType
-from extras.graphql.mixins import CustomFieldsMixin, TagsMixin
-from netbox.graphql.types import NetBoxObjectType, ObjectType
+from dcim.graphql.types import (
+    ManufacturerType,
+    DeviceType,
+    DeviceTypeType,
+    ModuleTypeType,
+    ModuleType,
+)
+from netbox.graphql.types import NetBoxObjectType
 from .filters import *
 
 from netbox_lifecycle import models
@@ -21,20 +26,12 @@ __all__ = (
 )
 
 
-@strawberry_django.type(
-    models.Vendor,
-    fields='__all__',
-    filters=VendorFilter
-)
+@strawberry_django.type(models.Vendor, fields='__all__', filters=VendorFilter)
 class VendorType(NetBoxObjectType):
     name: str
 
 
-@strawberry_django.type(
-    models.SupportSKU,
-    fields='__all__',
-    filters=SupportSKUFilter
-)
+@strawberry_django.type(models.SupportSKU, fields='__all__', filters=SupportSKUFilter)
 class SupportSKUType(NetBoxObjectType):
 
     sku: str
@@ -42,9 +39,7 @@ class SupportSKUType(NetBoxObjectType):
 
 
 @strawberry_django.type(
-    models.SupportContract,
-    fields='__all__',
-    filters=SupportContractFilter
+    models.SupportContract, fields='__all__', filters=SupportContractFilter
 )
 class SupportContractType(NetBoxObjectType):
 
@@ -55,11 +50,7 @@ class SupportContractType(NetBoxObjectType):
     end: str | None
 
 
-@strawberry_django.type(
-    models.License,
-    fields='__all__',
-    filters=LicenseFilter
-)
+@strawberry_django.type(models.License, fields='__all__', filters=LicenseFilter)
 class LicenseType(NetBoxObjectType):
 
     manufacturer: ManufacturerType
@@ -69,7 +60,7 @@ class LicenseType(NetBoxObjectType):
 @strawberry_django.type(
     models.SupportContractAssignment,
     fields='__all__',
-    filters=SupportContractAssignmentFilter
+    filters=SupportContractAssignmentFilter,
 )
 class SupportContractAssignmentType(NetBoxObjectType):
     contract: SupportContractType
@@ -80,9 +71,7 @@ class SupportContractAssignmentType(NetBoxObjectType):
 
 
 @strawberry_django.type(
-    models.LicenseAssignment,
-    fields='__all__',
-    filters=LicenseAssignmentFilter
+    models.LicenseAssignment, fields='__all__', filters=LicenseAssignmentFilter
 )
 class LicenseAssignmentType(NetBoxObjectType):
     license: LicenseType
@@ -92,17 +81,23 @@ class LicenseAssignmentType(NetBoxObjectType):
 
 
 @strawberry_django.type(
-    models.HardwareLifecycle,
-    fields='__all__',
-    filters=HardwareLifecycleFilter
+    models.HardwareLifecycle, fields='__all__', filters=HardwareLifecycleFilter
 )
 class HardwareLifecycleType(NetBoxObjectType):
-    assigned_object_type: Annotated["ContentTypeType", strawberry.lazy('netbox.graphql.types')] | None
+    assigned_object_type: (
+        Annotated["ContentTypeType", strawberry.lazy('netbox.graphql.types')] | None
+    )
     assigned_object_id: int
-    assigned_object: Annotated[Union[
-        Annotated["DeviceType", strawberry.lazy('dcim.graphql.types')],
-        Annotated["ModuleType", strawberry.lazy('dcim.graphql.types')],],
-        strawberry.union("HardwareLifecycleObjectTypes")] | None
+    assigned_object: (
+        Annotated[
+            Union[
+                Annotated["DeviceType", strawberry.lazy('dcim.graphql.types')],
+                Annotated["ModuleType", strawberry.lazy('dcim.graphql.types')],
+            ],
+            strawberry.union("HardwareLifecycleObjectTypes"),
+        ]
+        | None
+    )
     end_of_sale: str
     end_of_maintenance: str | None
     end_of_security: str | None

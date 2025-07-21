@@ -8,9 +8,7 @@ from netbox.filtersets import NetBoxModelFilterSet
 from netbox_lifecycle.models import HardwareLifecycle
 
 
-__all__ = (
-    'HardwareLifecycleFilterSet',
-)
+__all__ = ('HardwareLifecycleFilterSet',)
 
 
 class HardwareLifecycleFilterSet(NetBoxModelFilterSet):
@@ -47,21 +45,27 @@ class HardwareLifecycleFilterSet(NetBoxModelFilterSet):
     class Meta:
         model = HardwareLifecycle
         fields = (
-            'id', 'assigned_object_type_id', 'assigned_object_id', 'end_of_sale', 'end_of_maintenance', 'end_of_security', 'end_of_support',
+            'id',
+            'assigned_object_type_id',
+            'assigned_object_id',
+            'end_of_sale',
+            'end_of_maintenance',
+            'end_of_security',
+            'end_of_support',
         )
 
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
         qs_filter = Q(
-            Q(device_type__model__icontains=value) |
-            Q(module_type__model__icontains=value)
+            Q(device_type__model__icontains=value)
+            | Q(module_type__model__icontains=value)
         )
         return queryset.filter(qs_filter).distinct()
 
     def filter_types(self, queryset, name, value):
         if '__' in name:
-            name, leftover = name.split('__', 1)
+            name, leftover = name.split('__', 1)  # noqa F841
 
         if type(value) is list:
             name = f'{name}__in'

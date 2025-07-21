@@ -4,14 +4,20 @@ from django.utils.translation import gettext as _
 
 from dcim.models import Manufacturer, Device
 from netbox.filtersets import NetBoxModelFilterSet
-from netbox_lifecycle.models import Vendor, SupportContract, SupportContractAssignment, SupportSKU, LicenseAssignment, \
-    License
+from netbox_lifecycle.models import (
+    Vendor,
+    SupportContract,
+    SupportContractAssignment,
+    SupportSKU,
+    LicenseAssignment,
+    License,
+)
 
 __all__ = (
     'SupportContractFilterSet',
     'SupportSKUFilterSet',
     'VendorFilterSet',
-    'SupportContractAssignmentFilterSet'
+    'SupportContractAssignmentFilterSet',
 )
 
 
@@ -19,14 +25,16 @@ class VendorFilterSet(NetBoxModelFilterSet):
 
     class Meta:
         model = Vendor
-        fields = ('id', 'q', 'name', )
+        fields = (
+            'id',
+            'q',
+            'name',
+        )
 
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-        qs_filter = (
-            Q(name__icontains=value)
-        )
+        qs_filter = Q(name__icontains=value)
         return queryset.filter(qs_filter).distinct()
 
 
@@ -45,15 +53,16 @@ class SupportSKUFilterSet(NetBoxModelFilterSet):
 
     class Meta:
         model = SupportSKU
-        fields = ('id', 'q', 'sku', )
+        fields = (
+            'id',
+            'q',
+            'sku',
+        )
 
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-        qs_filter = (
-            Q(sku__icontains=value) |
-            Q(manufacturer__name__icontains=value)
-        )
+        qs_filter = Q(sku__icontains=value) | Q(manufacturer__name__icontains=value)
         return queryset.filter(qs_filter).distinct()
 
 
@@ -72,15 +81,16 @@ class SupportContractFilterSet(NetBoxModelFilterSet):
 
     class Meta:
         model = SupportContract
-        fields = ('id', 'q', 'contract_id', )
+        fields = (
+            'id',
+            'q',
+            'contract_id',
+        )
 
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-        qs_filter = (
-            Q(vendor__name__icontains=value) |
-            Q(contract_id__icontains=value)
-        )
+        qs_filter = Q(vendor__name__icontains=value) | Q(contract_id__icontains=value)
         return queryset.filter(qs_filter).distinct()
 
 
@@ -138,17 +148,20 @@ class SupportContractAssignmentFilterSet(NetBoxModelFilterSet):
 
     class Meta:
         model = SupportContractAssignment
-        fields = ('id', 'q', )
+        fields = (
+            'id',
+            'q',
+        )
 
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
         qs_filter = (
-            Q(contract__contract_id__icontains=value) |
-            Q(contract__vendor__name__icontains=value) |
-            Q(sku__sku__icontains=value) |
-            Q(device__name__icontains=value) |
-            Q(license__device__name__icontains=value) |
-            Q(license__license__name__icontains=value)
+            Q(contract__contract_id__icontains=value)
+            | Q(contract__vendor__name__icontains=value)
+            | Q(sku__sku__icontains=value)
+            | Q(device__name__icontains=value)
+            | Q(license__device__name__icontains=value)
+            | Q(license__license__name__icontains=value)
         )
         return queryset.filter(qs_filter).distinct()

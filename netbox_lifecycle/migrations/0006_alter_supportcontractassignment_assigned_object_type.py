@@ -8,13 +8,23 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('contenttypes', '0002_remove_content_type_name'),
-        ('netbox_lifecycle', '0005_remove_supportcontract_manufacturer_supportsku_and_more'),
+        (
+            'netbox_lifecycle',
+            '0005_remove_supportcontract_manufacturer_supportsku_and_more',
+        ),
     ]
 
     operations = [
         migrations.AlterField(
             model_name='supportcontractassignment',
             name='assigned_object_type',
-            field=models.ForeignKey(blank=True, limit_choices_to=('dcim.Device', 'netbox_lifecycle.LicenseAssignment'), null=True, on_delete=django.db.models.deletion.PROTECT, related_name='+', to='contenttypes.contenttype'),
+            field=models.ForeignKey(
+                blank=True,
+                limit_choices_to=('dcim.Device', 'netbox_lifecycle.LicenseAssignment'),
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name='+',
+                to='contenttypes.contenttype',
+            ),
         ),
     ]

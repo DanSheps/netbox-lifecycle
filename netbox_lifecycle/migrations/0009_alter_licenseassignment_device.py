@@ -15,6 +15,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='licenseassignment',
             name='device',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='licenses', to='dcim.device'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name='licenses',
+                to='dcim.device',
+            ),
         ),
     ]

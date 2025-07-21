@@ -22,13 +22,36 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SupportSKU',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False
+                    ),
+                ),
                 ('created', models.DateTimeField(auto_now_add=True, null=True)),
                 ('last_updated', models.DateTimeField(auto_now=True, null=True)),
-                ('custom_field_data', models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder)),
+                (
+                    'custom_field_data',
+                    models.JSONField(
+                        blank=True,
+                        default=dict,
+                        encoder=utilities.json.CustomFieldJSONEncoder,
+                    ),
+                ),
                 ('sku', models.CharField(max_length=100)),
-                ('manufacturer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='dcim.manufacturer')),
-                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+                (
+                    'manufacturer',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to='dcim.manufacturer',
+                    ),
+                ),
+                (
+                    'tags',
+                    taggit.managers.TaggableManager(
+                        through='extras.TaggedItem', to='extras.Tag'
+                    ),
+                ),
             ],
             options={
                 'ordering': ['manufacturer', 'sku'],
@@ -37,6 +60,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='supportcontractassignment',
             name='sku',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to='netbox_lifecycle.supportsku'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                to='netbox_lifecycle.supportsku',
+            ),
         ),
     ]

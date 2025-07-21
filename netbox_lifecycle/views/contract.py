@@ -1,13 +1,47 @@
-from netbox.views.generic import ObjectListView, ObjectEditView, ObjectDeleteView, ObjectView, ObjectChildrenView, \
-    BulkDeleteView, BulkEditView
-from netbox_lifecycle.filtersets import SupportContractFilterSet, VendorFilterSet, LicenseAssignmentFilterSet, \
-    SupportContractAssignmentFilterSet, SupportSKUFilterSet
-from netbox_lifecycle.forms import SupportContractFilterForm, VendorFilterForm, SupportContractForm, VendorForm, \
-    SupportContractAssignmentForm, SupportSKUFilterForm, SupportSKUForm, SupportContractAssignmentBulkEditForm, \
-    SupportContractAssignmentFilterForm, VendorBulkEditForm, SupportSKUBulkEditForm, SupportContractBulkEditForm
-from netbox_lifecycle.models import SupportContract, Vendor, LicenseAssignment, SupportContractAssignment, SupportSKU
-from netbox_lifecycle.tables import SupportContractTable, VendorTable, LicenseAssignmentTable, \
-    SupportContractAssignmentTable, SupportSKUTable
+from netbox.views.generic import (
+    ObjectListView,
+    ObjectEditView,
+    ObjectDeleteView,
+    ObjectView,
+    ObjectChildrenView,
+    BulkDeleteView,
+    BulkEditView,
+)
+from netbox_lifecycle.filtersets import (
+    SupportContractFilterSet,
+    VendorFilterSet,
+    # LicenseAssignmentFilterSet,
+    SupportContractAssignmentFilterSet,
+    SupportSKUFilterSet,
+)
+from netbox_lifecycle.forms import (
+    SupportContractFilterForm,
+    VendorFilterForm,
+    SupportContractForm,
+    VendorForm,
+    SupportContractAssignmentForm,
+    SupportSKUFilterForm,
+    SupportSKUForm,
+    SupportContractAssignmentBulkEditForm,
+    SupportContractAssignmentFilterForm,
+    VendorBulkEditForm,
+    SupportSKUBulkEditForm,
+    SupportContractBulkEditForm,
+)
+from netbox_lifecycle.models import (
+    SupportContract,
+    Vendor,
+    # LicenseAssignment,
+    SupportContractAssignment,
+    SupportSKU,
+)
+from netbox_lifecycle.tables import (
+    SupportContractTable,
+    VendorTable,
+    # LicenseAssignmentTable,
+    SupportContractAssignmentTable,
+    SupportSKUTable,
+)
 from utilities.views import ViewTab, register_model_view, GetRelatedModelsMixin
 
 
@@ -19,7 +53,6 @@ __all__ = (
     'VendorBulkEditView',
     'VendorDeleteView',
     'VendorBulkDeleteView',
-
     # SupportSKU
     'SupportSKUListView',
     'SupportSKUView',
@@ -27,7 +60,6 @@ __all__ = (
     'SupportSKUBulkEditView',
     'SupportSKUDeleteView',
     'SupportSKUBulkDeleteView',
-
     # SupportContract
     'SupportContractListView',
     'SupportContractView',
@@ -36,7 +68,6 @@ __all__ = (
     'SupportContractDeleteView',
     'SupportContractBulkDeleteView',
     'SupportContractAssignmentsView',
-
     # SupportContractAssignment
     'SupportContractAssignmentListView',
     'SupportContractAssignmentView',
@@ -157,14 +188,12 @@ class SupportContractAssignmentsView(ObjectChildrenView):
     child_model = SupportContractAssignment
     table = SupportContractAssignmentTable
     filterset = SupportContractAssignmentFilterSet
-    actions = {
-        'add': {'add'},
-        'edit': {'change'},
-        'delete': {'delete'}
-    }
+    actions = {'add': {'add'}, 'edit': {'change'}, 'delete': {'delete'}}
     tab = ViewTab(
         label='Assignments',
-        badge=lambda obj: SupportContractAssignment.objects.filter(contract=obj).count(),
+        badge=lambda obj: SupportContractAssignment.objects.filter(
+            contract=obj
+        ).count(),
     )
 
     def get_children(self, request, parent):
@@ -209,7 +238,7 @@ class SupportContractAssignmentListView(ObjectListView):
         'edit': {'change'},
         'delete': {'delete'},
         'bulk_edit': {'change'},
-        'bulk_delete': {'delete'}
+        'bulk_delete': {'delete'},
     }
 
 

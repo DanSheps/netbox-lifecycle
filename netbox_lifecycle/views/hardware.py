@@ -1,7 +1,16 @@
-from netbox.views.generic import (ObjectListView, ObjectEditView, ObjectDeleteView, ObjectView, BulkEditView,
-                                  BulkDeleteView)
+from netbox.views.generic import (
+    ObjectListView,
+    ObjectEditView,
+    ObjectDeleteView,
+    ObjectView,
+    BulkEditView,
+    BulkDeleteView,
+)
 from netbox_lifecycle.filtersets import HardwareLifecycleFilterSet
-from netbox_lifecycle.forms import HardwareLifecycleFilterForm, HardwareLifecycleBulkEditForm
+from netbox_lifecycle.forms import (
+    HardwareLifecycleFilterForm,
+    HardwareLifecycleBulkEditForm,
+)
 from netbox_lifecycle.forms.model_forms import HardwareLifecycleForm
 from netbox_lifecycle.models import HardwareLifecycle
 from netbox_lifecycle.tables import HardwareLifecycleTable
@@ -32,8 +41,7 @@ class HardwareLifecycleView(ObjectView):
 
     def get_extra_context(self, request, instance):
 
-        return {
-        }
+        return {}
 
 
 @register_model_view(HardwareLifecycle, 'edit')

@@ -5,9 +5,7 @@ from netbox.tables import NetBoxTable
 from netbox_lifecycle.models import HardwareLifecycle
 
 
-__all__ = (
-    'HardwareLifecycleTable',
-)
+__all__ = ('HardwareLifecycleTable',)
 
 
 class HardwareLifecycleTable(NetBoxTable):
@@ -29,9 +27,20 @@ class HardwareLifecycleTable(NetBoxTable):
     class Meta(NetBoxTable.Meta):
         model = HardwareLifecycle
         fields = (
-            'pk', 'name', 'assigned_object', 'end_of_sale', 'end_of_maintenance', 'end_of_security', 'end_of_support',
-            'description', 'comments',
+            'pk',
+            'name',
+            'assigned_object',
+            'end_of_sale',
+            'end_of_maintenance',
+            'end_of_security',
+            'end_of_support',
+            'description',
+            'comments',
         )
         default_columns = (
-            'pk', 'name', 'assigned_object', 'end_of_sale', 'end_of_maintenance'
+            'pk',
+            'name',
+            'assigned_object',
+            'end_of_sale',
+            'end_of_maintenance',
         )

@@ -5,10 +5,7 @@ from django.urls import reverse
 from netbox.models import PrimaryModel
 
 
-__all__ = (
-    'License',
-    'LicenseAssignment'
-)
+__all__ = ('License', 'LicenseAssignment')
 
 
 class License(PrimaryModel):
@@ -19,20 +16,17 @@ class License(PrimaryModel):
     )
     name = models.CharField(max_length=100)
 
-    clone_fields = (
-        'manufacturer',
-    )
-    prerequisite_models = (
-        'dcim.Manufacturer',
-    )
+    clone_fields = ('manufacturer',)
+    prerequisite_models = ('dcim.Manufacturer',)
 
     class Meta:
         ordering = ['manufacturer', 'name']
         constraints = (
             models.UniqueConstraint(
-                'manufacturer', Lower('name'),
+                'manufacturer',
+                Lower('name'),
                 name='%(app_label)s_%(class)s_unique_manufacturer_name',
-                violation_error_message="SKU name must be unique per manufacturer."
+                violation_error_message="SKU name must be unique per manufacturer.",
             ),
         )
 
@@ -67,7 +61,8 @@ class LicenseAssignment(PrimaryModel):
     )
 
     clone_fields = (
-        'vendor', 'license',
+        'vendor',
+        'license',
     )
     prerequisite_models = (
         'netbox_lifecycle.License',
@@ -79,9 +74,11 @@ class LicenseAssignment(PrimaryModel):
         ordering = ['license', 'device']
         constraints = (
             models.UniqueConstraint(
-                'license', 'vendor', 'device',
+                'license',
+                'vendor',
+                'device',
                 name='%(app_label)s_%(class)s_unique_license_vendor_device',
-                violation_error_message="License assignment must be unique."
+                violation_error_message="License assignment must be unique.",
             ),
         )
 

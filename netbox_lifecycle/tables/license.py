@@ -16,40 +16,36 @@ class LicenseTable(NetBoxTable):
         verbose_name=_('Name'),
         linkify=True,
     )
-    manufacturer = tables.Column(
-        verbose_name=_('Manufacturer'),
-        linkify=True
-    )
+    manufacturer = tables.Column(verbose_name=_('Manufacturer'), linkify=True)
 
     class Meta(NetBoxTable.Meta):
         model = License
         fields = (
-            'pk', 'name', 'description', 'comments',
+            'pk',
+            'name',
+            'description',
+            'comments',
         )
         default_columns = (
-            'pk', 'name',
+            'pk',
+            'name',
         )
 
 
 class LicenseAssignmentTable(NetBoxTable):
-    license = tables.Column(
-        verbose_name=_('License'),
-        linkify=True
-    )
-    vendor = tables.Column(
-        verbose_name=_('Vendor'),
-        linkify=True
-    )
-    device = tables.Column(
-        verbose_name=_('Device'),
-        linkify=True
-    )
+    license = tables.Column(verbose_name=_('License'), linkify=True)
+    vendor = tables.Column(verbose_name=_('Vendor'), linkify=True)
+    device = tables.Column(verbose_name=_('Device'), linkify=True)
 
     class Meta(NetBoxTable.Meta):
         model = LicenseAssignment
         fields = (
-            'pk', 'license', 'vendor', 'device', 'quantity', 'description', 'comments',
+            'pk',
+            'license',
+            'vendor',
+            'device',
+            'quantity',
+            'description',
+            'comments',
         )
-        default_columns = (
-            'pk', 'license', 'vendor', 'device'
-        )
+        default_columns = ('pk', 'license', 'vendor', 'device')

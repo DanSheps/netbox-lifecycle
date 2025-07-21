@@ -3,9 +3,18 @@ from django.utils.translation import gettext as _
 
 from dcim.models import DeviceType, ModuleType, Manufacturer, Device
 from netbox.forms import NetBoxModelForm
-from netbox_lifecycle.models import HardwareLifecycle, Vendor, SupportContract, LicenseAssignment, License, \
-    SupportContractAssignment, SupportSKU
-from utilities.forms.fields import DynamicModelChoiceField, DynamicModelMultipleChoiceField
+from netbox_lifecycle.models import (
+    HardwareLifecycle,
+    Vendor,
+    SupportContract,
+    LicenseAssignment,
+    License,
+    SupportContractAssignment,
+    SupportSKU,
+)
+from utilities.forms.fields import (
+    DynamicModelChoiceField,
+)
 from utilities.forms.widgets import DatePicker
 
 
@@ -16,7 +25,7 @@ __all__ = (
     'SupportContractAssignmentForm',
     'LicenseForm',
     'LicenseAssignmentForm',
-    'HardwareLifecycleForm'
+    'HardwareLifecycleForm',
 )
 
 
@@ -24,7 +33,12 @@ class VendorForm(NetBoxModelForm):
 
     class Meta:
         model = Vendor
-        fields = ('name', 'description', 'comments', 'tags', )
+        fields = (
+            'name',
+            'description',
+            'comments',
+            'tags',
+        )
 
 
 class SupportSKUForm(NetBoxModelForm):
@@ -35,7 +49,13 @@ class SupportSKUForm(NetBoxModelForm):
 
     class Meta:
         model = SupportSKU
-        fields = ('manufacturer', 'sku', 'description', 'comments', 'tags', )
+        fields = (
+            'manufacturer',
+            'sku',
+            'description',
+            'comments',
+            'tags',
+        )
 
 
 class SupportContractForm(NetBoxModelForm):
@@ -46,7 +66,16 @@ class SupportContractForm(NetBoxModelForm):
 
     class Meta:
         model = SupportContract
-        fields = ('vendor', 'contract_id', 'start', 'renewal', 'end', 'description', 'comments', 'tags', )
+        fields = (
+            'vendor',
+            'contract_id',
+            'start',
+            'renewal',
+            'end',
+            'description',
+            'comments',
+            'tags',
+        )
         widgets = {
             'start': DatePicker(),
             'renewal': DatePicker(),
@@ -80,7 +109,16 @@ class SupportContractAssignmentForm(NetBoxModelForm):
 
     class Meta:
         model = SupportContractAssignment
-        fields = ('contract', 'sku', 'device', 'license', 'end', 'description', 'comments', 'tags', )
+        fields = (
+            'contract',
+            'sku',
+            'device',
+            'license',
+            'end',
+            'description',
+            'comments',
+            'tags',
+        )
         widgets = {
             'end': DatePicker(),
         }
@@ -97,19 +135,25 @@ class SupportContractAssignmentForm(NetBoxModelForm):
         ]
 
         if len(selected_objects) == 0:
-            raise forms.ValidationError({
-                'device': "You must select at least a device or license",
-                'license': "You must select at least a device or license"
-            })
+            raise forms.ValidationError(
+                {
+                    'device': "You must select at least a device or license",
+                    'license': "You must select at least a device or license",
+                }
+            )
 
         if self.cleaned_data.get('license') and not self.cleaned_data.get('device'):
             self.cleaned_data['device'] = self.cleaned_data.get('license').device
 
         if self.cleaned_data.get('license') and self.cleaned_data.get('device'):
-            if self.cleaned_data.get('license').device != self.cleaned_data.get('device'):
-                raise forms.ValidationError({
-                    'device': 'Device assigned to license must match device assignment'
-                })
+            if self.cleaned_data.get('license').device != self.cleaned_data.get(
+                'device'
+            ):
+                raise forms.ValidationError(
+                    {
+                        'device': 'Device assigned to license must match device assignment'
+                    }
+                )
 
 
 class LicenseForm(NetBoxModelForm):
@@ -120,7 +164,13 @@ class LicenseForm(NetBoxModelForm):
 
     class Meta:
         model = License
-        fields = ('manufacturer', 'name', 'description', 'comments', 'tags', )
+        fields = (
+            'manufacturer',
+            'name',
+            'description',
+            'comments',
+            'tags',
+        )
 
 
 class LicenseAssignmentForm(NetBoxModelForm):
@@ -140,7 +190,15 @@ class LicenseAssignmentForm(NetBoxModelForm):
 
     class Meta:
         model = LicenseAssignment
-        fields = ('vendor', 'license', 'device', 'quantity', 'description', 'comments', 'tags', )
+        fields = (
+            'vendor',
+            'license',
+            'device',
+            'quantity',
+            'description',
+            'comments',
+            'tags',
+        )
 
 
 class HardwareLifecycleForm(NetBoxModelForm):
@@ -160,8 +218,17 @@ class HardwareLifecycleForm(NetBoxModelForm):
     class Meta:
         model = HardwareLifecycle
         fields = (
-            'last_contract_attach', 'last_contract_renewal', 'end_of_sale', 'end_of_maintenance', 'end_of_security', 'end_of_support', 'notice',
-            'documentation', 'description', 'comments', 'tags',
+            'last_contract_attach',
+            'last_contract_renewal',
+            'end_of_sale',
+            'end_of_maintenance',
+            'end_of_security',
+            'end_of_support',
+            'notice',
+            'documentation',
+            'description',
+            'comments',
+            'tags',
         )
         widgets = {
             'last_contract_attach': DatePicker(),
@@ -191,13 +258,19 @@ class HardwareLifecycleForm(NetBoxModelForm):
 
         # Handle object assignment
         selected_objects = [
-            field for field in ('device_type', 'module_type') if self.cleaned_data[field]
+            field
+            for field in ('device_type', 'module_type')
+            if self.cleaned_data[field]
         ]
 
         if len(selected_objects) > 1:
-            raise forms.ValidationError({
-                selected_objects[1]: "You can only have a lifecycle for a device or module type"
-            })
+            raise forms.ValidationError(
+                {
+                    selected_objects[
+                        1
+                    ]: "You can only have a lifecycle for a device or module type"
+                }
+            )
         elif selected_objects:
             self.instance.assigned_object = self.cleaned_data[selected_objects[0]]
         else:

@@ -14,11 +14,23 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='supportcontractassignment',
             name='contract',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='assignments', to='netbox_lifecycle.supportcontract'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name='assignments',
+                to='netbox_lifecycle.supportcontract',
+            ),
         ),
         migrations.AlterField(
             model_name='supportcontractassignment',
             name='sku',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='assignments', to='netbox_lifecycle.supportsku'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name='assignments',
+                to='netbox_lifecycle.supportsku',
+            ),
         ),
     ]

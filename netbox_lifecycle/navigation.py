@@ -41,9 +41,9 @@ license_assignments = PluginMenuItem(
 menu = PluginMenu(
     label='Hardware Lifecycle',
     groups=(
-        ('Lifecycle', (lifecycle, )),
+        ('Lifecycle', (lifecycle,)),
         ('Support Contracts', (vendors, skus, contracts, contract_assignments)),
         ('Licensing', (licenses, license_assignments)),
     ),
-    icon_class='mdi mdi-server'
+    icon_class='mdi mdi-server',
 )

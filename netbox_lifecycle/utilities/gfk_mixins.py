@@ -1,7 +1,5 @@
 import datetime
 
-from netaddr.ip import IPAddress
-
 
 class DateFieldMixin:
     def model_to_dict(self, instance, fields, api=False):

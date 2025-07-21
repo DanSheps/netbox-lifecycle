@@ -5,7 +5,12 @@ from django.test import TestCase
 
 from dcim.models import Manufacturer, Site, DeviceRole, DeviceType, Device
 from netbox_lifecycle.models import (
-    Vendor, SupportContract, SupportSKU, SupportContractAssignment, License, LicenseAssignment
+    Vendor,
+    SupportContract,
+    SupportSKU,
+    SupportContractAssignment,
+    License,
+    LicenseAssignment,
 )
 
 
@@ -26,7 +31,7 @@ class SupportContractTestCase(TestCase):
             contract_id='1234',
             start=datetime.date.today(),
             renewal=datetime.date.today() + datetime.timedelta(days=1),
-            end=datetime.date.today() + datetime.timedelta(days=2)
+            end=datetime.date.today() + datetime.timedelta(days=2),
         )
         contract.full_clean()
         contract.save()
@@ -112,13 +117,17 @@ class SupportContractAssignmentTestCase(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        manufacturer = Manufacturer.objects.create(name='Manufacturer 1', slug='manufacturer-1')
+        manufacturer = Manufacturer.objects.create(
+            name='Manufacturer 1', slug='manufacturer-1'
+        )
         site = Site.objects.create(name='Test Site', slug='test-site')
         role = DeviceRole.objects.create(name='Test Role', slug='test-role')
         device_type = DeviceType.objects.create(
             model='Test DeviceType', slug='test-devicetype', manufacturer=manufacturer
         )
-        device = Device.objects.create(name='Test Device 1', device_type=device_type, role=role, site=site)
+        device = Device.objects.create(
+            name='Test Device 1', device_type=device_type, role=role, site=site
+        )
 
         vendor = Vendor.objects.create(name='Vendor 1')
         license = License.objects.create(manufacturer=manufacturer, name='Test License')
@@ -135,32 +144,25 @@ class SupportContractAssignmentTestCase(TestCase):
         )
         SupportSKU.objects.bulk_create(skus)
 
-        contract = SupportContract.objects.create(
+        SupportContract.objects.create(
             vendor=Vendor.objects.first(),
             contract_id='1234',
             start=datetime.date.today(),
             renewal=datetime.date.today() + datetime.timedelta(days=1),
-            end=datetime.date.today() + datetime.timedelta(days=2)
+            end=datetime.date.today() + datetime.timedelta(days=2),
         )
 
         LicenseAssignment.objects.create(
-            license=license,
-            vendor=vendor,
-            device=device,
-            quantity=1
+            license=license, vendor=vendor, device=device, quantity=1
         )
 
     def test_contractassignment_creation(self):
         contract = SupportContract.objects.first()
         sku = SupportSKU.objects.first()
         device = Device.objects.first()
-        license = LicenseAssignment.objects.first()
+        LicenseAssignment.objects.first()
 
-        contract = SupportContractAssignment(
-            contract=contract,
-            sku=sku,
-            device=device
-        )
+        contract = SupportContractAssignment(contract=contract, sku=sku, device=device)
         contract.full_clean()
         contract.save()
 
@@ -170,19 +172,11 @@ class SupportContractAssignmentTestCase(TestCase):
         device = Device.objects.first()
         license = LicenseAssignment.objects.first()
 
-        contract1 = SupportContractAssignment(
-            contract=contract,
-            sku=sku,
-            device=device
-        )
+        contract1 = SupportContractAssignment(contract=contract, sku=sku, device=device)
         contract1.full_clean()
         contract1.save()
 
-        contract2 = SupportContractAssignment(
-            contract=contract,
-            sku=sku,
-            device=device
-        )
+        contract2 = SupportContractAssignment(contract=contract, sku=sku, device=device)
 
         with self.assertRaises(ValidationError):
             contract2.full_clean()

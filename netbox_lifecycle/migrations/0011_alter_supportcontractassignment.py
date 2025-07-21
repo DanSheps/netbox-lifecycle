@@ -5,29 +5,39 @@ import django.db.models.deletion
 
 
 def migrate_assigned_object_forward(apps, schema_editor):
-    SupportContractAssignment = apps.get_model('netbox_lifecycle', 'SupportContractAssignment')
+    SupportContractAssignment = apps.get_model(
+        'netbox_lifecycle', 'SupportContractAssignment'
+    )
     LicenseAssignment = apps.get_model('netbox_lifecycle', 'LicenseAssignment')
     Device = apps.get_model('dcim', 'Device')
     ContentType = apps.get_model('contenttypes', 'ContentType')
 
     for assignment in SupportContractAssignment.objects.all():
-        if assignment.assigned_object_type == ContentType.objects.get(app_label='dcim', model='device'):
+        if assignment.assigned_object_type == ContentType.objects.get(
+            app_label='dcim', model='device'
+        ):
             device = Device.objects.get(pk=assignment.assigned_object_id)
             assignment.device = device
             assignment.save()
         else:
-            license_assignment = LicenseAssignment.objects.get(pk=assignment.assigned_object_id)
+            license_assignment = LicenseAssignment.objects.get(
+                pk=assignment.assigned_object_id
+            )
             assignment.device = license_assignment.device
             assignment.license = license_assignment
             assignment.save()
 
 
 def migrate_assigned_object_reverse(apps, schema_editor):
-    SupportContractAssignment = apps.get_model('netbox_lifecycle', 'SupportContractAssignment')
+    SupportContractAssignment = apps.get_model(
+        'netbox_lifecycle', 'SupportContractAssignment'
+    )
     ContentType = apps.get_model('contenttypes', 'ContentType')
 
     device_type = ContentType.objects.get(app_label='dcim', model='device')
-    license_type = ContentType.objects.get(app_label='netbox_lifecycle', model='licenseassignment')
+    license_type = ContentType.objects.get(
+        app_label='netbox_lifecycle', model='licenseassignment'
+    )
 
     for assignment in SupportContractAssignment.objects.all():
         if assignment.license is None:
@@ -51,14 +61,28 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='supportcontractassignment',
             name='device',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='contracts', to='dcim.device'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name='contracts',
+                to='dcim.device',
+            ),
         ),
         migrations.AddField(
             model_name='supportcontractassignment',
             name='license',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='contracts', to='netbox_lifecycle.licenseassignment'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name='contracts',
+                to='netbox_lifecycle.licenseassignment',
+            ),
         ),
-        migrations.RunPython(migrate_assigned_object_forward, migrate_assigned_object_reverse),
+        migrations.RunPython(
+            migrate_assigned_object_forward, migrate_assigned_object_reverse
+        ),
         migrations.AlterModelOptions(
             name='supportcontractassignment',
             options={'ordering': ['contract', 'device', 'license']},

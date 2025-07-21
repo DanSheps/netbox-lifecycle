@@ -8,16 +8,14 @@ from netbox_lifecycle.models import HardwareLifecycle
 from utilities.api import get_serializer_for_model
 
 
-__all__ = (
-    'HardwareLifecycleSerializer',
-)
+__all__ = ('HardwareLifecycleSerializer',)
 
 
 class HardwareLifecycleSerializer(NetBoxModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_lifecycle-api:hardwarelifecycle-detail')
-    assigned_object_type = ContentTypeField(
-        queryset=ContentType.objects.all()
+    url = serializers.HyperlinkedIdentityField(
+        view_name='plugins-api:netbox_lifecycle-api:hardwarelifecycle-detail'
     )
+    assigned_object_type = ContentTypeField(queryset=ContentType.objects.all())
 
     end_of_sale = serializers.DateField()
     end_of_maintenance = serializers.DateField(required=False)
@@ -29,12 +27,29 @@ class HardwareLifecycleSerializer(NetBoxModelSerializer):
     class Meta:
         model = HardwareLifecycle
         fields = (
-            'url', 'id', 'display', 'assigned_object_type', 'assigned_object_id', 'end_of_sale',
-            'end_of_maintenance', 'end_of_security', 'last_contract_attach', 'last_contract_renewal',
-            'end_of_support', 'notice', 'documentation', 'description', 'comments',
+            'url',
+            'id',
+            'display',
+            'assigned_object_type',
+            'assigned_object_id',
+            'end_of_sale',
+            'end_of_maintenance',
+            'end_of_security',
+            'last_contract_attach',
+            'last_contract_renewal',
+            'end_of_support',
+            'notice',
+            'documentation',
+            'description',
+            'comments',
         )
         brief_fields = (
-            'url', 'id', 'display', 'assigned_object_type', 'assigned_object_id', 'end_of_sale',
+            'url',
+            'id',
+            'display',
+            'assigned_object_type',
+            'assigned_object_id',
+            'end_of_sale',
         )
 
     @extend_schema_field(serializers.JSONField(allow_null=True))

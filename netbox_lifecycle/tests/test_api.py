@@ -19,7 +19,12 @@ class AppTest(APITestCase):
 class VendorTest(APIViewTestCases.APIViewTestCase):
     model = Vendor
     view_namespace = "plugins-api:netbox_lifecycle"
-    brief_fields = ['display', 'id', 'name', 'url', ]
+    brief_fields = [
+        'display',
+        'id',
+        'name',
+        'url',
+    ]
 
     create_data = [
         {
@@ -32,9 +37,7 @@ class VendorTest(APIViewTestCases.APIViewTestCase):
             'name': 'Vendor 6',
         },
     ]
-    bulk_update_data = {
-        'description': "A Vendor description"
-    }
+    bulk_update_data = {'description': "A Vendor description"}
 
     @classmethod
     def setUpTestData(cls):
@@ -49,17 +52,22 @@ class VendorTest(APIViewTestCases.APIViewTestCase):
 class LicenseTest(APIViewTestCases.APIViewTestCase):
     model = License
     view_namespace = "plugins-api:netbox_lifecycle"
-    brief_fields = ['display', 'id', 'name', 'url', ]
+    brief_fields = [
+        'display',
+        'id',
+        'name',
+        'url',
+    ]
 
     user_permissions = ('dcim.view_manufacturer',)
 
-    bulk_update_data = {
-        'description': "A License description"
-    }
+    bulk_update_data = {'description': "A License description"}
 
     @classmethod
     def setUpTestData(cls):
-        manufacturer = Manufacturer.objects.create(name='Generic Manufacturer', slug='generic-manufacturer')
+        manufacturer = Manufacturer.objects.create(
+            name='Generic Manufacturer', slug='generic-manufacturer'
+        )
         licenses = [
             License(manufacturer=manufacturer, name='License 1'),
             License(manufacturer=manufacturer, name='License 2'),
@@ -88,16 +96,20 @@ class LicenseAssignmentTest(APIViewTestCases.APIViewTestCase):
     view_namespace = "plugins-api:netbox_lifecycle"
     brief_fields = ['device', 'display', 'id', 'license', 'url', 'vendor']
 
-    user_permissions = ('netbox_lifecycle.view_license', 'netbox_lifecycle.view_vendor', 'dcim.view_device', )
+    user_permissions = (
+        'netbox_lifecycle.view_license',
+        'netbox_lifecycle.view_vendor',
+        'dcim.view_device',
+    )
 
-    bulk_update_data = {
-        'description': "A licenseassignment description"
-    }
+    bulk_update_data = {'description': "A licenseassignment description"}
 
     @classmethod
     def setUpTestData(cls):
         vendor = Vendor.objects.create(name='Vendor')
-        manufacturer = Manufacturer.objects.create(name='Generic Manufacturer', slug='generic-manufacturer')
+        manufacturer = Manufacturer.objects.create(
+            name='Generic Manufacturer', slug='generic-manufacturer'
+        )
         device = create_test_device(name='Test Device')
         licenses = [
             License(manufacturer=manufacturer, name='License 1'),
@@ -139,17 +151,23 @@ class LicenseAssignmentTest(APIViewTestCases.APIViewTestCase):
 class SupportSKUTest(APIViewTestCases.APIViewTestCase):
     model = SupportSKU
     view_namespace = "plugins-api:netbox_lifecycle"
-    brief_fields = ['display', 'id', 'manufacturer', 'sku', 'url', ]
+    brief_fields = [
+        'display',
+        'id',
+        'manufacturer',
+        'sku',
+        'url',
+    ]
 
-    user_permissions = ('dcim.view_manufacturer', )
+    user_permissions = ('dcim.view_manufacturer',)
 
-    bulk_update_data = {
-        'description': "A Support SKU description"
-    }
+    bulk_update_data = {'description': "A Support SKU description"}
 
     @classmethod
     def setUpTestData(cls):
-        manufacturer = Manufacturer.objects.create(name='Generic Manufacturer', slug='generic-manufacturer')
+        manufacturer = Manufacturer.objects.create(
+            name='Generic Manufacturer', slug='generic-manufacturer'
+        )
 
         supportskus = [
             SupportSKU(sku='Support SKU 1', manufacturer=manufacturer),
@@ -177,13 +195,20 @@ class SupportSKUTest(APIViewTestCases.APIViewTestCase):
 class SupportContractTest(APIViewTestCases.APIViewTestCase):
     model = SupportContract
     view_namespace = "plugins-api:netbox_lifecycle"
-    brief_fields = ['contract_id', 'display', 'id', 'url', 'vendor', ]
+    brief_fields = [
+        'contract_id',
+        'display',
+        'id',
+        'url',
+        'vendor',
+    ]
 
-    user_permissions = ('netbox_lifecycle.view_supportsku', 'netbox_lifecycle.view_vendor', )
+    user_permissions = (
+        'netbox_lifecycle.view_supportsku',
+        'netbox_lifecycle.view_vendor',
+    )
 
-    bulk_update_data = {
-        'description': "A Support SKU description"
-    }
+    bulk_update_data = {'description': "A Support SKU description"}
 
     @classmethod
     def setUpTestData(cls):
@@ -215,17 +240,29 @@ class SupportContractTest(APIViewTestCases.APIViewTestCase):
 class SupportContractAssignmentTest(APIViewTestCases.APIViewTestCase):
     model = SupportContractAssignment
     view_namespace = "plugins-api:netbox_lifecycle"
-    brief_fields = ['contract', 'device', 'display', 'id', 'license', 'sku', 'url', ]
+    brief_fields = [
+        'contract',
+        'device',
+        'display',
+        'id',
+        'license',
+        'sku',
+        'url',
+    ]
 
-    user_permissions = ('netbox_lifecycle.view_supportcontract', 'netbox_lifecycle.view_vendor', 'dcim.view_device', )
+    user_permissions = (
+        'netbox_lifecycle.view_supportcontract',
+        'netbox_lifecycle.view_vendor',
+        'dcim.view_device',
+    )
 
-    bulk_update_data = {
-        'description': "A assignment description"
-    }
+    bulk_update_data = {'description': "A assignment description"}
 
     @classmethod
     def setUpTestData(cls):
-        manufacturer = Manufacturer.objects.create(name='Manufacturer', slug='manufacturer')
+        manufacturer = Manufacturer.objects.create(
+            name='Manufacturer', slug='manufacturer'
+        )
         vendor = Vendor.objects.create(name='Vendor')
         device = create_test_device(name='Test Device')
 
@@ -271,37 +308,62 @@ class SupportContractAssignmentTest(APIViewTestCases.APIViewTestCase):
 class HardwareLifecycleTest(DateFieldMixin, APIViewTestCases.APIViewTestCase):
     model = HardwareLifecycle
     view_namespace = "plugins-api:netbox_lifecycle"
-    brief_fields = ['assigned_object_id', 'assigned_object_type', 'display', 'end_of_sale', 'id', 'url', ]
+    brief_fields = [
+        'assigned_object_id',
+        'assigned_object_type',
+        'display',
+        'end_of_sale',
+        'id',
+        'url',
+    ]
 
-    user_permissions = ('dcim.view_devicetype', )
+    user_permissions = ('dcim.view_devicetype',)
 
-    bulk_update_data = {
-        'description': "A assignment description"
-    }
+    bulk_update_data = {'description': "A assignment description"}
 
     @classmethod
     def setUpTestData(cls):
-        manufacturer = Manufacturer.objects.create(name='Manufacturer', slug='generic-manufacturer')
+        manufacturer = Manufacturer.objects.create(
+            name='Manufacturer', slug='generic-manufacturer'
+        )
         device_types = [
-            DeviceType(model='Device Type 1', manufacturer=manufacturer, slug='device-type-1'),
-            DeviceType(model='Device Type 2', manufacturer=manufacturer, slug='device-type-2'),
-            DeviceType(model='Device Type 3', manufacturer=manufacturer, slug='device-type-3'),
-            DeviceType(model='Device Type 4', manufacturer=manufacturer, slug='device-type-4'),
-            DeviceType(model='Device Type 5', manufacturer=manufacturer, slug='device-type-5'),
-            DeviceType(model='Device Type 6', manufacturer=manufacturer, slug='device-type-6'),
+            DeviceType(
+                model='Device Type 1', manufacturer=manufacturer, slug='device-type-1'
+            ),
+            DeviceType(
+                model='Device Type 2', manufacturer=manufacturer, slug='device-type-2'
+            ),
+            DeviceType(
+                model='Device Type 3', manufacturer=manufacturer, slug='device-type-3'
+            ),
+            DeviceType(
+                model='Device Type 4', manufacturer=manufacturer, slug='device-type-4'
+            ),
+            DeviceType(
+                model='Device Type 5', manufacturer=manufacturer, slug='device-type-5'
+            ),
+            DeviceType(
+                model='Device Type 6', manufacturer=manufacturer, slug='device-type-6'
+            ),
         ]
 
         DeviceType.objects.bulk_create(device_types)
 
         hardware_lifecycles = [
             HardwareLifecycle(
-                assigned_object=device_types[0], end_of_sale='2030-01-01', end_of_support='2030-01-01'
+                assigned_object=device_types[0],
+                end_of_sale='2030-01-01',
+                end_of_support='2030-01-01',
             ),
             HardwareLifecycle(
-                assigned_object=device_types[1], end_of_sale='2030-01-01', end_of_support='2040-01-01'
+                assigned_object=device_types[1],
+                end_of_sale='2030-01-01',
+                end_of_support='2040-01-01',
             ),
             HardwareLifecycle(
-                assigned_object=device_types[2], end_of_sale='2030-01-01', end_of_support='2050-01-01'
+                assigned_object=device_types[2],
+                end_of_sale='2030-01-01',
+                end_of_support='2050-01-01',
             ),
         ]
         HardwareLifecycle.objects.bulk_create(hardware_lifecycles)
@@ -311,18 +373,18 @@ class HardwareLifecycleTest(DateFieldMixin, APIViewTestCases.APIViewTestCase):
                 'assigned_object_id': device_types[3].pk,
                 'assigned_object_type': 'dcim.devicetype',
                 'end_of_sale': '2030-01-01',
-                'end_of_support': '2030-01-01'
+                'end_of_support': '2030-01-01',
             },
             {
                 'assigned_object_id': device_types[4].pk,
                 'assigned_object_type': 'dcim.devicetype',
                 'end_of_sale': '2030-01-01',
-                'end_of_support': '2040-01-01'
+                'end_of_support': '2040-01-01',
             },
             {
                 'assigned_object_id': device_types[5].pk,
                 'assigned_object_type': 'dcim.devicetype',
                 'end_of_sale': '2030-01-01',
-                'end_of_support': '2050-01-01'
+                'end_of_support': '2050-01-01',
             },
         ]

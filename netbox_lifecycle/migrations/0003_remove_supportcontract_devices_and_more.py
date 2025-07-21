@@ -7,16 +7,22 @@ import utilities.json
 
 
 def migrate_to_assignments(apps, schema_editor):
-    SupportContractDeviceAssignment = apps.get_model('netbox_lifecycle', 'SupportContractDeviceAssignment')
+    SupportContractDeviceAssignment = apps.get_model(
+        'netbox_lifecycle', 'SupportContractDeviceAssignment'
+    )
     SupportContract = apps.get_model('netbox_lifecycle', 'SupportContract')
 
     for contract in SupportContract.objects.all():
         for device in contract.devices.all():
-            SupportContractDeviceAssignment.objects.create(contract=contract, device=device)
+            SupportContractDeviceAssignment.objects.create(
+                contract=contract, device=device
+            )
 
 
 def migrate_from_assignments(apps, schema_editor):
-    SupportContractDeviceAssignment = apps.get_model('netbox_lifecycle', 'SupportContractDeviceAssignment')
+    SupportContractDeviceAssignment = apps.get_model(
+        'netbox_lifecycle', 'SupportContractDeviceAssignment'
+    )
 
     for contract in SupportContractDeviceAssignment.objects.all():
         contract.contract.devices.add(contract.device)
@@ -34,13 +40,41 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SupportContractDeviceAssignment',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False
+                    ),
+                ),
                 ('created', models.DateTimeField(auto_now_add=True, null=True)),
                 ('last_updated', models.DateTimeField(auto_now=True, null=True)),
-                ('custom_field_data', models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder)),
-                ('contract', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='netbox_lifecycle.supportcontract')),
-                ('device', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='dcim.device')),
-                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+                (
+                    'custom_field_data',
+                    models.JSONField(
+                        blank=True,
+                        default=dict,
+                        encoder=utilities.json.CustomFieldJSONEncoder,
+                    ),
+                ),
+                (
+                    'contract',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to='netbox_lifecycle.supportcontract',
+                    ),
+                ),
+                (
+                    'device',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to='dcim.device'
+                    ),
+                ),
+                (
+                    'tags',
+                    taggit.managers.TaggableManager(
+                        through='extras.TaggedItem', to='extras.Tag'
+                    ),
+                ),
             ],
             options={
                 'ordering': ['contract', 'device'],

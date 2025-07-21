@@ -3,29 +3,33 @@ from django.utils.translation import gettext as _
 import django_tables2 as tables
 
 from netbox.tables import NetBoxTable, ChoiceFieldColumn
-from netbox_lifecycle.models import SupportContract, Vendor, SupportContractAssignment, SupportSKU
+from netbox_lifecycle.models import (
+    SupportContract,
+    Vendor,
+    SupportContractAssignment,
+    SupportSKU,
+)
 
 __all__ = (
     'VendorTable',
     'SupportSKUTable',
     'SupportContractTable',
-    'SupportContractAssignmentTable'
+    'SupportContractAssignmentTable',
 )
 
 
 class VendorTable(NetBoxTable):
-    name = tables.Column(
-        linkify=True,
-        verbose_name=_('Name')
-    )
+    name = tables.Column(linkify=True, verbose_name=_('Name'))
 
     class Meta(NetBoxTable.Meta):
         model = Vendor
         fields = (
-            'pk', 'name',
+            'pk',
+            'name',
         )
         default_columns = (
-            'pk', 'name',
+            'pk',
+            'name',
         )
 
 
@@ -42,26 +46,36 @@ class SupportSKUTable(NetBoxTable):
     class Meta(NetBoxTable.Meta):
         model = SupportSKU
         fields = (
-            'pk', 'manufacturer', 'sku', 'description', 'comments',
+            'pk',
+            'manufacturer',
+            'sku',
+            'description',
+            'comments',
         )
         default_columns = (
-            'pk', 'manufacturer', 'sku',
+            'pk',
+            'manufacturer',
+            'sku',
         )
 
 
 class SupportContractTable(NetBoxTable):
-    contract_id = tables.Column(
-        linkify=True,
-        verbose_name=_('Contract ID')
-    )
+    contract_id = tables.Column(linkify=True, verbose_name=_('Contract ID'))
 
     class Meta(NetBoxTable.Meta):
         model = SupportContract
         fields = (
-            'pk', 'contract_id', 'start', 'renewal', 'end', 'description', 'comments',
+            'pk',
+            'contract_id',
+            'start',
+            'renewal',
+            'end',
+            'description',
+            'comments',
         )
         default_columns = (
-            'pk', 'contract_id',
+            'pk',
+            'contract_id',
         )
 
 
@@ -120,9 +134,25 @@ class SupportContractAssignmentTable(NetBoxTable):
     class Meta(NetBoxTable.Meta):
         model = SupportContractAssignment
         fields = (
-            'pk', 'contract', 'sku', 'device_name', 'license_name', 'device_model', 'device_serial', 'quantity',
-            'renewal', 'end', 'description', 'comments',
+            'pk',
+            'contract',
+            'sku',
+            'device_name',
+            'license_name',
+            'device_model',
+            'device_serial',
+            'quantity',
+            'renewal',
+            'end',
+            'description',
+            'comments',
         )
         default_columns = (
-            'pk', 'contract', 'sku', 'device_name', 'license_name', 'device_model', 'device_serial'
+            'pk',
+            'contract',
+            'sku',
+            'device_name',
+            'license_name',
+            'device_model',
+            'device_serial',
         )

@@ -9,9 +9,7 @@ from netbox.models import PrimaryModel
 from netbox_lifecycle.constants import HARDWARE_LIFECYCLE_MODELS
 
 
-__all__ = (
-    'HardwareLifecycle',
-)
+__all__ = ('HardwareLifecycle',)
 
 
 class HardwareLifecycle(PrimaryModel):
@@ -21,15 +19,11 @@ class HardwareLifecycle(PrimaryModel):
         on_delete=models.PROTECT,
         related_name='+',
         blank=True,
-        null=True
+        null=True,
     )
-    assigned_object_id = models.PositiveBigIntegerField(
-        blank=True,
-        null=True
-    )
+    assigned_object_id = models.PositiveBigIntegerField(blank=True, null=True)
     assigned_object = GenericForeignKey(
-        ct_field='assigned_object_type',
-        fk_field='assigned_object_id'
+        ct_field='assigned_object_type', fk_field='assigned_object_id'
     )
 
     end_of_sale = models.DateField()
@@ -46,9 +40,10 @@ class HardwareLifecycle(PrimaryModel):
         ordering = ['assigned_object_type']
         constraints = (
             models.UniqueConstraint(
-                'assigned_object_type', 'assigned_object_id',
+                'assigned_object_type',
+                'assigned_object_id',
                 name='%(app_label)s_%(class)s_unique_object',
-                violation_error_message="Objects must be unique."
+                violation_error_message="Objects must be unique.",
             ),
         )
 

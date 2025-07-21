@@ -1,6 +1,5 @@
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Q
 from django.db.models.functions import Lower
 from django.urls import reverse
 from django.utils.translation import gettext as _
@@ -29,7 +28,7 @@ class Vendor(PrimaryModel):
             models.UniqueConstraint(
                 Lower('name'),
                 name='%(app_label)s_%(class)s_unique_name',
-                violation_error_message="Vendor must be unique."
+                violation_error_message="Vendor must be unique.",
             ),
         )
 
@@ -48,20 +47,17 @@ class SupportSKU(PrimaryModel):
     )
     sku = models.CharField(max_length=100)
 
-    clone_fields = (
-        'manufacturer',
-    )
-    prerequisite_models = (
-        'dcim.Manufacturer',
-    )
+    clone_fields = ('manufacturer',)
+    prerequisite_models = ('dcim.Manufacturer',)
 
     class Meta:
         ordering = ['manufacturer', 'sku']
         constraints = (
             models.UniqueConstraint(
-                'manufacturer', Lower('sku'),
+                'manufacturer',
+                Lower('sku'),
                 name='%(app_label)s_%(class)s_unique_manufacturer_sku',
-                violation_error_message="SKU must be unique per manufacturer."
+                violation_error_message="SKU must be unique per manufacturer.",
             ),
         )
 
@@ -85,20 +81,17 @@ class SupportContract(PrimaryModel):
     renewal = models.DateField(null=True, blank=True)
     end = models.DateField(null=True, blank=True)
 
-    clone_fields = (
-        'vendor', 'start', 'renewal', 'end'
-    )
-    prerequisite_models = (
-        'netbox_lifecycle.Vendor',
-    )
+    clone_fields = ('vendor', 'start', 'renewal', 'end')
+    prerequisite_models = ('netbox_lifecycle.Vendor',)
 
     class Meta:
         ordering = ['contract_id']
         constraints = (
             models.UniqueConstraint(
-                'vendor', Lower('contract_id'),
+                'vendor',
+                Lower('contract_id'),
                 name='%(app_label)s_%(class)s_unique_vendor_contract_id',
-                violation_error_message="Contract must be unique per vendor."
+                violation_error_message="Contract must be unique per vendor.",
             ),
         )
 
@@ -142,11 +135,13 @@ class SupportContractAssignment(PrimaryModel):
         null=True,
         blank=True,
         verbose_name=_('End Date'),
-        help_text=_('A unique end date varying from the contract')
+        help_text=_('A unique end date varying from the contract'),
     )
 
     clone_fields = (
-        'contract', 'sku', 'end',
+        'contract',
+        'sku',
+        'end',
     )
     prerequisite_models = (
         'netbox_lifecycle.SupportContract',
@@ -165,7 +160,9 @@ class SupportContractAssignment(PrimaryModel):
         return f'{self.device}: {self.contract.contract_id}'
 
     def get_absolute_url(self):
-        return reverse('plugins:netbox_lifecycle:supportcontractassignment', args=[self.pk])
+        return reverse(
+            'plugins:netbox_lifecycle:supportcontractassignment', args=[self.pk]
+        )
 
     @property
     def end_date(self):
@@ -179,15 +176,45 @@ class SupportContractAssignment(PrimaryModel):
         return DeviceStatusChoices.colors.get(self.device.status)
 
     def clean(self):
-        if self.device and self.license and SupportContractAssignment.objects.filter(
-                contract=self.contract, device=self.device, license=self.license, sku=self.sku
-        ).exclude(pk=self.pk).count() > 0:
+        if (
+            self.device
+            and self.license
+            and SupportContractAssignment.objects.filter(
+                contract=self.contract,
+                device=self.device,
+                license=self.license,
+                sku=self.sku,
+            )
+            .exclude(pk=self.pk)
+            .count()
+            > 0
+        ):
             raise ValidationError('Device or License must be unique')
-        elif self.device and not self.license and SupportContractAssignment.objects.filter(
-                contract=self.contract, device=self.device, sku=self.sku, license=self.license
-        ).exclude(pk=self.pk).count() > 0:
+        elif (
+            self.device
+            and not self.license
+            and SupportContractAssignment.objects.filter(
+                contract=self.contract,
+                device=self.device,
+                sku=self.sku,
+                license=self.license,
+            )
+            .exclude(pk=self.pk)
+            .count()
+            > 0
+        ):
             raise ValidationError('Device must be unique')
-        elif not self.device and self.license and SupportContractAssignment.objects.filter(
-                contract=self.contract, device=self.device, license=self.license, sku=self.sku
-        ).exclude(pk=self.pk).count() > 0:
+        elif (
+            not self.device
+            and self.license
+            and SupportContractAssignment.objects.filter(
+                contract=self.contract,
+                device=self.device,
+                license=self.license,
+                sku=self.sku,
+            )
+            .exclude(pk=self.pk)
+            .count()
+            > 0
+        ):
             raise ValidationError('License must be unique')

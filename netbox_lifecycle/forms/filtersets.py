@@ -7,10 +7,19 @@ from django.forms import DateField
 from dcim.choices import DeviceStatusChoices
 from dcim.models import Device, Manufacturer
 from netbox.forms import NetBoxModelFilterSetForm
-from netbox_lifecycle.models import HardwareLifecycle, SupportContract, Vendor, License, LicenseAssignment, \
-    SupportContractAssignment, SupportSKU
-from utilities.filters import MultiValueCharFilter, MultiValueNumberFilter
-from utilities.forms.fields import DynamicModelMultipleChoiceField, TagFilterField, DynamicMultipleChoiceField
+from netbox_lifecycle.models import (
+    HardwareLifecycle,
+    SupportContract,
+    Vendor,
+    License,
+    LicenseAssignment,
+    SupportContractAssignment,
+    SupportSKU,
+)
+from utilities.forms.fields import (
+    DynamicModelMultipleChoiceField,
+    TagFilterField,
+)
 from utilities.forms.rendering import FieldSet
 from utilities.forms.widgets import APISelectMultiple, DatePicker
 
@@ -22,7 +31,7 @@ __all__ = (
     'VendorFilterForm',
     'LicenseFilterForm',
     'LicenseAssignmentFilterForm',
-    'SupportContractAssignmentFilterForm'
+    'SupportContractAssignmentFilterForm',
 )
 
 
@@ -31,16 +40,25 @@ class HardwareLifecycleFilterForm(NetBoxModelFilterSetForm):
     fieldsets = (
         FieldSet('q', 'filter_id', 'tag'),
         FieldSet('assigned_object_type_id', name=_('Hardware')),
-        FieldSet('end_of_sale__lt', 'end_of_maintenance__lt', 'end_of_security__lt', 'end_of_support__lt', name=_('Dates'))
+        FieldSet(
+            'end_of_sale__lt',
+            'end_of_maintenance__lt',
+            'end_of_security__lt',
+            'end_of_support__lt',
+            name=_('Dates'),
+        ),
     )
 
     assigned_object_type_id = DynamicModelMultipleChoiceField(
-        queryset=ContentType.objects.filter(Q(app_label='dcim', model='devicetype') | Q(app_label='dcim', model='moduletype')),
+        queryset=ContentType.objects.filter(
+            Q(app_label='dcim', model='devicetype')
+            | Q(app_label='dcim', model='moduletype')
+        ),
         required=False,
         label=_('Object Type'),
         widget=APISelectMultiple(
             api_url='/api/extras/content-types/',
-        )
+        ),
     )
     end_of_sale__lt = DateField(
         required=False,
@@ -66,9 +84,7 @@ class HardwareLifecycleFilterForm(NetBoxModelFilterSetForm):
 
 class SupportSKUFilterForm(NetBoxModelFilterSetForm):
     model = SupportSKU
-    fieldsets = (
-        FieldSet('q', 'filter_id', 'tag', 'manufacturer_id'),
-    )
+    fieldsets = (FieldSet('q', 'filter_id', 'tag', 'manufacturer_id'),)
     manufacturer_id = DynamicModelMultipleChoiceField(
         queryset=Manufacturer.objects.all(),
         required=False,
@@ -95,9 +111,7 @@ class SupportContractFilterForm(NetBoxModelFilterSetForm):
 
 class VendorFilterForm(NetBoxModelFilterSetForm):
     model = Vendor
-    fieldsets = (
-        FieldSet('q', 'filter_id', 'tag'),
-    )
+    fieldsets = (FieldSet('q', 'filter_id', 'tag'),)
     tag = TagFilterField(model)
 
 
@@ -120,7 +134,9 @@ class SupportContractAssignmentFilterForm(NetBoxModelFilterSetForm):
     model = SupportContractAssignment
     fieldsets = (
         FieldSet('q', 'filter_id', 'tag'),
-        FieldSet('contract_id', 'device_id', 'license_id', 'device_status', name='Assignment'),
+        FieldSet(
+            'contract_id', 'device_id', 'license_id', 'device_status', name='Assignment'
+        ),
     )
     contract_id = DynamicModelMultipleChoiceField(
         queryset=SupportContract.objects.all(),
@@ -141,9 +157,7 @@ class SupportContractAssignmentFilterForm(NetBoxModelFilterSetForm):
         label=_('Devices'),
     )
     device_status = forms.MultipleChoiceField(
-        label=_('Status'),
-        choices=DeviceStatusChoices,
-        required=False
+        label=_('Status'), choices=DeviceStatusChoices, required=False
     )
     tag = TagFilterField(model)
 
