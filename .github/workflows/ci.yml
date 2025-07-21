@@ -90,7 +90,7 @@ jobs:
     - name: Check Black
       uses: psf/black@stable
       with:
-        src: "netbox-routing/netbox_routing"
+        src: "netbox-lifecycle/netbox_lifecycle"
         use_pyproject: true
 
     - name: Run tests
