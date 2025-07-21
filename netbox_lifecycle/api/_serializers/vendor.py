@@ -8,7 +8,7 @@ __all__ = ('VendorSerializer',)
 
 class VendorSerializer(NetBoxModelSerializer):
     url = serializers.HyperlinkedIdentityField(
-        view_name='plugins-api:netbox_lifecycle-api:hardwarelifecycle-detail'
+        view_name='plugins-api:netbox_lifecycle-api:vendor-detail'
     )
 
     class Meta:
