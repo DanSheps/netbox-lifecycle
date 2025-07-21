@@ -13,3 +13,4 @@ preview = true
 
 [format]
 quote-style = "single"
+output-format = "github"
