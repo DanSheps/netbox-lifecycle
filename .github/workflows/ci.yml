@@ -90,8 +90,8 @@ jobs:
     - name: Check Black
       uses: psf/black@stable
       with:
+        options: "--check --skip-string-normalization"
         src: "netbox-lifecycle/netbox_lifecycle"
-        use_pyproject: true
 
     - name: Run tests
       run: coverage run --source="netbox-lifecycle/netbox_lifecycle/" netbox/netbox/manage.py test netbox-lifecycle/netbox_lifecycle/ --parallel
