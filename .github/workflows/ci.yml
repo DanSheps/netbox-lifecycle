@@ -85,13 +85,13 @@ jobs:
 
     - name: Check PEP8 compliance
       run: |
-        ruff check netbox-routing/netbox_routing/
+        ruff check netbox-lifecycle/netbox_lifecycle/
 
     - name: Check Black
       uses: psf/black@stable
       with:
-        src: "netbox-routing/netbox_routing"
-        use_pyproject: true
+        options: "--check --skip-string-normalization"
+        src: "netbox-lifecycle/netbox_lifecycle"
 
     - name: Run tests
       run: coverage run --source="netbox-lifecycle/netbox_lifecycle/" netbox/netbox/manage.py test netbox-lifecycle/netbox_lifecycle/ --parallel
