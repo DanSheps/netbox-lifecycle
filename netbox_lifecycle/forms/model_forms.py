@@ -15,6 +15,7 @@ from netbox_lifecycle.models import (
 from utilities.forms.fields import (
     DynamicModelChoiceField,
 )
+from utilities.forms.rendering import FieldSet, TabbedGroups
 from utilities.forms.widgets import DatePicker
 
 
@@ -215,6 +216,26 @@ class HardwareLifecycleForm(NetBoxModelForm):
         label=_('Module Type'),
     )
 
+    fieldsets = (
+        FieldSet(
+            TabbedGroups(
+                FieldSet('device_type', name=_('Device Type')),
+                FieldSet('module_type', name=_('Module Type')),
+            ),
+        ),
+        FieldSet(
+            'last_contract_attach',
+            'last_contract_renewal',
+            'end_of_sale',
+            'end_of_maintenance',
+            'end_of_security',
+            'end_of_support',
+            name=_('Dates'),
+        ),
+        FieldSet('notice', 'documentation', 'description', name=_('Information')),
+        FieldSet('tags', name=_('Tags')),
+    )
+
     class Meta:
         model = HardwareLifecycle
         fields = (
@@ -240,7 +261,6 @@ class HardwareLifecycleForm(NetBoxModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-
         # Initialize helper selectors
         instance = kwargs.get('instance')
         initial = kwargs.get('initial', {}).copy()
