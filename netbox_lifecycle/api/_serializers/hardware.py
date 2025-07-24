@@ -42,6 +42,7 @@ class HardwareLifecycleSerializer(NetBoxModelSerializer):
             'documentation',
             'description',
             'comments',
+            'custom_fields',
         )
         brief_fields = (
             'url',
