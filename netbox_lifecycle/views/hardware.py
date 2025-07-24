@@ -46,7 +46,6 @@ class HardwareLifecycleView(ObjectView):
 
 @register_model_view(HardwareLifecycle, 'edit')
 class HardwareLifecycleEditView(ObjectEditView):
-    template_name = 'netbox_lifecycle/hardwarelifecycle_edit.html'
     queryset = HardwareLifecycle.objects.all()
     form = HardwareLifecycleForm
 
