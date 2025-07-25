@@ -142,7 +142,7 @@ class SupportContractAssignmentFilterForm(NetBoxModelFilterSetForm):
         queryset=SupportContract.objects.all(),
         required=False,
         selector=True,
-        label=_('Contracts'),
+        label=_('Support Contracts'),
     )
     license_id = DynamicModelMultipleChoiceField(
         queryset=License.objects.all(),
