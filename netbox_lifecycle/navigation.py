@@ -18,12 +18,12 @@ skus = PluginMenuItem(
 )
 contracts = PluginMenuItem(
     link='plugins:netbox_lifecycle:supportcontract_list',
-    link_text='Contracts',
+    link_text='Support Contracts',
     permissions=['netbox_lifecycle.view_supportcontract'],
 )
 contract_assignments = PluginMenuItem(
     link='plugins:netbox_lifecycle:supportcontractassignment_list',
-    link_text='Contract Assignments',
+    link_text='Support Assignments',
     permissions=['netbox_lifecycle.view_supportcontractassignment'],
 )
 licenses = PluginMenuItem(
@@ -42,7 +42,7 @@ menu = PluginMenu(
     label='Hardware Lifecycle',
     groups=(
         ('Lifecycle', (lifecycle,)),
-        ('Support Contracts', (vendors, skus, contracts, contract_assignments)),
+        ('Vendor Support', (vendors, skus, contracts, contract_assignments)),
         ('Licensing', (licenses, license_assignments)),
     ),
     icon_class='mdi mdi-server',
