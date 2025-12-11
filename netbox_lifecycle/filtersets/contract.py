@@ -2,7 +2,7 @@ import django_filters
 from django.db.models import Q
 from django.utils.translation import gettext as _
 
-from dcim.models import Manufacturer, Device
+from dcim.models import Manufacturer, Device, Module
 from netbox.filtersets import NetBoxModelFilterSet
 from netbox_lifecycle.models import (
     Vendor,
@@ -127,6 +127,17 @@ class SupportContractAssignmentFilterSet(NetBoxModelFilterSet):
         to_field_name='name',
         label=_('Device (name)'),
     )
+    module_id = django_filters.ModelMultipleChoiceFilter(
+        field_name='module',
+        queryset=Module.objects.all(),
+        label=_('Module (ID)'),
+    )
+    module = django_filters.ModelMultipleChoiceFilter(
+        field_name='module__serial',
+        queryset=Module.objects.all(),
+        to_field_name='serial',
+        label=_('Module (serial)'),
+    )
     license_id = django_filters.ModelMultipleChoiceFilter(
         field_name='license__license',
         queryset=License.objects.all(),
@@ -160,6 +171,8 @@ class SupportContractAssignmentFilterSet(NetBoxModelFilterSet):
             | Q(contract__vendor__name__icontains=value)
             | Q(sku__sku__icontains=value)
             | Q(device__name__icontains=value)
+            | Q(module__serial__icontains=value)
+            | Q(module__module_type__model__icontains=value)
             | Q(license__device__name__icontains=value)
             | Q(license__license__name__icontains=value)
         )

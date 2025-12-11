@@ -1,7 +1,7 @@
 from django.urls import reverse
 from rest_framework import status
 
-from dcim.models import Manufacturer, DeviceType
+from dcim.models import Manufacturer, DeviceType, Module, ModuleBay, ModuleType
 from utilities.testing import APIViewTestCases, APITestCase, create_test_device
 
 from netbox_lifecycle.models import *
@@ -246,6 +246,7 @@ class SupportContractAssignmentTest(APIViewTestCases.APIViewTestCase):
         'display',
         'id',
         'license',
+        'module',
         'sku',
         'url',
     ]
@@ -254,6 +255,7 @@ class SupportContractAssignmentTest(APIViewTestCases.APIViewTestCase):
         'netbox_lifecycle.view_supportcontract',
         'netbox_lifecycle.view_vendor',
         'dcim.view_device',
+        'dcim.view_module',
     )
 
     bulk_update_data = {'description': "A assignment description"}
@@ -265,6 +267,16 @@ class SupportContractAssignmentTest(APIViewTestCases.APIViewTestCase):
         )
         vendor = Vendor.objects.create(name='Vendor')
         device = create_test_device(name='Test Device')
+
+        # Create module fixtures
+        module_type = ModuleType.objects.create(
+            manufacturer=manufacturer, model='Test Module Type'
+        )
+        module_bay = ModuleBay.objects.create(device=device, name='Module Bay 1')
+        module = Module.objects.create(
+            device=device, module_bay=module_bay, module_type=module_type
+        )
+        cls.module = module
 
         sku = SupportSKU.objects.create(sku='SKU', manufacturer=manufacturer)
 
@@ -303,6 +315,19 @@ class SupportContractAssignmentTest(APIViewTestCases.APIViewTestCase):
                 'sku': sku.pk,
             },
         ]
+
+    def test_create_support_contract_assignment_with_module(self):
+        """Test creating a support contract assignment with a module"""
+        self.add_permissions('netbox_lifecycle.add_supportcontractassignment')
+        contract = SupportContract.objects.first()
+        url = reverse('plugins-api:netbox_lifecycle-api:supportcontractassignment-list')
+        data = {
+            'contract': contract.pk,
+            'module': self.module.pk,
+        }
+        response = self.client.post(url, data, format='json', **self.header)
+        self.assertHttpStatus(response, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['module']['id'], self.module.pk)
 
 
 class HardwareLifecycleTest(DateFieldMixin, APIViewTestCases.APIViewTestCase):
