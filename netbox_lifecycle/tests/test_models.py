@@ -1,9 +1,16 @@
 import datetime
+from datetime import date, timedelta
 
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from dcim.models import Manufacturer, Site, DeviceRole, DeviceType, Device
+from netbox_lifecycle.constants import (
+    CONTRACT_STATUS_ACTIVE,
+    CONTRACT_STATUS_EXPIRED,
+    CONTRACT_STATUS_FUTURE,
+    CONTRACT_STATUS_UNSPECIFIED,
+)
 from netbox_lifecycle.models import (
     Vendor,
     SupportContract,
@@ -184,3 +191,66 @@ class SupportContractAssignmentTestCase(TestCase):
         contract2.license = license
         contract2.full_clean()
         contract2.save()
+
+
+class SupportContractAssignmentStatusTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.vendor = Vendor.objects.create(name='Test Vendor')
+
+    def test_status_active_when_end_in_future(self):
+        contract = SupportContract.objects.create(
+            vendor=self.vendor,
+            contract_id='ACTIVE-001',
+            end=date.today() + timedelta(days=30),
+        )
+        assignment = SupportContractAssignment.objects.create(contract=contract)
+        self.assertEqual(assignment.status, CONTRACT_STATUS_ACTIVE)
+
+    def test_status_active_when_end_is_today(self):
+        contract = SupportContract.objects.create(
+            vendor=self.vendor,
+            contract_id='ACTIVE-002',
+            end=date.today(),
+        )
+        assignment = SupportContractAssignment.objects.create(contract=contract)
+        self.assertEqual(assignment.status, CONTRACT_STATUS_ACTIVE)
+
+    def test_status_future_when_start_in_future(self):
+        contract = SupportContract.objects.create(
+            vendor=self.vendor,
+            contract_id='FUTURE-001',
+            start=date.today() + timedelta(days=30),
+            end=date.today() + timedelta(days=60),
+        )
+        assignment = SupportContractAssignment.objects.create(contract=contract)
+        self.assertEqual(assignment.status, CONTRACT_STATUS_FUTURE)
+
+    def test_status_expired_when_end_in_past(self):
+        contract = SupportContract.objects.create(
+            vendor=self.vendor,
+            contract_id='EXPIRED-001',
+            end=date.today() - timedelta(days=1),
+        )
+        assignment = SupportContractAssignment.objects.create(contract=contract)
+        self.assertEqual(assignment.status, CONTRACT_STATUS_EXPIRED)
+
+    def test_status_unspecified_when_no_end_date(self):
+        contract = SupportContract.objects.create(
+            vendor=self.vendor,
+            contract_id='UNSPEC-001',
+        )
+        assignment = SupportContractAssignment.objects.create(contract=contract)
+        self.assertEqual(assignment.status, CONTRACT_STATUS_UNSPECIFIED)
+
+    def test_status_uses_assignment_end_over_contract_end(self):
+        contract = SupportContract.objects.create(
+            vendor=self.vendor,
+            contract_id='OVERRIDE-001',
+            end=date.today() + timedelta(days=30),
+        )
+        assignment = SupportContractAssignment.objects.create(
+            contract=contract,
+            end=date.today() - timedelta(days=1),
+        )
+        self.assertEqual(assignment.status, CONTRACT_STATUS_EXPIRED)

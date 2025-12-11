@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.functions import Lower
@@ -6,6 +8,13 @@ from django.utils.translation import gettext as _
 
 from dcim.choices import DeviceStatusChoices
 from netbox.models import PrimaryModel
+
+from netbox_lifecycle.constants import (
+    CONTRACT_STATUS_ACTIVE,
+    CONTRACT_STATUS_EXPIRED,
+    CONTRACT_STATUS_FUTURE,
+    CONTRACT_STATUS_UNSPECIFIED,
+)
 
 
 __all__ = (
@@ -182,6 +191,22 @@ class SupportContractAssignment(PrimaryModel):
         if self.end:
             return self.end
         return self.contract.end
+
+    @property
+    def status(self):
+        today = date.today()
+
+        # Check if contract starts in the future
+        if self.contract.start and self.contract.start > today:
+            return CONTRACT_STATUS_FUTURE
+
+        # Use assignment's end_date property (falls back to contract.end)
+        end = self.end_date
+        if end is None:
+            return CONTRACT_STATUS_UNSPECIFIED
+        if end < today:
+            return CONTRACT_STATUS_EXPIRED
+        return CONTRACT_STATUS_ACTIVE
 
     def get_device_status_color(self):
         if self.device is None:

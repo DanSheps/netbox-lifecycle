@@ -1,0 +1,12 @@
+{% load i18n %}
+
+<div hx-get="{{ htmx_url }}"
+     hx-trigger="load"
+     hx-swap="outerHTML">
+  <div class="card">
+    <h5 class="card-header">{% trans "Support Contracts" %}</h5>
+    <div class="card-body text-center">
+      <div class="spinner-border spinner-border-sm"></div>
+    </div>
+  </div>
+</div>

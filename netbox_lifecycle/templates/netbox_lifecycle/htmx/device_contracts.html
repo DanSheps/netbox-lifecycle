@@ -1,0 +1,130 @@
+{% load i18n %}
+{% load filters %}
+
+<div class="card">
+  <h5 class="card-header">{% trans "Support Contracts" %}</h5>
+  {% if active or future or unspecified or expired_count %}
+  <div class="card-body">
+    <ul class="nav nav-tabs" role="tablist">
+      {% if active %}
+      <li class="nav-item" role="presentation">
+        <a href="#tab-active" class="nav-link active" data-bs-toggle="tab" role="tab">
+          {% trans "Active" %} <span class="badge text-bg-success ms-1">{{ active|length }}</span>
+        </a>
+      </li>
+      {% endif %}
+      {% if future %}
+      <li class="nav-item" role="presentation">
+        <a href="#tab-future" class="nav-link {% if not active %}active{% endif %}" data-bs-toggle="tab" role="tab">
+          {% trans "Future" %} <span class="badge text-bg-info ms-1">{{ future|length }}</span>
+        </a>
+      </li>
+      {% endif %}
+      {% if unspecified %}
+      <li class="nav-item" role="presentation">
+        <a href="#tab-unspecified" class="nav-link {% if not active and not future %}active{% endif %}" data-bs-toggle="tab" role="tab">
+          {% trans "Unspecified" %} <span class="badge text-bg-secondary ms-1">{{ unspecified|length }}</span>
+        </a>
+      </li>
+      {% endif %}
+      {% if expired_count %}
+      <li class="nav-item" role="presentation">
+        <a href="#tab-expired" class="nav-link {% if not active and not future and not unspecified %}active{% endif %}" data-bs-toggle="tab" role="tab"
+           hx-get="{% url 'plugins:netbox_lifecycle:device_contracts_expired' pk=device.pk %}"
+           hx-trigger="click once"
+           hx-target="#tab-expired-content">
+          {% trans "Expired" %} <span class="badge text-bg-danger ms-1">{{ expired_count }}</span>
+        </a>
+      </li>
+      {% endif %}
+    </ul>
+    <div class="tab-content">
+      {% if active %}
+      <div class="tab-pane fade show active" id="tab-active" role="tabpanel">
+        <table class="table table-sm table-hover table-vcenter mb-0 mt-1">
+          <thead class="table-light">
+            <tr>
+              <th>{% trans "Contract" %}</th>
+              <th>{% trans "SKU" %}</th>
+              <th>{% trans "Vendor" %}</th>
+              <th class="text-end">{% trans "End Date" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for assignment in active %}
+            <tr>
+              <td><a href="{{ assignment.contract.get_absolute_url }}">{{ assignment.contract.contract_id }}</a></td>
+              <td>{% if assignment.sku %}<a href="{{ assignment.sku.get_absolute_url }}">{{ assignment.sku.sku }}</a>{% else %}-{% endif %}</td>
+              <td class="text-muted">{{ assignment.contract.vendor|default:"-" }}</td>
+              <td class="text-end">{{ assignment.end_date|date:"Y-m-d" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+      {% if future %}
+      <div class="tab-pane fade {% if not active %}show active{% endif %}" id="tab-future" role="tabpanel">
+        <table class="table table-sm table-hover table-vcenter mb-0 mt-1">
+          <thead class="table-light">
+            <tr>
+              <th>{% trans "Contract" %}</th>
+              <th>{% trans "SKU" %}</th>
+              <th>{% trans "Vendor" %}</th>
+              <th class="text-end">{% trans "Starts" %}</th>
+              <th class="text-end">{% trans "Ends" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for assignment in future %}
+            <tr>
+              <td><a href="{{ assignment.contract.get_absolute_url }}">{{ assignment.contract.contract_id }}</a></td>
+              <td>{% if assignment.sku %}<a href="{{ assignment.sku.get_absolute_url }}">{{ assignment.sku.sku }}</a>{% else %}-{% endif %}</td>
+              <td class="text-muted">{{ assignment.contract.vendor|default:"-" }}</td>
+              <td class="text-end">{{ assignment.contract.start|date:"Y-m-d" }}</td>
+              <td class="text-end">{{ assignment.end_date|date:"Y-m-d" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+      {% if unspecified %}
+      <div class="tab-pane fade {% if not active and not future %}show active{% endif %}" id="tab-unspecified" role="tabpanel">
+        <table class="table table-sm table-hover table-vcenter mb-0 mt-1">
+          <thead class="table-light">
+            <tr>
+              <th>{% trans "Contract" %}</th>
+              <th>{% trans "SKU" %}</th>
+              <th>{% trans "Vendor" %}</th>
+              <th class="text-end">{% trans "Started" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for assignment in unspecified %}
+            <tr>
+              <td><a href="{{ assignment.contract.get_absolute_url }}">{{ assignment.contract.contract_id }}</a></td>
+              <td>{% if assignment.sku %}<a href="{{ assignment.sku.get_absolute_url }}">{{ assignment.sku.sku }}</a>{% else %}-{% endif %}</td>
+              <td class="text-muted">{{ assignment.contract.vendor|default:"-" }}</td>
+              <td class="text-end">{{ assignment.contract.start|date:"Y-m-d"|default:"-" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+      {% if expired_count %}
+      <div class="tab-pane fade {% if not active and not future and not unspecified %}show active{% endif %}" id="tab-expired" role="tabpanel">
+        <div id="tab-expired-content">
+          <div class="text-center py-3"><div class="spinner-border spinner-border-sm"></div></div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% else %}
+  <div class="card-body">
+    <span class="text-muted">{% trans "None" %}</span>
+  </div>
+  {% endif %}
+</div>
