@@ -249,7 +249,6 @@ class SupportContractAssignmentView(ObjectView):
 
 @register_model_view(SupportContractAssignment, 'edit')
 class SupportContractAssignmentEditView(ObjectEditView):
-    template_name = 'netbox_lifecycle/supportcontractassignment_edit.html'
     queryset = SupportContractAssignment.objects.all()
     form = SupportContractAssignmentForm
 

@@ -110,6 +110,17 @@ class SupportContractAssignmentTable(NetBoxTable):
         accessor='device__status',
         orderable=True,
     )
+    module_name = tables.Column(
+        verbose_name=_('Module'),
+        accessor='module__module_type__model',
+        linkify=True,
+        orderable=True,
+    )
+    module_serial = tables.Column(
+        verbose_name=_('Module Serial'),
+        accessor='module__serial',
+        orderable=True,
+    )
     license_name = tables.Column(
         verbose_name=_('License'),
         accessor='license__license__name',
@@ -138,9 +149,12 @@ class SupportContractAssignmentTable(NetBoxTable):
             'contract',
             'sku',
             'device_name',
+            'module_name',
             'license_name',
             'device_model',
             'device_serial',
+            'module_serial',
+            'device_status',
             'quantity',
             'renewal',
             'end',
@@ -152,6 +166,7 @@ class SupportContractAssignmentTable(NetBoxTable):
             'contract',
             'sku',
             'device_name',
+            'module_name',
             'license_name',
             'device_model',
             'device_serial',

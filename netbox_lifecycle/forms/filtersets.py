@@ -5,7 +5,7 @@ from django.db.models import Q
 from django.forms import DateField
 
 from dcim.choices import DeviceStatusChoices
-from dcim.models import Device, Manufacturer
+from dcim.models import Device, Manufacturer, Module
 from netbox.forms import NetBoxModelFilterSetForm
 from netbox_lifecycle.models import (
     HardwareLifecycle,
@@ -135,7 +135,12 @@ class SupportContractAssignmentFilterForm(NetBoxModelFilterSetForm):
     fieldsets = (
         FieldSet('q', 'filter_id', 'tag'),
         FieldSet(
-            'contract_id', 'device_id', 'license_id', 'device_status', name='Assignment'
+            'contract_id',
+            'device_id',
+            'module_id',
+            'license_id',
+            'device_status',
+            name='Assignment',
         ),
     )
     contract_id = DynamicModelMultipleChoiceField(
@@ -155,6 +160,11 @@ class SupportContractAssignmentFilterForm(NetBoxModelFilterSetForm):
         required=False,
         selector=True,
         label=_('Devices'),
+    )
+    module_id = DynamicModelMultipleChoiceField(
+        queryset=Module.objects.all(),
+        required=False,
+        label=_('Module'),
     )
     device_status = forms.MultipleChoiceField(
         label=_('Status'), choices=DeviceStatusChoices, required=False

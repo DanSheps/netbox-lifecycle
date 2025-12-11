@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from dcim.api.serializers_.devices import DeviceSerializer
+from dcim.api.serializers_.devices import DeviceSerializer, ModuleSerializer
 from dcim.api.serializers_.manufacturers import ManufacturerSerializer
 from netbox.api.serializers import NetBoxModelSerializer
 from netbox_lifecycle.api._serializers.license import LicenseAssignmentSerializer
@@ -87,6 +87,7 @@ class SupportContractAssignmentSerializer(NetBoxModelSerializer):
     contract = SupportContractSerializer(nested=True)
     sku = SupportSKUSerializer(nested=True, required=False, allow_null=True)
     device = DeviceSerializer(nested=True, required=False, allow_null=True)
+    module = ModuleSerializer(nested=True, required=False, allow_null=True)
     license = LicenseAssignmentSerializer(nested=True, required=False, allow_null=True)
 
     class Meta:
@@ -98,6 +99,7 @@ class SupportContractAssignmentSerializer(NetBoxModelSerializer):
             'contract',
             'sku',
             'device',
+            'module',
             'license',
             'end',
             'description',
@@ -113,5 +115,6 @@ class SupportContractAssignmentSerializer(NetBoxModelSerializer):
             'contract',
             'sku',
             'device',
+            'module',
             'license',
         )

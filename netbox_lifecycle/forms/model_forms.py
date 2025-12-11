@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.translation import gettext as _
 
-from dcim.models import DeviceType, ModuleType, Manufacturer, Device
+from dcim.models import DeviceType, ModuleType, Manufacturer, Device, Module
 from netbox.forms import NetBoxModelForm
 from netbox_lifecycle.models import (
     HardwareLifecycle,
@@ -101,11 +101,31 @@ class SupportContractAssignmentForm(NetBoxModelForm):
         selector=True,
         label=_('Device'),
     )
+    module = DynamicModelChoiceField(
+        queryset=Module.objects.all(),
+        required=False,
+        selector=True,
+        label=_('Module'),
+        query_params={'device_id': '$device'},
+    )
     license = DynamicModelChoiceField(
         queryset=LicenseAssignment.objects.all(),
         required=False,
         selector=True,
         label=_('License Assignment'),
+    )
+
+    fieldsets = (
+        FieldSet('contract', 'sku', name=_('Contract')),
+        FieldSet(
+            TabbedGroups(
+                FieldSet('device', 'module', name=_('Hardware')),
+                FieldSet('license', name=_('License')),
+            ),
+            name=_('Assignment'),
+        ),
+        FieldSet('end', name=_('Dates')),
+        FieldSet('description', 'comments', 'tags', name=_('Other')),
     )
 
     class Meta:
@@ -114,6 +134,7 @@ class SupportContractAssignmentForm(NetBoxModelForm):
             'contract',
             'sku',
             'device',
+            'module',
             'license',
             'end',
             'description',
@@ -124,37 +145,50 @@ class SupportContractAssignmentForm(NetBoxModelForm):
             'end': DatePicker(),
         }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def clean(self):
         super().clean()
 
-        # Handle object assignment
-        selected_objects = [
-            field for field in ('device', 'license') if self.cleaned_data[field]
-        ]
+        has_hardware = self.cleaned_data.get('device') or self.cleaned_data.get(
+            'module'
+        )
+        has_license = self.cleaned_data.get('license')
 
-        if len(selected_objects) == 0:
+        # Must select at least one assignment target
+        if not has_hardware and not has_license:
             raise forms.ValidationError(
-                {
-                    'device': "You must select at least a device or license",
-                    'license': "You must select at least a device or license",
-                }
+                _('Select a device, module, or license assignment')
             )
 
-        if self.cleaned_data.get('license') and not self.cleaned_data.get('device'):
-            self.cleaned_data['device'] = self.cleaned_data.get('license').device
+        # Auto-populate device from module if module selected without device
+        if self.cleaned_data.get('module') and not self.cleaned_data.get('device'):
+            self.cleaned_data['device'] = self.cleaned_data['module'].device
 
-        if self.cleaned_data.get('license') and self.cleaned_data.get('device'):
-            if self.cleaned_data.get('license').device != self.cleaned_data.get(
-                'device'
-            ):
-                raise forms.ValidationError(
-                    {
-                        'device': 'Device assigned to license must match device assignment'
-                    }
-                )
+        # Validate device matches module.device
+        if (
+            self.cleaned_data.get('device')
+            and self.cleaned_data.get('module')
+            and self.cleaned_data['device'] != self.cleaned_data['module'].device
+        ):
+            raise forms.ValidationError(
+                {'module': _('Module must belong to the selected device')}
+            )
+
+        # Auto-populate device from license if license selected without device
+        if self.cleaned_data.get('license') and not self.cleaned_data.get('device'):
+            self.cleaned_data['device'] = self.cleaned_data['license'].device
+
+        # Validate device matches license.device if both are set
+        if (
+            self.cleaned_data.get('license')
+            and self.cleaned_data.get('device')
+            and self.cleaned_data['license'].device
+            and self.cleaned_data['device'] != self.cleaned_data['license'].device
+        ):
+            raise forms.ValidationError(
+                {'device': _('Device must match the device assigned to the license')}
+            )
+
+        return self.cleaned_data
 
 
 class LicenseForm(NetBoxModelForm):

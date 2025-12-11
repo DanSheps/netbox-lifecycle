@@ -124,6 +124,13 @@ class SupportContractAssignment(PrimaryModel):
         blank=True,
         related_name='contracts',
     )
+    module = models.ForeignKey(
+        to='dcim.Module',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='contracts',
+    )
     license = models.ForeignKey(
         to='netbox_lifecycle.LicenseAssignment',
         on_delete=models.SET_NULL,
@@ -141,6 +148,7 @@ class SupportContractAssignment(PrimaryModel):
     clone_fields = (
         'contract',
         'sku',
+        'module',
         'end',
     )
     prerequisite_models = (
@@ -148,16 +156,21 @@ class SupportContractAssignment(PrimaryModel):
         'netbox_lifecycle.SupportSKU',
         'netbox_lifecycle.License',
         'dcim.Device',
+        'dcim.Module',
     )
 
     class Meta:
-        ordering = ['contract', 'device', 'license']
+        ordering = ['contract', 'device', 'module', 'license']
         constraints = ()
 
     def __str__(self):
+        if self.module:
+            return f'{self.module}: {self.contract.contract_id}'
         if self.license and self.device:
             return f'{self.device} ({self.license}): {self.contract.contract_id}'
-        return f'{self.device}: {self.contract.contract_id}'
+        if self.device:
+            return f'{self.device}: {self.contract.contract_id}'
+        return f'{self.contract.contract_id}'
 
     def get_absolute_url(self):
         return reverse(
@@ -176,45 +189,42 @@ class SupportContractAssignment(PrimaryModel):
         return DeviceStatusChoices.colors.get(self.device.status)
 
     def clean(self):
+        has_hardware = self.device or self.module
+        has_license = self.license
+
+        # Must select something
+        if not has_hardware and not has_license:
+            raise ValidationError(_('Select a device, module, or license assignment'))
+
+        # If both device and module, they must match
+        if self.device and self.module and self.device != self.module.device:
+            raise ValidationError(
+                {'module': _('Module must belong to the selected device')}
+            )
+
+        # If license has a device, it must match the assignment's device
+        if self.license and self.license.device and self.device:
+            if self.device != self.license.device:
+                raise ValidationError(
+                    {
+                        'device': _(
+                            'Device must match the device assigned to the license'
+                        )
+                    }
+                )
+
+        # Uniqueness check: contract + device + module + license + sku must be unique
         if (
-            self.device
-            and self.license
-            and SupportContractAssignment.objects.filter(
+            SupportContractAssignment.objects.filter(
                 contract=self.contract,
                 device=self.device,
+                module=self.module,
                 license=self.license,
                 sku=self.sku,
             )
             .exclude(pk=self.pk)
-            .count()
-            > 0
+            .exists()
         ):
-            raise ValidationError('Device or License must be unique')
-        elif (
-            self.device
-            and not self.license
-            and SupportContractAssignment.objects.filter(
-                contract=self.contract,
-                device=self.device,
-                sku=self.sku,
-                license=self.license,
+            raise ValidationError(
+                _('This assignment combination already exists for this contract')
             )
-            .exclude(pk=self.pk)
-            .count()
-            > 0
-        ):
-            raise ValidationError('Device must be unique')
-        elif (
-            not self.device
-            and self.license
-            and SupportContractAssignment.objects.filter(
-                contract=self.contract,
-                device=self.device,
-                license=self.license,
-                sku=self.sku,
-            )
-            .exclude(pk=self.pk)
-            .count()
-            > 0
-        ):
-            raise ValidationError('License must be unique')

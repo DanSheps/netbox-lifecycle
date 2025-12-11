@@ -66,6 +66,7 @@ class SupportContractAssignmentType(NetBoxObjectType):
     contract: SupportContractType
     sku: SupportSKUType | None
     device: DeviceType | None
+    module: ModuleType | None
     license: LicenseType | None
     end: str | None
 
