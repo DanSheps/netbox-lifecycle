@@ -20,6 +20,7 @@ class VendorSerializer(NetBoxModelSerializer):
             'name',
             'description',
             'comments',
+            'tags',
             'custom_fields',
         )
         brief_fields = (
