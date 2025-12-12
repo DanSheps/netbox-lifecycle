@@ -38,6 +38,7 @@ The plugin can be configured via `PLUGINS_CONFIG` in your NetBox configuration f
 ```python
 PLUGINS_CONFIG = {
     'netbox_lifecycle': {
+        'lifecycle_card_position': 'right_page',
         'contract_card_position': 'right_page',
     },
 }
@@ -47,11 +48,16 @@ PLUGINS_CONFIG = {
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| `contract_card_position` | `right_page` | Position of the Support Contracts card on device detail pages. Options: `left_page`, `right_page`, `full_width_page`. |
+| `lifecycle_card_position` | `right_page` | Position of the Hardware Lifecycle Info card on Device, Module, DeviceType, and ModuleType detail pages. Options: `left_page`, `right_page`, `full_width_page`. |
+| `contract_card_position` | `right_page` | Position of the Support Contracts card on Device detail pages. Options: `left_page`, `right_page`, `full_width_page`. |
 
-### Contract Card Position
+### Hardware Lifecycle Info Card
 
-When enabled, a Support Contracts card will be displayed on device detail pages showing all contract assignments grouped by status:
+Displays EOL/EOS information for the hardware type on Device, Module, DeviceType, and ModuleType detail pages.
+
+### Support Contracts Card
+
+Displays all contract assignments on Device detail pages, grouped by status:
 
 - **Active**: Contracts currently in effect
 - **Future**: Contracts with a start date in the future
