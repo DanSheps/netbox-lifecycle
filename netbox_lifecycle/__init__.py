@@ -16,6 +16,7 @@ class NetBoxLifeCycle(PluginConfig):
     min_version = '4.3.0'
     required_settings = []
     default_settings = {
+        'lifecycle_card_position': 'right_page',
         'contract_card_position': 'right_page',
     }
     queues = []
