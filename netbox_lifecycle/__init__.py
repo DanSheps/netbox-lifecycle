@@ -15,7 +15,9 @@ class NetBoxLifeCycle(PluginConfig):
     base_url = 'lifecycle'
     min_version = '4.3.0'
     required_settings = []
-    default_settings = {}
+    default_settings = {
+        'contract_card_position': 'right_page',
+    }
     queues = []
     graphql_schema = 'graphql.schema.schema'
 

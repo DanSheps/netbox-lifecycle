@@ -1,0 +1,23 @@
+{% load i18n %}
+{% load filters %}
+
+<table class="table table-sm table-hover mb-0 mt-1">
+  <thead class="table-light">
+    <tr>
+      <th>{% trans "Contract" %}</th>
+      <th>{% trans "SKU" %}</th>
+      <th>{% trans "Vendor" %}</th>
+      <th class="text-end">{% trans "Ended" %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for assignment in assignments %}
+    <tr>
+      <td><a href="{{ assignment.contract.get_absolute_url }}">{{ assignment.contract.contract_id }}</a></td>
+      <td>{% if assignment.sku %}<a href="{{ assignment.sku.get_absolute_url }}">{{ assignment.sku.sku }}</a>{% else %}-{% endif %}</td>
+      <td class="text-muted">{{ assignment.contract.vendor|default:"-" }}</td>
+      <td class="text-end">{{ assignment.end_date|date:"Y-m-d"|default:"-" }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>

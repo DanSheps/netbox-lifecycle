@@ -254,4 +254,15 @@ urlpatterns = [
         name='licenseassignment_changelog',
         kwargs={'model': LicenseAssignment},
     ),
+    # HTMX endpoints
+    path(
+        'htmx/device/<int:pk>/contracts/',
+        views.DeviceContractsHTMXView.as_view(),
+        name='device_contracts_htmx',
+    ),
+    path(
+        'htmx/device/<int:pk>/contracts/expired/',
+        views.DeviceContractsExpiredHTMXView.as_view(),
+        name='device_contracts_expired',
+    ),
 ]
