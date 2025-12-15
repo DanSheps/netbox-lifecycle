@@ -3,6 +3,7 @@ from rest_framework import serializers
 from dcim.api.serializers_.devices import DeviceSerializer, ModuleSerializer
 from dcim.api.serializers_.manufacturers import ManufacturerSerializer
 from netbox.api.serializers import NetBoxModelSerializer
+from virtualization.api.serializers_.virtualmachines import VirtualMachineSerializer
 from netbox_lifecycle.api._serializers.license import LicenseAssignmentSerializer
 from netbox_lifecycle.api._serializers.vendor import VendorSerializer
 from netbox_lifecycle.models import (
@@ -88,6 +89,9 @@ class SupportContractAssignmentSerializer(NetBoxModelSerializer):
     sku = SupportSKUSerializer(nested=True, required=False, allow_null=True)
     device = DeviceSerializer(nested=True, required=False, allow_null=True)
     module = ModuleSerializer(nested=True, required=False, allow_null=True)
+    virtual_machine = VirtualMachineSerializer(
+        nested=True, required=False, allow_null=True
+    )
     license = LicenseAssignmentSerializer(nested=True, required=False, allow_null=True)
 
     class Meta:
@@ -100,6 +104,7 @@ class SupportContractAssignmentSerializer(NetBoxModelSerializer):
             'sku',
             'device',
             'module',
+            'virtual_machine',
             'license',
             'end',
             'description',
@@ -116,5 +121,6 @@ class SupportContractAssignmentSerializer(NetBoxModelSerializer):
             'sku',
             'device',
             'module',
+            'virtual_machine',
             'license',
         )

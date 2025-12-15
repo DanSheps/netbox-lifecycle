@@ -4,6 +4,7 @@ from django.utils.translation import gettext as _
 
 from dcim.models import Manufacturer, Device
 from netbox.filtersets import NetBoxModelFilterSet
+from virtualization.models import VirtualMachine
 from netbox_lifecycle.models import Vendor, License, LicenseAssignment
 
 __all__ = (
@@ -74,6 +75,17 @@ class LicenseAssignmentFilterSet(NetBoxModelFilterSet):
         to_field_name='name',
         label=_('Device'),
     )
+    virtual_machine_id = django_filters.ModelMultipleChoiceFilter(
+        field_name='virtual_machine',
+        queryset=VirtualMachine.objects.all(),
+        label=_('Virtual Machine'),
+    )
+    virtual_machine = django_filters.ModelMultipleChoiceFilter(
+        field_name='virtual_machine__name',
+        queryset=VirtualMachine.objects.all(),
+        to_field_name='name',
+        label=_('Virtual Machine'),
+    )
 
     class Meta:
         model = LicenseAssignment
@@ -90,5 +102,6 @@ class LicenseAssignmentFilterSet(NetBoxModelFilterSet):
             | Q(license__name__icontains=value)
             | Q(vendor__name__icontains=value)
             | Q(device__name__icontains=value)
+            | Q(virtual_machine__name__icontains=value)
         )
         return queryset.filter(qs_filter).distinct()

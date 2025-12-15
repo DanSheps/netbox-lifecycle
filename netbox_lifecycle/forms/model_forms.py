@@ -3,6 +3,7 @@ from django.utils.translation import gettext as _
 
 from dcim.models import DeviceType, ModuleType, Manufacturer, Device, Module
 from netbox.forms import NetBoxModelForm
+from virtualization.models import VirtualMachine
 from netbox_lifecycle.models import (
     HardwareLifecycle,
     Vendor,
@@ -108,6 +109,12 @@ class SupportContractAssignmentForm(NetBoxModelForm):
         label=_('Module'),
         query_params={'device_id': '$device'},
     )
+    virtual_machine = DynamicModelChoiceField(
+        queryset=VirtualMachine.objects.all(),
+        required=False,
+        selector=True,
+        label=_('Virtual Machine'),
+    )
     license = DynamicModelChoiceField(
         queryset=LicenseAssignment.objects.all(),
         required=False,
@@ -120,6 +127,7 @@ class SupportContractAssignmentForm(NetBoxModelForm):
         FieldSet(
             TabbedGroups(
                 FieldSet('device', 'module', name=_('Hardware')),
+                FieldSet('virtual_machine', name=_('Virtual Machine')),
                 FieldSet('license', name=_('License')),
             ),
             name=_('Assignment'),
@@ -135,6 +143,7 @@ class SupportContractAssignmentForm(NetBoxModelForm):
             'sku',
             'device',
             'module',
+            'virtual_machine',
             'license',
             'end',
             'description',
@@ -148,44 +157,79 @@ class SupportContractAssignmentForm(NetBoxModelForm):
     def clean(self):
         super().clean()
 
-        has_hardware = self.cleaned_data.get('device') or self.cleaned_data.get(
-            'module'
-        )
-        has_license = self.cleaned_data.get('license')
+        device = self.cleaned_data.get('device')
+        module = self.cleaned_data.get('module')
+        virtual_machine = self.cleaned_data.get('virtual_machine')
+        license_assignment = self.cleaned_data.get('license')
+
+        # Mutual exclusivity: device and virtual_machine
+        if device and virtual_machine:
+            raise forms.ValidationError(
+                _('Device and virtual machine are mutually exclusive. Select only one.')
+            )
+
+        # Module only allowed with device
+        if module and virtual_machine:
+            raise forms.ValidationError(
+                {
+                    'module': _(
+                        'Module can only be assigned with a device, not a virtual machine'
+                    )
+                }
+            )
+
+        has_hardware = device or module or virtual_machine
+        has_license = license_assignment
 
         # Must select at least one assignment target
         if not has_hardware and not has_license:
             raise forms.ValidationError(
-                _('Select a device, module, or license assignment')
+                _('Select a device, module, virtual machine, or license assignment')
             )
 
         # Auto-populate device from module if module selected without device
-        if self.cleaned_data.get('module') and not self.cleaned_data.get('device'):
-            self.cleaned_data['device'] = self.cleaned_data['module'].device
+        if module and not device:
+            self.cleaned_data['device'] = module.device
 
         # Validate device matches module.device
-        if (
-            self.cleaned_data.get('device')
-            and self.cleaned_data.get('module')
-            and self.cleaned_data['device'] != self.cleaned_data['module'].device
-        ):
+        if device and module and device != module.device:
             raise forms.ValidationError(
                 {'module': _('Module must belong to the selected device')}
             )
 
-        # Auto-populate device from license if license selected without device
-        if self.cleaned_data.get('license') and not self.cleaned_data.get('device'):
-            self.cleaned_data['device'] = self.cleaned_data['license'].device
+        # Auto-populate device/vm from license if license selected without device/vm
+        if license_assignment and not device and not virtual_machine:
+            if license_assignment.device:
+                self.cleaned_data['device'] = license_assignment.device
+            elif license_assignment.virtual_machine:
+                self.cleaned_data['virtual_machine'] = (
+                    license_assignment.virtual_machine
+                )
 
         # Validate device matches license.device if both are set
         if (
-            self.cleaned_data.get('license')
-            and self.cleaned_data.get('device')
-            and self.cleaned_data['license'].device
-            and self.cleaned_data['device'] != self.cleaned_data['license'].device
+            license_assignment
+            and device
+            and license_assignment.device
+            and device != license_assignment.device
         ):
             raise forms.ValidationError(
                 {'device': _('Device must match the device assigned to the license')}
+            )
+
+        # Validate virtual_machine matches license.virtual_machine if both are set
+        if (
+            license_assignment
+            and virtual_machine
+            and license_assignment.virtual_machine
+            and virtual_machine != license_assignment.virtual_machine
+        ):
+            raise forms.ValidationError(
+                {
+                    'virtual_machine': _(
+                        'Virtual machine must match the virtual machine assigned to the license'
+                    )
+                }
             )
 
         return self.cleaned_data
@@ -221,6 +265,25 @@ class LicenseAssignmentForm(NetBoxModelForm):
         queryset=Device.objects.all(),
         required=False,
         selector=True,
+        label=_('Device'),
+    )
+    virtual_machine = DynamicModelChoiceField(
+        queryset=VirtualMachine.objects.all(),
+        required=False,
+        selector=True,
+        label=_('Virtual Machine'),
+    )
+
+    fieldsets = (
+        FieldSet('vendor', 'license', name=_('License')),
+        FieldSet(
+            TabbedGroups(
+                FieldSet('device', name=_('Device')),
+                FieldSet('virtual_machine', name=_('Virtual Machine')),
+            ),
+            name=_('Assignment'),
+        ),
+        FieldSet('quantity', 'description', 'comments', 'tags', name=_('Other')),
     )
 
     class Meta:
@@ -229,11 +292,26 @@ class LicenseAssignmentForm(NetBoxModelForm):
             'vendor',
             'license',
             'device',
+            'virtual_machine',
             'quantity',
             'description',
             'comments',
             'tags',
         )
+
+    def clean(self):
+        super().clean()
+
+        device = self.cleaned_data.get('device')
+        virtual_machine = self.cleaned_data.get('virtual_machine')
+
+        # Mutual exclusivity validation
+        if device and virtual_machine:
+            raise forms.ValidationError(
+                _('Device and virtual machine are mutually exclusive. Select only one.')
+            )
+
+        return self.cleaned_data
 
 
 class HardwareLifecycleForm(NetBoxModelForm):

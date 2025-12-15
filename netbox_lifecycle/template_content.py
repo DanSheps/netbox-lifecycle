@@ -114,9 +114,46 @@ class ModuleTypeLifecycleContent(BaseLifecycleContent):
     lifecycle_object_id_attr = 'id'
 
 
+class VirtualMachineContractContent(PluginTemplateExtension):
+    """Template extension for VirtualMachine detail pages showing contracts."""
+
+    models = ['virtualization.virtualmachine']
+
+    def get_contract_card_position(self):
+        return PLUGIN_SETTINGS.get('contract_card_position', 'right_page')
+
+    def _render_contract_card(self):
+        obj = self.context.get('object')
+        return self.render(
+            'netbox_lifecycle/inc/contract_card_placeholder.html',
+            extra_context={
+                'htmx_url': reverse(
+                    'plugins:netbox_lifecycle:virtualmachine_contracts_htmx',
+                    kwargs={'pk': obj.pk},
+                ),
+            },
+        )
+
+    def right_page(self):
+        if self.get_contract_card_position() == 'right_page':
+            return self._render_contract_card()
+        return ''
+
+    def left_page(self):
+        if self.get_contract_card_position() == 'left_page':
+            return self._render_contract_card()
+        return ''
+
+    def full_width_page(self):
+        if self.get_contract_card_position() == 'full_width_page':
+            return self._render_contract_card()
+        return ''
+
+
 template_extensions = (
     DeviceLifecycleContent,
     ModuleLifecycleContent,
     DeviceTypeLifecycleContent,
     ModuleTypeLifecycleContent,
+    VirtualMachineContractContent,
 )

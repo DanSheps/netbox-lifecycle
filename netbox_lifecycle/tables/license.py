@@ -36,6 +36,7 @@ class LicenseAssignmentTable(NetBoxTable):
     license = tables.Column(verbose_name=_('License'), linkify=True)
     vendor = tables.Column(verbose_name=_('Vendor'), linkify=True)
     device = tables.Column(verbose_name=_('Device'), linkify=True)
+    virtual_machine = tables.Column(verbose_name=_('Virtual Machine'), linkify=True)
 
     class Meta(NetBoxTable.Meta):
         model = LicenseAssignment
@@ -44,8 +45,9 @@ class LicenseAssignmentTable(NetBoxTable):
             'license',
             'vendor',
             'device',
+            'virtual_machine',
             'quantity',
             'description',
             'comments',
         )
-        default_columns = ('pk', 'license', 'vendor', 'device')
+        default_columns = ('pk', 'license', 'vendor', 'device', 'virtual_machine')

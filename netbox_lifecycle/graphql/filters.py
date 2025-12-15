@@ -59,6 +59,13 @@ class SupportContractAssignmentFilter(BaseObjectTypeFilterMixin):
         Annotated['DeviceFilter', strawberry.lazy('dcim.graphql.filters')] | None
     ) = strawberry_django.filter_field()
     device_id: strawberry.ID | None = strawberry_django.filter_field()
+    virtual_machine: (
+        Annotated[
+            'VirtualMachineFilter', strawberry.lazy('virtualization.graphql.filters')
+        ]
+        | None
+    ) = strawberry_django.filter_field()
+    virtual_machine_id: strawberry.ID | None = strawberry_django.filter_field()
     license: (
         Annotated['LicenseFilter', strawberry.lazy('netbox_lifecycle.graphql.filters')]
         | None
@@ -90,6 +97,13 @@ class LicenseAssignmentFilter(BaseObjectTypeFilterMixin):
         Annotated['DeviceFilter', strawberry.lazy('dcim.graphql.filters')] | None
     ) = strawberry_django.filter_field()
     device_id: strawberry.ID | None = strawberry_django.filter_field()
+    virtual_machine: (
+        Annotated[
+            'VirtualMachineFilter', strawberry.lazy('virtualization.graphql.filters')
+        ]
+        | None
+    ) = strawberry_django.filter_field()
+    virtual_machine_id: strawberry.ID | None = strawberry_django.filter_field()
 
 
 @strawberry_django.filter(models.HardwareLifecycle, lookups=True)

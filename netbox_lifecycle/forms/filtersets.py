@@ -7,6 +7,7 @@ from django.forms import DateField
 from dcim.choices import DeviceStatusChoices
 from dcim.models import Device, Manufacturer, Module
 from netbox.forms import NetBoxModelFilterSetForm
+from virtualization.models import VirtualMachine
 from netbox_lifecycle.models import (
     HardwareLifecycle,
     SupportContract,
@@ -138,6 +139,7 @@ class SupportContractAssignmentFilterForm(NetBoxModelFilterSetForm):
             'contract_id',
             'device_id',
             'module_id',
+            'virtual_machine_id',
             'license_id',
             'device_status',
             name='Assignment',
@@ -166,6 +168,12 @@ class SupportContractAssignmentFilterForm(NetBoxModelFilterSetForm):
         required=False,
         label=_('Module'),
     )
+    virtual_machine_id = DynamicModelMultipleChoiceField(
+        queryset=VirtualMachine.objects.all(),
+        required=False,
+        selector=True,
+        label=_('Virtual Machines'),
+    )
     device_status = forms.MultipleChoiceField(
         label=_('Status'), choices=DeviceStatusChoices, required=False
     )
@@ -176,7 +184,13 @@ class LicenseAssignmentFilterForm(NetBoxModelFilterSetForm):
     model = LicenseAssignment
     fieldsets = (
         FieldSet('q', 'filter_id', 'tag'),
-        FieldSet('license_id', 'vendor_id', 'device_id', name='Assignment'),
+        FieldSet(
+            'license_id',
+            'vendor_id',
+            'device_id',
+            'virtual_machine_id',
+            name='Assignment',
+        ),
     )
     license_id = DynamicModelMultipleChoiceField(
         queryset=License.objects.all(),
@@ -195,5 +209,11 @@ class LicenseAssignmentFilterForm(NetBoxModelFilterSetForm):
         required=False,
         selector=True,
         label=_('Devices'),
+    )
+    virtual_machine_id = DynamicModelMultipleChoiceField(
+        queryset=VirtualMachine.objects.all(),
+        required=False,
+        selector=True,
+        label=_('Virtual Machines'),
     )
     tag = TagFilterField(model)

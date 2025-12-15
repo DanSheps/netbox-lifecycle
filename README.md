@@ -4,9 +4,9 @@ The Netbox Lifecycle plugin is a Hardware EOS/EOL, License and Support Contract 
 
 ## Features
 
-* Tracking EOL/EOS data
-* Tracking License
-* Tracking Support Contracts
+* Tracking EOL/EOS data for DeviceTypes and ModuleTypes
+* Tracking Licenses (assignable to Devices and Virtual Machines)
+* Tracking Support Contracts (assignable to Devices, Modules, and Virtual Machines)
 
 # Requirements
 
@@ -49,7 +49,7 @@ PLUGINS_CONFIG = {
 | Setting | Default | Description |
 |---------|---------|-------------|
 | `lifecycle_card_position` | `right_page` | Position of the Hardware Lifecycle Info card on Device, Module, DeviceType, and ModuleType detail pages. Options: `left_page`, `right_page`, `full_width_page`. |
-| `contract_card_position` | `right_page` | Position of the Support Contracts card on Device detail pages. Options: `left_page`, `right_page`, `full_width_page`. |
+| `contract_card_position` | `right_page` | Position of the Support Contracts card on Device and VirtualMachine detail pages. Options: `left_page`, `right_page`, `full_width_page`. |
 
 ### Hardware Lifecycle Info Card
 
@@ -57,7 +57,7 @@ Displays EOL/EOS information for the hardware type on Device, Module, DeviceType
 
 ### Support Contracts Card
 
-Displays all contract assignments on Device detail pages, grouped by status:
+Displays all contract assignments on Device and VirtualMachine detail pages, grouped by status:
 
 - **Active**: Contracts currently in effect
 - **Future**: Contracts with a start date in the future

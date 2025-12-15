@@ -3,6 +3,7 @@ from rest_framework import status
 
 from dcim.models import Manufacturer, DeviceType, Module, ModuleBay, ModuleType
 from extras.models import Tag
+from virtualization.models import Cluster, ClusterType, VirtualMachine
 from utilities.testing import APIViewTestCases, APITestCase, create_test_device
 
 from netbox_lifecycle.models import *
@@ -109,12 +110,21 @@ class LicenseTest(APIViewTestCases.APIViewTestCase):
 class LicenseAssignmentTest(APIViewTestCases.APIViewTestCase):
     model = LicenseAssignment
     view_namespace = "plugins-api:netbox_lifecycle"
-    brief_fields = ['device', 'display', 'id', 'license', 'url', 'vendor']
+    brief_fields = [
+        'device',
+        'display',
+        'id',
+        'license',
+        'url',
+        'vendor',
+        'virtual_machine',
+    ]
 
     user_permissions = (
         'netbox_lifecycle.view_license',
         'netbox_lifecycle.view_vendor',
         'dcim.view_device',
+        'virtualization.view_virtualmachine',
     )
 
     bulk_update_data = {'description': "A licenseassignment description"}
@@ -126,6 +136,14 @@ class LicenseAssignmentTest(APIViewTestCases.APIViewTestCase):
             name='Generic Manufacturer', slug='generic-manufacturer'
         )
         device = create_test_device(name='Test Device')
+
+        # Create VM fixtures
+        cluster_type = ClusterType.objects.create(
+            name='Test Cluster Type', slug='test-cluster-type'
+        )
+        cluster = Cluster.objects.create(name='Test Cluster', type=cluster_type)
+        cls.vm = VirtualMachine.objects.create(name='Test VM', cluster=cluster)
+
         licenses = [
             License(manufacturer=manufacturer, name='License 1'),
             License(manufacturer=manufacturer, name='License 2'),
@@ -133,9 +151,12 @@ class LicenseAssignmentTest(APIViewTestCases.APIViewTestCase):
             License(manufacturer=manufacturer, name='License 4'),
             License(manufacturer=manufacturer, name='License 5'),
             License(manufacturer=manufacturer, name='License 6'),
+            License(manufacturer=manufacturer, name='License 7'),
         ]
 
         License.objects.bulk_create(licenses)
+        cls.licenses = licenses
+        cls.vendor = vendor
 
         license_assignments = [
             LicenseAssignment(vendor=vendor, license=licenses[0], device=device),
@@ -161,6 +182,19 @@ class LicenseAssignmentTest(APIViewTestCases.APIViewTestCase):
                 'device': device.pk,
             },
         ]
+
+    def test_create_license_assignment_with_vm(self):
+        """Test creating a license assignment with a virtual machine"""
+        self.add_permissions('netbox_lifecycle.add_licenseassignment')
+        url = reverse('plugins-api:netbox_lifecycle-api:licenseassignment-list')
+        data = {
+            'vendor': self.vendor.pk,
+            'license': self.licenses[6].pk,
+            'virtual_machine': self.vm.pk,
+        }
+        response = self.client.post(url, data, format='json', **self.header)
+        self.assertHttpStatus(response, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['virtual_machine']['id'], self.vm.pk)
 
 
 class SupportSKUTest(APIViewTestCases.APIViewTestCase):
@@ -264,6 +298,7 @@ class SupportContractAssignmentTest(APIViewTestCases.APIViewTestCase):
         'module',
         'sku',
         'url',
+        'virtual_machine',
     ]
 
     user_permissions = (
@@ -271,6 +306,7 @@ class SupportContractAssignmentTest(APIViewTestCases.APIViewTestCase):
         'netbox_lifecycle.view_vendor',
         'dcim.view_device',
         'dcim.view_module',
+        'virtualization.view_virtualmachine',
     )
 
     bulk_update_data = {'description': "A assignment description"}
@@ -293,6 +329,13 @@ class SupportContractAssignmentTest(APIViewTestCases.APIViewTestCase):
         )
         cls.module = module
 
+        # Create VM fixtures
+        cluster_type = ClusterType.objects.create(
+            name='Test Cluster Type', slug='test-cluster-type'
+        )
+        cluster = Cluster.objects.create(name='Test Cluster', type=cluster_type)
+        cls.vm = VirtualMachine.objects.create(name='Test VM', cluster=cluster)
+
         sku = SupportSKU.objects.create(sku='SKU', manufacturer=manufacturer)
 
         contracts = [
@@ -302,9 +345,11 @@ class SupportContractAssignmentTest(APIViewTestCases.APIViewTestCase):
             SupportContract(vendor=vendor, contract_id='NB1000-4'),
             SupportContract(vendor=vendor, contract_id='NB1000-5'),
             SupportContract(vendor=vendor, contract_id='NB1000-6'),
+            SupportContract(vendor=vendor, contract_id='NB1000-7'),
         ]
 
         SupportContract.objects.bulk_create(contracts)
+        cls.contracts = contracts
 
         assignments = [
             SupportContractAssignment(contract=contracts[0], device=device, sku=sku),
@@ -343,6 +388,18 @@ class SupportContractAssignmentTest(APIViewTestCases.APIViewTestCase):
         response = self.client.post(url, data, format='json', **self.header)
         self.assertHttpStatus(response, status.HTTP_201_CREATED)
         self.assertEqual(response.data['module']['id'], self.module.pk)
+
+    def test_create_support_contract_assignment_with_vm(self):
+        """Test creating a support contract assignment with a virtual machine"""
+        self.add_permissions('netbox_lifecycle.add_supportcontractassignment')
+        url = reverse('plugins-api:netbox_lifecycle-api:supportcontractassignment-list')
+        data = {
+            'contract': self.contracts[6].pk,
+            'virtual_machine': self.vm.pk,
+        }
+        response = self.client.post(url, data, format='json', **self.header)
+        self.assertHttpStatus(response, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['virtual_machine']['id'], self.vm.pk)
 
 
 class HardwareLifecycleTest(DateFieldMixin, APIViewTestCases.APIViewTestCase):
