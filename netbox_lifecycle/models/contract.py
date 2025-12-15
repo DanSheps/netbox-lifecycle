@@ -6,7 +6,6 @@ from django.db.models.functions import Lower
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from dcim.choices import DeviceStatusChoices
 from netbox.models import PrimaryModel
 
 from netbox_lifecycle.constants import (
@@ -207,11 +206,6 @@ class SupportContractAssignment(PrimaryModel):
         if end < today:
             return CONTRACT_STATUS_EXPIRED
         return CONTRACT_STATUS_ACTIVE
-
-    def get_device_status_color(self):
-        if self.device is None:
-            return
-        return DeviceStatusChoices.colors.get(self.device.status)
 
     def clean(self):
         has_hardware = self.device or self.module

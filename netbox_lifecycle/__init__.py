@@ -28,9 +28,7 @@ class NetBoxLifeCycle(PluginConfig):
 
         from django.contrib.contenttypes.fields import GenericRelation
         from dcim.models import DeviceType, ModuleType
-        from netbox_lifecycle.models import (
-            HardwareLifecycle,
-        )  # ,SupportContractAssignment
+        from netbox_lifecycle.models import HardwareLifecycle
 
         # Add Generic Relations to appropriate models
         GenericRelation(
