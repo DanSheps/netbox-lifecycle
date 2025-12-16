@@ -488,13 +488,19 @@ class HardwareLifecycleTest(DateFieldMixin, APIViewTestCases.APIViewTestCase):
 
         # Additional device types for null date tests
         cls.device_type_for_null_test = DeviceType.objects.create(
-            model='Device Type Null Test', manufacturer=manufacturer, slug='device-type-null'
+            model='Device Type Null Test',
+            manufacturer=manufacturer,
+            slug='device-type-null',
         )
         cls.device_type_for_explicit_null = DeviceType.objects.create(
-            model='Device Type Explicit Null', manufacturer=manufacturer, slug='device-type-explicit-null'
+            model='Device Type Explicit Null',
+            manufacturer=manufacturer,
+            slug='device-type-explicit-null',
         )
         cls.device_type_for_update_null = DeviceType.objects.create(
-            model='Device Type Update Null', manufacturer=manufacturer, slug='device-type-update-null'
+            model='Device Type Update Null',
+            manufacturer=manufacturer,
+            slug='device-type-update-null',
         )
 
     def test_create_lifecycle_with_omitted_dates(self):
@@ -542,7 +548,7 @@ class HardwareLifecycleTest(DateFieldMixin, APIViewTestCases.APIViewTestCase):
         )
         url = reverse(
             'plugins-api:netbox_lifecycle-api:hardwarelifecycle-detail',
-            kwargs={'pk': lifecycle.pk}
+            kwargs={'pk': lifecycle.pk},
         )
         data = {
             'end_of_sale': None,
