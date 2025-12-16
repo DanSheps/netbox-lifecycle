@@ -1,11 +1,9 @@
 from django.contrib.contenttypes.models import ContentType
-from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from netbox.api.fields import ContentTypeField
 from netbox.api.serializers import NetBoxModelSerializer
 from netbox_lifecycle.models import HardwareLifecycle
-from utilities.api import get_serializer_for_model
 
 
 __all__ = ('HardwareLifecycleSerializer',)
@@ -53,9 +51,3 @@ class HardwareLifecycleSerializer(NetBoxModelSerializer):
             'assigned_object_id',
             'end_of_sale',
         )
-
-    @extend_schema_field(serializers.JSONField(allow_null=True))
-    def get_assigned_object(self, instance):
-        serializer = get_serializer_for_model(instance.assigned_object)
-        context = {'request': self.context['request']}
-        return serializer(instance.assigned_object, context=context, nested=True).data

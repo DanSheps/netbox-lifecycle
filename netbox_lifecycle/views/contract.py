@@ -10,7 +10,6 @@ from netbox.views.generic import (
 from netbox_lifecycle.filtersets import (
     SupportContractFilterSet,
     VendorFilterSet,
-    # LicenseAssignmentFilterSet,
     SupportContractAssignmentFilterSet,
     SupportSKUFilterSet,
 )
@@ -31,14 +30,12 @@ from netbox_lifecycle.forms import (
 from netbox_lifecycle.models import (
     SupportContract,
     Vendor,
-    # LicenseAssignment,
     SupportContractAssignment,
     SupportSKU,
 )
 from netbox_lifecycle.tables import (
     SupportContractTable,
     VendorTable,
-    # LicenseAssignmentTable,
     SupportContractAssignmentTable,
     SupportSKUTable,
 )

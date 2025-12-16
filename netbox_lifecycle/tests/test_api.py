@@ -2,6 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 
 from dcim.models import Manufacturer, DeviceType, Module, ModuleBay, ModuleType
+from extras.models import Tag
 from utilities.testing import APIViewTestCases, APITestCase, create_test_device
 
 from netbox_lifecycle.models import *
@@ -47,6 +48,20 @@ class VendorTest(APIViewTestCases.APIViewTestCase):
             Vendor(name="Vendor 3"),
         ]
         Vendor.objects.bulk_create(vendors)
+
+    def test_create_vendor_with_tags(self):
+        """Test creating a vendor with tags via the API."""
+        self.add_permissions('netbox_lifecycle.add_vendor')
+        Tag.objects.create(name='Test Tag', slug='test-tag')
+        url = reverse('plugins-api:netbox_lifecycle-api:vendor-list')
+        data = {
+            'name': 'Vendor with Tags',
+            'tags': [{'name': 'Test Tag'}],
+        }
+        response = self.client.post(url, data, format='json', **self.header)
+        self.assertHttpStatus(response, status.HTTP_201_CREATED)
+        self.assertEqual(len(response.data['tags']), 1)
+        self.assertEqual(response.data['tags'][0]['name'], 'Test Tag')
 
 
 class LicenseTest(APIViewTestCases.APIViewTestCase):
