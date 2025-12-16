@@ -4,6 +4,7 @@ from django.utils.translation import gettext as _
 
 from dcim.models import Manufacturer, Device, Module
 from netbox.filtersets import NetBoxModelFilterSet
+from virtualization.models import VirtualMachine
 from netbox_lifecycle.models import (
     Vendor,
     SupportContract,
@@ -149,6 +150,17 @@ class SupportContractAssignmentFilterSet(NetBoxModelFilterSet):
         to_field_name='name',
         label=_('License (SKU)'),
     )
+    virtual_machine_id = django_filters.ModelMultipleChoiceFilter(
+        field_name='virtual_machine',
+        queryset=VirtualMachine.objects.all(),
+        label=_('Virtual Machine (ID)'),
+    )
+    virtual_machine = django_filters.ModelMultipleChoiceFilter(
+        field_name='virtual_machine__name',
+        queryset=VirtualMachine.objects.all(),
+        to_field_name='name',
+        label=_('Virtual Machine (name)'),
+    )
     device_status = django_filters.ModelMultipleChoiceFilter(
         field_name='device__status',
         queryset=Device.objects.all(),
@@ -173,7 +185,9 @@ class SupportContractAssignmentFilterSet(NetBoxModelFilterSet):
             | Q(device__name__icontains=value)
             | Q(module__serial__icontains=value)
             | Q(module__module_type__model__icontains=value)
+            | Q(virtual_machine__name__icontains=value)
             | Q(license__device__name__icontains=value)
+            | Q(license__virtual_machine__name__icontains=value)
             | Q(license__license__name__icontains=value)
         )
         return queryset.filter(qs_filter).distinct()

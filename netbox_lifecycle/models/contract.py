@@ -146,6 +146,13 @@ class SupportContractAssignment(PrimaryModel):
         blank=True,
         related_name='contracts',
     )
+    virtual_machine = models.ForeignKey(
+        to='virtualization.VirtualMachine',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='contracts',
+    )
     end = models.DateField(
         null=True,
         blank=True,
@@ -165,19 +172,38 @@ class SupportContractAssignment(PrimaryModel):
         'netbox_lifecycle.License',
         'dcim.Device',
         'dcim.Module',
+        'virtualization.VirtualMachine',
     )
 
     class Meta:
-        ordering = ['contract', 'device', 'module', 'license']
-        constraints = ()
+        ordering = ['contract', 'device', 'virtual_machine', 'module', 'license']
+        constraints = (
+            models.CheckConstraint(
+                check=(
+                    models.Q(device__isnull=True, virtual_machine__isnull=False)
+                    | models.Q(device__isnull=False, virtual_machine__isnull=True)
+                    | models.Q(device__isnull=True, virtual_machine__isnull=True)
+                ),
+                name='%(app_label)s_%(class)s_device_vm_exclusive',
+                violation_error_message=_(
+                    'Device and virtual machine are mutually exclusive.'
+                ),
+            ),
+        )
 
     def __str__(self):
         if self.module:
             return f'{self.module}: {self.contract.contract_id}'
         if self.license and self.device:
             return f'{self.device} ({self.license}): {self.contract.contract_id}'
+        if self.license and self.virtual_machine:
+            return (
+                f'{self.virtual_machine} ({self.license}): {self.contract.contract_id}'
+            )
         if self.device:
             return f'{self.device}: {self.contract.contract_id}'
+        if self.virtual_machine:
+            return f'{self.virtual_machine}: {self.contract.contract_id}'
         return f'{self.contract.contract_id}'
 
     def get_absolute_url(self):
@@ -208,12 +234,30 @@ class SupportContractAssignment(PrimaryModel):
         return CONTRACT_STATUS_ACTIVE
 
     def clean(self):
-        has_hardware = self.device or self.module
+        # Mutual exclusivity: device and virtual_machine
+        if self.device and self.virtual_machine:
+            raise ValidationError(
+                _('Device and virtual machine are mutually exclusive. Select only one.')
+            )
+
+        # Module only allowed with device (not with VM)
+        if self.module and self.virtual_machine:
+            raise ValidationError(
+                {
+                    'module': _(
+                        'Module can only be assigned with a device, not a virtual machine'
+                    )
+                }
+            )
+
+        has_hardware = self.device or self.module or self.virtual_machine
         has_license = self.license
 
         # Must select something
         if not has_hardware and not has_license:
-            raise ValidationError(_('Select a device, module, or license assignment'))
+            raise ValidationError(
+                _('Select a device, module, virtual machine, or license assignment')
+            )
 
         # If both device and module, they must match
         if self.device and self.module and self.device != self.module.device:
@@ -232,12 +276,24 @@ class SupportContractAssignment(PrimaryModel):
                     }
                 )
 
-        # Uniqueness check: contract + device + module + license + sku must be unique
+        # If license has a virtual_machine, it must match the assignment's virtual_machine
+        if self.license and self.license.virtual_machine and self.virtual_machine:
+            if self.virtual_machine != self.license.virtual_machine:
+                raise ValidationError(
+                    {
+                        'virtual_machine': _(
+                            'Virtual machine must match the virtual machine assigned to the license'
+                        )
+                    }
+                )
+
+        # Uniqueness check: contract + device + module + virtual_machine + license + sku
         if (
             SupportContractAssignment.objects.filter(
                 contract=self.contract,
                 device=self.device,
                 module=self.module,
+                virtual_machine=self.virtual_machine,
                 license=self.license,
                 sku=self.sku,
             )

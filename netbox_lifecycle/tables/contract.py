@@ -121,6 +121,17 @@ class SupportContractAssignmentTable(NetBoxTable):
         accessor='module__serial',
         orderable=True,
     )
+    virtual_machine_name = tables.Column(
+        verbose_name=_('Virtual Machine'),
+        accessor='virtual_machine__name',
+        linkify=True,
+        orderable=True,
+    )
+    virtual_machine_status = ChoiceFieldColumn(
+        verbose_name=_('VM Status'),
+        accessor='virtual_machine__status',
+        orderable=True,
+    )
     license_name = tables.Column(
         verbose_name=_('License'),
         accessor='license__license__name',
@@ -150,11 +161,13 @@ class SupportContractAssignmentTable(NetBoxTable):
             'sku',
             'device_name',
             'module_name',
+            'virtual_machine_name',
             'license_name',
             'device_model',
             'device_serial',
             'module_serial',
             'device_status',
+            'virtual_machine_status',
             'quantity',
             'renewal',
             'end',
@@ -167,6 +180,7 @@ class SupportContractAssignmentTable(NetBoxTable):
             'sku',
             'device_name',
             'module_name',
+            'virtual_machine_name',
             'license_name',
             'device_model',
             'device_serial',

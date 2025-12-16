@@ -10,6 +10,7 @@ from dcim.graphql.types import (
     ModuleTypeType,
     ModuleType,
 )
+from virtualization.graphql.types import VirtualMachineType
 from netbox.graphql.types import NetBoxObjectType
 from .filters import *
 
@@ -67,6 +68,7 @@ class SupportContractAssignmentType(NetBoxObjectType):
     sku: SupportSKUType | None
     device: DeviceType | None
     module: ModuleType | None
+    virtual_machine: VirtualMachineType | None
     license: LicenseType | None
     end: str | None
 
@@ -78,6 +80,7 @@ class LicenseAssignmentType(NetBoxObjectType):
     license: LicenseType
     vendor: VendorType
     device: DeviceType | None
+    virtual_machine: VirtualMachineType | None
     quantity: int | None
 
 

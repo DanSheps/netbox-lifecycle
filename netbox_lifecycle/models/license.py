@@ -1,6 +1,8 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.functions import Lower
 from django.urls import reverse
+from django.utils.translation import gettext as _
 
 from netbox.models import PrimaryModel
 
@@ -55,6 +57,13 @@ class LicenseAssignment(PrimaryModel):
         blank=True,
         related_name='licenses',
     )
+    virtual_machine = models.ForeignKey(
+        to='virtualization.VirtualMachine',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='licenses',
+    )
     quantity = models.IntegerField(
         null=True,
         blank=True,
@@ -68,48 +77,73 @@ class LicenseAssignment(PrimaryModel):
         'netbox_lifecycle.License',
         'netbox_lifecycle.Vendor',
         'dcim.Device',
+        'virtualization.VirtualMachine',
     )
 
     class Meta:
-        ordering = ['license', 'device']
+        ordering = ['license', 'device', 'virtual_machine']
         constraints = (
-            models.UniqueConstraint(
-                'license',
-                'vendor',
-                'device',
-                name='%(app_label)s_%(class)s_unique_license_vendor_device',
-                violation_error_message="License assignment must be unique.",
+            models.CheckConstraint(
+                check=(
+                    models.Q(device__isnull=True, virtual_machine__isnull=False)
+                    | models.Q(device__isnull=False, virtual_machine__isnull=True)
+                    | models.Q(device__isnull=True, virtual_machine__isnull=True)
+                ),
+                name='%(app_label)s_%(class)s_device_vm_exclusive',
+                violation_error_message=_(
+                    'Device and virtual machine are mutually exclusive.'
+                ),
             ),
         )
 
     def __str__(self):
-        if self.device is None:
-            return f'{self.license.name}'
-        return f'{self.device.name}: {self.license.name}'
+        if self.device:
+            return f'{self.device.name}: {self.license.name}'
+        if self.virtual_machine:
+            return f'{self.virtual_machine.name}: {self.license.name}'
+        return f'{self.license.name}'
 
     def get_absolute_url(self):
         return reverse('plugins:netbox_lifecycle:licenseassignment', args=[self.pk])
 
+    def clean(self):
+        super().clean()
+
+        # Mutual exclusivity validation
+        if self.device and self.virtual_machine:
+            raise ValidationError(
+                _('Device and virtual machine are mutually exclusive. Select only one.')
+            )
+
+    @property
+    def assigned_object(self):
+        """Return the device or virtual machine assigned to this license."""
+        return self.device or self.virtual_machine
+
     @property
     def name(self):
-        if self.device is None:
-            return None
-        return f'{self.device.name}'
+        if self.device:
+            return self.device.name
+        if self.virtual_machine:
+            return self.virtual_machine.name
+        return None
 
     @property
     def serial(self):
-        if self.device is None:
-            return None
-        return f'{self.device.serial}'
+        if self.device:
+            return self.device.serial
+        return None  # VMs don't have serial numbers
 
     @property
     def device_type(self):
-        if self.device is None:
-            return None
-        return self.device.device_type
+        if self.device:
+            return self.device.device_type
+        return None  # VMs don't have device_type
 
     @property
     def status(self):
-        if self.device is None:
-            return None
-        return self.device.status
+        if self.device:
+            return self.device.status
+        if self.virtual_machine:
+            return self.virtual_machine.status
+        return None

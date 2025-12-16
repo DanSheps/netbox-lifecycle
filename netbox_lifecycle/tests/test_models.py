@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from dcim.models import Manufacturer, Site, DeviceRole, DeviceType, Device
+from virtualization.models import Cluster, ClusterType, VirtualMachine
 from netbox_lifecycle.constants import (
     CONTRACT_STATUS_ACTIVE,
     CONTRACT_STATUS_EXPIRED,
@@ -254,3 +255,130 @@ class SupportContractAssignmentStatusTest(TestCase):
             end=date.today() - timedelta(days=1),
         )
         self.assertEqual(assignment.status, CONTRACT_STATUS_EXPIRED)
+
+
+class LicenseAssignmentVMTestCase(TestCase):
+    """Tests for LicenseAssignment with virtual_machine field."""
+
+    @classmethod
+    def setUpTestData(cls):
+        manufacturer = Manufacturer.objects.create(
+            name='Manufacturer 1', slug='manufacturer-1'
+        )
+        site = Site.objects.create(name='Test Site', slug='test-site')
+        role = DeviceRole.objects.create(name='Test Role', slug='test-role')
+        device_type = DeviceType.objects.create(
+            model='Test DeviceType', slug='test-devicetype', manufacturer=manufacturer
+        )
+        cls.device = Device.objects.create(
+            name='Test Device 1', device_type=device_type, role=role, site=site
+        )
+
+        cluster_type = ClusterType.objects.create(
+            name='Test Cluster Type', slug='test-cluster-type'
+        )
+        cluster = Cluster.objects.create(name='Test Cluster', type=cluster_type)
+        cls.vm = VirtualMachine.objects.create(name='Test VM', cluster=cluster)
+
+        cls.vendor = Vendor.objects.create(name='Vendor 1')
+        cls.license = License.objects.create(
+            manufacturer=manufacturer, name='Test License'
+        )
+
+    def test_license_assignment_with_vm(self):
+        """Test that a license can be assigned to a virtual machine."""
+        assignment = LicenseAssignment(
+            license=self.license,
+            vendor=self.vendor,
+            virtual_machine=self.vm,
+            quantity=1,
+        )
+        assignment.full_clean()
+        assignment.save()
+        self.assertEqual(assignment.virtual_machine, self.vm)
+
+    def test_license_assignment_device_vm_mutually_exclusive(self):
+        """Test that device and virtual_machine are mutually exclusive."""
+        assignment = LicenseAssignment(
+            license=self.license,
+            vendor=self.vendor,
+            device=self.device,
+            virtual_machine=self.vm,
+            quantity=1,
+        )
+        with self.assertRaises(ValidationError) as context:
+            assignment.full_clean()
+        self.assertIn('mutually exclusive', str(context.exception))
+
+    def test_license_assignment_name_with_vm(self):
+        """Test that the name property works correctly with a VM."""
+        assignment = LicenseAssignment.objects.create(
+            license=self.license,
+            vendor=self.vendor,
+            virtual_machine=self.vm,
+            quantity=1,
+        )
+        self.assertIn(self.vm.name, assignment.name)
+
+
+class SupportContractAssignmentVMTestCase(TestCase):
+    """Tests for SupportContractAssignment with virtual_machine field."""
+
+    @classmethod
+    def setUpTestData(cls):
+        manufacturer = Manufacturer.objects.create(
+            name='Manufacturer 1', slug='manufacturer-1'
+        )
+        site = Site.objects.create(name='Test Site', slug='test-site')
+        role = DeviceRole.objects.create(name='Test Role', slug='test-role')
+        device_type = DeviceType.objects.create(
+            model='Test DeviceType', slug='test-devicetype', manufacturer=manufacturer
+        )
+        cls.device = Device.objects.create(
+            name='Test Device 1', device_type=device_type, role=role, site=site
+        )
+
+        cluster_type = ClusterType.objects.create(
+            name='Test Cluster Type', slug='test-cluster-type'
+        )
+        cluster = Cluster.objects.create(name='Test Cluster', type=cluster_type)
+        cls.vm = VirtualMachine.objects.create(name='Test VM', cluster=cluster)
+
+        cls.vendor = Vendor.objects.create(name='Vendor 1')
+        cls.sku = SupportSKU.objects.create(manufacturer=manufacturer, sku='SKU-1')
+        cls.contract = SupportContract.objects.create(
+            vendor=cls.vendor,
+            contract_id='CONTRACT-VM-1',
+            end=date.today() + timedelta(days=30),
+        )
+
+    def test_contract_assignment_with_vm(self):
+        """Test that a contract can be assigned to a virtual machine."""
+        assignment = SupportContractAssignment(
+            contract=self.contract,
+            sku=self.sku,
+            virtual_machine=self.vm,
+        )
+        assignment.full_clean()
+        assignment.save()
+        self.assertEqual(assignment.virtual_machine, self.vm)
+
+    def test_contract_assignment_device_vm_mutually_exclusive(self):
+        """Test that device and virtual_machine are mutually exclusive."""
+        assignment = SupportContractAssignment(
+            contract=self.contract,
+            sku=self.sku,
+            device=self.device,
+            virtual_machine=self.vm,
+        )
+        with self.assertRaises(ValidationError) as context:
+            assignment.full_clean()
+        self.assertIn('mutually exclusive', str(context.exception))
+
+    def test_contract_assignment_vm_status(self):
+        """Test that status property works with VM assignments."""
+        assignment = SupportContractAssignment.objects.create(
+            contract=self.contract,
+            virtual_machine=self.vm,
+        )
+        self.assertEqual(assignment.status, CONTRACT_STATUS_ACTIVE)

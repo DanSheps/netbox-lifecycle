@@ -265,4 +265,14 @@ urlpatterns = [
         views.DeviceContractsExpiredHTMXView.as_view(),
         name='device_contracts_expired',
     ),
+    path(
+        'htmx/virtualmachine/<int:pk>/contracts/',
+        views.VirtualMachineContractsHTMXView.as_view(),
+        name='virtualmachine_contracts_htmx',
+    ),
+    path(
+        'htmx/virtualmachine/<int:pk>/contracts/expired/',
+        views.VirtualMachineContractsExpiredHTMXView.as_view(),
+        name='virtualmachine_contracts_expired',
+    ),
 ]
