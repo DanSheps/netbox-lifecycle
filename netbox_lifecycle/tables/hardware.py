@@ -34,6 +34,8 @@ class HardwareLifecycleTable(NetBoxTable):
             'end_of_maintenance',
             'end_of_security',
             'end_of_support',
+            'last_contract_attach',
+            'last_contract_renewal',
             'description',
             'comments',
         )

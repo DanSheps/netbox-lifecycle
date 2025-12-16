@@ -13,27 +13,27 @@
   <table class="table table-hover attr-table">
     <tr>
       <td>End of Sale</td>
-      <td><span {{ lifecycle_info.end_of_sale|date_badge_class }}>{{ lifecycle_info.end_of_sale }}</span></td>
+      <td><span {{ lifecycle_info.end_of_sale|date_badge_class }}>{{ lifecycle_info.end_of_sale|placeholder }}</span></td>
     </tr>
     <tr>
       <td>End of Maintenance Updates</td>
-      <td><span {{ lifecycle_info.end_of_maintenance|date_badge_class }}>{{ lifecycle_info.end_of_maintenance }}</span></td>
+      <td><span {{ lifecycle_info.end_of_maintenance|date_badge_class }}>{{ lifecycle_info.end_of_maintenance|placeholder }}</span></td>
     </tr>
     <tr>
       <td>End of Security Updates</td>
-      <td><span {{ lifecycle_info.end_of_security|date_badge_class }}>{{ lifecycle_info.end_of_security }}</span></td>
+      <td><span {{ lifecycle_info.end_of_security|date_badge_class }}>{{ lifecycle_info.end_of_security|placeholder }}</span></td>
     </tr>
     <tr>
       <td>Last Support Contract Attach</td>
-      <td><span {{ lifecycle_info.last_contract_attach|date_badge_class }}>{{ lifecycle_info.last_contract_attach }}</span></td>
+      <td><span {{ lifecycle_info.last_contract_attach|date_badge_class }}>{{ lifecycle_info.last_contract_attach|placeholder }}</span></td>
     </tr>
     <tr>
       <td>Last Support Contract Renewal</td>
-      <td><span {{ lifecycle_info.last_contract_renewal|date_badge_class }}>{{ lifecycle_info.last_contract_renewal }}</span></td>
+      <td><span {{ lifecycle_info.last_contract_renewal|date_badge_class }}>{{ lifecycle_info.last_contract_renewal|placeholder }}</span></td>
     </tr>
     <tr>
       <td>End of Support</td>
-      <td><span {{ lifecycle_info.end_of_support|date_badge_class }}>{{ lifecycle_info.end_of_support }}</span></td>
+      <td><span {{ lifecycle_info.end_of_support|date_badge_class }}>{{ lifecycle_info.end_of_support|placeholder }}</span></td>
     </tr>
   </table>
   {% else %}
