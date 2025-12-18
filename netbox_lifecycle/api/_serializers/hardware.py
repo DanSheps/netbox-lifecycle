@@ -15,12 +15,12 @@ class HardwareLifecycleSerializer(NetBoxModelSerializer):
     )
     assigned_object_type = ContentTypeField(queryset=ContentType.objects.all())
 
-    end_of_sale = serializers.DateField()
-    end_of_maintenance = serializers.DateField(required=False)
-    end_of_security = serializers.DateField(required=False)
-    last_contract_attach = serializers.DateField(required=False)
-    last_contract_renewal = serializers.DateField(required=False)
-    end_of_support = serializers.DateField()
+    end_of_sale = serializers.DateField(required=False, allow_null=True)
+    end_of_maintenance = serializers.DateField(required=False, allow_null=True)
+    end_of_security = serializers.DateField(required=False, allow_null=True)
+    last_contract_attach = serializers.DateField(required=False, allow_null=True)
+    last_contract_renewal = serializers.DateField(required=False, allow_null=True)
+    end_of_support = serializers.DateField(required=False, allow_null=True)
 
     class Meta:
         model = HardwareLifecycle

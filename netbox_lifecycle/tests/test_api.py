@@ -485,3 +485,76 @@ class HardwareLifecycleTest(DateFieldMixin, APIViewTestCases.APIViewTestCase):
                 'end_of_support': '2050-01-01',
             },
         ]
+
+        # Additional device types for null date tests
+        cls.device_type_for_null_test = DeviceType.objects.create(
+            model='Device Type Null Test',
+            manufacturer=manufacturer,
+            slug='device-type-null',
+        )
+        cls.device_type_for_explicit_null = DeviceType.objects.create(
+            model='Device Type Explicit Null',
+            manufacturer=manufacturer,
+            slug='device-type-explicit-null',
+        )
+        cls.device_type_for_update_null = DeviceType.objects.create(
+            model='Device Type Update Null',
+            manufacturer=manufacturer,
+            slug='device-type-update-null',
+        )
+
+    def test_create_lifecycle_with_omitted_dates(self):
+        """Test creating a hardware lifecycle with omitted date fields."""
+        self.add_permissions('netbox_lifecycle.add_hardwarelifecycle')
+        url = reverse('plugins-api:netbox_lifecycle-api:hardwarelifecycle-list')
+        data = {
+            'assigned_object_id': self.device_type_for_null_test.pk,
+            'assigned_object_type': 'dcim.devicetype',
+        }
+        response = self.client.post(url, data, format='json', **self.header)
+        self.assertHttpStatus(response, status.HTTP_201_CREATED)
+        self.assertIsNone(response.data['end_of_sale'])
+        self.assertIsNone(response.data['end_of_support'])
+        self.assertIsNone(response.data['end_of_maintenance'])
+        self.assertIsNone(response.data['end_of_security'])
+
+    def test_create_lifecycle_with_explicit_null_dates(self):
+        """Test creating a hardware lifecycle with explicit null values for dates."""
+        self.add_permissions('netbox_lifecycle.add_hardwarelifecycle')
+        url = reverse('plugins-api:netbox_lifecycle-api:hardwarelifecycle-list')
+        data = {
+            'assigned_object_id': self.device_type_for_explicit_null.pk,
+            'assigned_object_type': 'dcim.devicetype',
+            'end_of_sale': None,
+            'end_of_support': None,
+            'end_of_maintenance': None,
+            'end_of_security': None,
+        }
+        response = self.client.post(url, data, format='json', **self.header)
+        self.assertHttpStatus(response, status.HTTP_201_CREATED)
+        self.assertIsNone(response.data['end_of_sale'])
+        self.assertIsNone(response.data['end_of_support'])
+        self.assertIsNone(response.data['end_of_maintenance'])
+        self.assertIsNone(response.data['end_of_security'])
+
+    def test_update_lifecycle_dates_to_null(self):
+        """Test updating a hardware lifecycle to set dates to null."""
+        self.add_permissions('netbox_lifecycle.change_hardwarelifecycle')
+        # Create lifecycle with dates
+        lifecycle = HardwareLifecycle.objects.create(
+            assigned_object=self.device_type_for_update_null,
+            end_of_sale='2030-01-01',
+            end_of_support='2035-01-01',
+        )
+        url = reverse(
+            'plugins-api:netbox_lifecycle-api:hardwarelifecycle-detail',
+            kwargs={'pk': lifecycle.pk},
+        )
+        data = {
+            'end_of_sale': None,
+            'end_of_support': None,
+        }
+        response = self.client.patch(url, data, format='json', **self.header)
+        self.assertHttpStatus(response, status.HTTP_200_OK)
+        self.assertIsNone(response.data['end_of_sale'])
+        self.assertIsNone(response.data['end_of_support'])

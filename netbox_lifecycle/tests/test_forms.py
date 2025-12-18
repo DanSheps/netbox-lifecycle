@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from dcim.models import Device, Manufacturer
+from dcim.models import Device, DeviceType, Manufacturer
 from utilities.testing import create_test_device
 
 from netbox_lifecycle.forms import *
@@ -164,3 +164,67 @@ class SupportContractAssignmentTestCase(TestCase):
         self.assertFalse(form.is_valid())
         with self.assertRaises(ValueError):
             form.save()
+
+
+class HardwareLifecycleTestCase(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        manufacturer = Manufacturer.objects.create(
+            name='Manufacturer', slug='manufacturer'
+        )
+        cls.device_type = DeviceType.objects.create(
+            manufacturer=manufacturer, model='Device Type 1', slug='device-type-1'
+        )
+        cls.device_type_2 = DeviceType.objects.create(
+            manufacturer=manufacturer, model='Device Type 2', slug='device-type-2'
+        )
+        cls.device_type_3 = DeviceType.objects.create(
+            manufacturer=manufacturer, model='Device Type 3', slug='device-type-3'
+        )
+
+    def test_lifecycle_with_all_dates(self):
+        """Test creating a hardware lifecycle with all date fields populated."""
+        form = HardwareLifecycleForm(
+            data={
+                'device_type': self.device_type.pk,
+                'end_of_sale': '2030-01-01',
+                'end_of_support': '2035-01-01',
+                'end_of_maintenance': '2032-01-01',
+                'end_of_security': '2033-01-01',
+                'last_contract_attach': '2025-01-01',
+                'last_contract_renewal': '2028-01-01',
+            }
+        )
+        self.assertTrue(form.is_valid())
+        instance = form.save()
+        self.assertEqual(str(instance.end_of_sale), '2030-01-01')
+        self.assertEqual(str(instance.end_of_support), '2035-01-01')
+
+    def test_lifecycle_with_no_dates(self):
+        """Test creating a hardware lifecycle with no date fields (all null)."""
+        form = HardwareLifecycleForm(
+            data={
+                'device_type': self.device_type_2.pk,
+            }
+        )
+        self.assertTrue(form.is_valid())
+        instance = form.save()
+        self.assertIsNone(instance.end_of_sale)
+        self.assertIsNone(instance.end_of_support)
+        self.assertIsNone(instance.end_of_maintenance)
+        self.assertIsNone(instance.end_of_security)
+
+    def test_lifecycle_with_partial_dates(self):
+        """Test creating a hardware lifecycle with only some date fields."""
+        form = HardwareLifecycleForm(
+            data={
+                'device_type': self.device_type_3.pk,
+                'end_of_sale': '2030-01-01',
+                # end_of_support intentionally omitted
+            }
+        )
+        self.assertTrue(form.is_valid())
+        instance = form.save()
+        self.assertEqual(str(instance.end_of_sale), '2030-01-01')
+        self.assertIsNone(instance.end_of_support)
