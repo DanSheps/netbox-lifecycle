@@ -46,7 +46,7 @@ class SupportContractAssignmentIndex(SearchIndex):
         ('description', 4000),
         ('comments', 5000),
     )
-    display_attrs = ('vendor', 'start', 'renewal', 'end', 'description')
+    display_attrs = ('contract', 'sku', 'device', 'end', 'description')
 
 
 @register_search
@@ -70,4 +70,4 @@ class LicenseAssignmentIndex(SearchIndex):
         ('description', 4000),
         ('comments', 5000),
     )
-    display_attrs = ('manufacturer', 'description')
+    display_attrs = ('license', 'vendor', 'device', 'description')
