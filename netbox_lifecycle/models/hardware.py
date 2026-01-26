@@ -8,7 +8,6 @@ from netbox.models import PrimaryModel
 
 from netbox_lifecycle.constants import HARDWARE_LIFECYCLE_MODELS
 
-
 __all__ = ('HardwareLifecycle',)
 
 

@@ -20,7 +20,6 @@ from netbox_lifecycle.models import License, LicenseAssignment
 from netbox_lifecycle.tables import LicenseTable, LicenseAssignmentTable
 from utilities.views import ViewTab, register_model_view
 
-
 __all__ = (
     'LicenseListView',
     'LicenseView',

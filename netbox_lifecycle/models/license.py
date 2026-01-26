@@ -6,7 +6,6 @@ from django.utils.translation import gettext as _
 
 from netbox.models import PrimaryModel
 
-
 __all__ = ('License', 'LicenseAssignment')
 
 

@@ -13,7 +13,6 @@ from netbox_lifecycle.constants import (
 )
 from netbox_lifecycle.models import SupportContractAssignment
 
-
 __all__ = (
     'DeviceContractsHTMXView',
     'DeviceContractsExpiredHTMXView',

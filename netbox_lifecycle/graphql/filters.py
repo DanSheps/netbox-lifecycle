@@ -6,7 +6,6 @@ import strawberry_django
 from netbox.graphql.filters import PrimaryModelFilter
 from netbox_lifecycle import models
 
-
 __all__ = (
     'VendorFilter',
     'SupportSKUFilter',
