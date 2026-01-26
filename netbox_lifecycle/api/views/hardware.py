@@ -3,7 +3,6 @@ from netbox_lifecycle.api.serializers import HardwareLifecycleSerializer
 from netbox_lifecycle.filtersets import HardwareLifecycleFilterSet
 from netbox_lifecycle.models import HardwareLifecycle
 
-
 __all__ = ('HardwareLifecycleViewSet',)
 
 

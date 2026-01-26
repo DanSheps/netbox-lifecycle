@@ -19,7 +19,6 @@ from utilities.forms.fields import (
 from utilities.forms.rendering import FieldSet, TabbedGroups
 from utilities.forms.widgets import DatePicker
 
-
 __all__ = (
     'VendorForm',
     'SupportSKUForm',

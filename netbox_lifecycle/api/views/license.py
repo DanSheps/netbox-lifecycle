@@ -6,7 +6,6 @@ from netbox_lifecycle.api.serializers import (
 from netbox_lifecycle.filtersets import LicenseAssignmentFilterSet, LicenseFilterSet
 from netbox_lifecycle.models import License, LicenseAssignment
 
-
 __all__ = ('LicenseViewSet', 'LicenseAssignmentViewSet')
 
 
