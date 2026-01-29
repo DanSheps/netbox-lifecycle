@@ -5,7 +5,6 @@ from netbox.api.fields import ContentTypeField
 from netbox.api.serializers import NetBoxModelSerializer
 from netbox_lifecycle.models import HardwareLifecycle
 
-
 __all__ = ('HardwareLifecycleSerializer',)
 
 

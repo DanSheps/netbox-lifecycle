@@ -7,7 +7,6 @@ from dcim.models import ModuleType, DeviceType
 from netbox.filtersets import NetBoxModelFilterSet
 from netbox_lifecycle.models import HardwareLifecycle
 
-
 __all__ = ('HardwareLifecycleFilterSet',)
 
 

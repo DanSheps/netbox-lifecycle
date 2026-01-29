@@ -24,7 +24,6 @@ from utilities.forms.fields import (
 from utilities.forms.rendering import FieldSet
 from utilities.forms.widgets import APISelectMultiple, DatePicker
 
-
 __all__ = (
     'HardwareLifecycleFilterForm',
     'SupportSKUFilterForm',
