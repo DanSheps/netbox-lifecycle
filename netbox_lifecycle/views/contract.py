@@ -1,11 +1,12 @@
 from netbox.views.generic import (
-    ObjectListView,
-    ObjectEditView,
-    ObjectDeleteView,
-    ObjectView,
-    ObjectChildrenView,
     BulkDeleteView,
     BulkEditView,
+    BulkImportView,
+    ObjectChildrenView,
+    ObjectDeleteView,
+    ObjectEditView,
+    ObjectListView,
+    ObjectView,
 )
 from netbox_lifecycle.filtersets import (
     SupportContractFilterSet,
@@ -14,18 +15,22 @@ from netbox_lifecycle.filtersets import (
     SupportSKUFilterSet,
 )
 from netbox_lifecycle.forms import (
-    SupportContractFilterForm,
-    VendorFilterForm,
-    SupportContractForm,
-    VendorForm,
-    SupportContractAssignmentForm,
-    SupportSKUFilterForm,
-    SupportSKUForm,
     SupportContractAssignmentBulkEditForm,
     SupportContractAssignmentFilterForm,
-    VendorBulkEditForm,
-    SupportSKUBulkEditForm,
+    SupportContractAssignmentForm,
+    SupportContractAssignmentImportForm,
     SupportContractBulkEditForm,
+    SupportContractFilterForm,
+    SupportContractForm,
+    SupportContractImportForm,
+    SupportSKUBulkEditForm,
+    SupportSKUFilterForm,
+    SupportSKUForm,
+    SupportSKUImportForm,
+    VendorBulkEditForm,
+    VendorFilterForm,
+    VendorForm,
+    VendorImportForm,
 )
 from netbox_lifecycle.models import (
     SupportContract,
@@ -43,34 +48,38 @@ from utilities.views import ViewTab, register_model_view, GetRelatedModelsMixin
 
 __all__ = (
     # Vendor
+    'VendorBulkDeleteView',
+    'VendorBulkEditView',
+    'VendorBulkImportView',
+    'VendorDeleteView',
+    'VendorEditView',
     'VendorListView',
     'VendorView',
-    'VendorEditView',
-    'VendorBulkEditView',
-    'VendorDeleteView',
-    'VendorBulkDeleteView',
     # SupportSKU
+    'SupportSKUBulkDeleteView',
+    'SupportSKUBulkEditView',
+    'SupportSKUBulkImportView',
+    'SupportSKUDeleteView',
+    'SupportSKUEditView',
     'SupportSKUListView',
     'SupportSKUView',
-    'SupportSKUEditView',
-    'SupportSKUBulkEditView',
-    'SupportSKUDeleteView',
-    'SupportSKUBulkDeleteView',
     # SupportContract
+    'SupportContractAssignmentsView',
+    'SupportContractBulkDeleteView',
+    'SupportContractBulkEditView',
+    'SupportContractBulkImportView',
+    'SupportContractDeleteView',
+    'SupportContractEditView',
     'SupportContractListView',
     'SupportContractView',
-    'SupportContractEditView',
-    'SupportContractBulkEditView',
-    'SupportContractDeleteView',
-    'SupportContractBulkDeleteView',
-    'SupportContractAssignmentsView',
     # SupportContractAssignment
+    'SupportContractAssignmentBulkDeleteView',
+    'SupportContractAssignmentBulkEditView',
+    'SupportContractAssignmentBulkImportView',
+    'SupportContractAssignmentDeleteView',
+    'SupportContractAssignmentEditView',
     'SupportContractAssignmentListView',
     'SupportContractAssignmentView',
-    'SupportContractAssignmentEditView',
-    'SupportContractAssignmentDeleteView',
-    'SupportContractAssignmentBulkEditView',
-    'SupportContractAssignmentBulkDeleteView',
 )
 
 
@@ -123,6 +132,12 @@ class VendorBulkDeleteView(BulkDeleteView):
     table = VendorTable
 
 
+@register_model_view(Vendor, 'bulk_import')
+class VendorBulkImportView(BulkImportView):
+    queryset = Vendor.objects.all()
+    model_form = VendorImportForm
+
+
 @register_model_view(SupportSKU, name='list')
 class SupportSKUListView(ObjectListView):
     queryset = SupportSKU.objects.all()
@@ -162,6 +177,12 @@ class SupportSKUBulkDeleteView(BulkDeleteView):
     queryset = SupportSKU.objects.all()
     filterset = SupportSKUFilterSet
     table = SupportSKUTable
+
+
+@register_model_view(SupportSKU, 'bulk_import')
+class SupportSKUBulkImportView(BulkImportView):
+    queryset = SupportSKU.objects.all()
+    model_form = SupportSKUImportForm
 
 
 @register_model_view(SupportContract, name='list')
@@ -222,6 +243,12 @@ class SupportContractBulkDeleteView(BulkDeleteView):
     table = SupportContractTable
 
 
+@register_model_view(SupportContract, 'bulk_import')
+class SupportContractBulkImportView(BulkImportView):
+    queryset = SupportContract.objects.all()
+    model_form = SupportContractImportForm
+
+
 @register_model_view(SupportContractAssignment, name='list')
 class SupportContractAssignmentListView(ObjectListView):
     queryset = SupportContractAssignment.objects.all()
@@ -265,3 +292,9 @@ class SupportContractAssignmentBulkDeleteView(BulkDeleteView):
     queryset = SupportContractAssignment.objects.all()
     filterset = SupportContractAssignmentFilterSet
     table = SupportContractAssignmentTable
+
+
+@register_model_view(SupportContractAssignment, 'bulk_import')
+class SupportContractAssignmentBulkImportView(BulkImportView):
+    queryset = SupportContractAssignment.objects.all()
+    model_form = SupportContractAssignmentImportForm
