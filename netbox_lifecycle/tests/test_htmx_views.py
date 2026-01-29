@@ -15,7 +15,6 @@ from netbox_lifecycle.models import (
     Vendor,
 )
 
-
 User = get_user_model()
 
 

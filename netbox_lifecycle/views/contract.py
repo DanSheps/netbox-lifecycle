@@ -41,7 +41,6 @@ from netbox_lifecycle.tables import (
 )
 from utilities.views import ViewTab, register_model_view, GetRelatedModelsMixin
 
-
 __all__ = (
     # Vendor
     'VendorListView',

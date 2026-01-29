@@ -18,7 +18,6 @@ from netbox_lifecycle.models import (
     SupportSKU,
 )
 
-
 __all__ = (
     'VendorViewSet',
     'SupportSKUViewSet',

@@ -16,7 +16,6 @@ from netbox_lifecycle.models import HardwareLifecycle
 from netbox_lifecycle.tables import HardwareLifecycleTable
 from utilities.views import register_model_view
 
-
 __all__ = (
     'HardwareLifecycleListView',
     'HardwareLifecycleView',

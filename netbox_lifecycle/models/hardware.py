@@ -8,7 +8,6 @@ from netbox.models import PrimaryModel
 
 from netbox_lifecycle.constants import HARDWARE_LIFECYCLE_MODELS
 
-
 __all__ = ('HardwareLifecycle',)
 
 
@@ -35,6 +34,17 @@ class HardwareLifecycle(PrimaryModel):
 
     notice = models.CharField(max_length=500, blank=True, null=True)
     documentation = models.CharField(max_length=500, blank=True, null=True)
+
+    clone_fields = (
+        'end_of_sale',
+        'end_of_maintenance',
+        'end_of_security',
+        'last_contract_attach',
+        'last_contract_renewal',
+        'end_of_support',
+        'notice',
+        'documentation',
+    )
 
     class Meta:
         ordering = ['assigned_object_type']

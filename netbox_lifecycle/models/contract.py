@@ -15,7 +15,6 @@ from netbox_lifecycle.constants import (
     CONTRACT_STATUS_UNSPECIFIED,
 )
 
-
 __all__ = (
     'Vendor',
     'SupportSKU',
