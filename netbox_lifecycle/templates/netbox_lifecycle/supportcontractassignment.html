@@ -21,17 +21,37 @@
               <th>SKU</th>
               <td>{{ object.sku|linkify }}</td>
             </tr>
+            {% if object.device %}
             <tr>
               <th>Device</th>
               <td>{{ object.device|linkify }}</td>
             </tr>
+            {% endif %}
+            {% if object.module %}
+            <tr>
+              <th>Module</th>
+              <td>{{ object.module|linkify }}</td>
+            </tr>
+            {% endif %}
+            {% if object.virtual_machine %}
+            <tr>
+              <th>Virtual Machine</th>
+              <td>{{ object.virtual_machine|linkify }}</td>
+            </tr>
+            {% endif %}
+            {% if object.license %}
             <tr>
               <th>License</th>
               <td>{{ object.license|linkify }}</td>
             </tr>
+            {% endif %}
             <tr>
               <th>End Date</th>
               <td>{{ object.end }}</td>
+            </tr>
+            <tr>
+              <th>Description</th>
+              <td>{{ object.description }}</td>
             </tr>
           </table>
         </div>

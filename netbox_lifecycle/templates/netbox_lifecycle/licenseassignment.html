@@ -21,13 +21,24 @@
               <th>Vendor</th>
               <td>{{ object.vendor|linkify }}</td>
             </tr>
+            {% if object.device %}
             <tr>
               <th>Device</th>
               <td>{{ object.device|linkify }}</td>
             </tr>
+            {% elif object.virtual_machine %}
+            <tr>
+              <th>Virtual Machine</th>
+              <td>{{ object.virtual_machine|linkify }}</td>
+            </tr>
+            {% endif %}
             <tr>
               <th>Quantity</th>
               <td>{{ object.quantity }}</td>
+            </tr>
+            <tr>
+              <th>Description</th>
+              <td>{{ object.description }}</td>
             </tr>
           </table>
         </div>
