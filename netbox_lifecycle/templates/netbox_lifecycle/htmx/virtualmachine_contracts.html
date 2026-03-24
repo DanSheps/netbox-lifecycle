@@ -31,7 +31,7 @@
       <li class="nav-item" role="presentation">
         <a href="#tab-expired" class="nav-link {% if not active and not future and not unspecified %}active{% endif %}" data-bs-toggle="tab" role="tab"
            hx-get="{% url 'plugins:netbox_lifecycle:virtualmachine_contracts_expired' pk=virtual_machine.pk %}"
-           hx-trigger="click once"
+           hx-trigger="{% if not active and not future and not unspecified %}load{% else %}click once{% endif %}"
            hx-target="#tab-expired-content">
           {% trans "Expired" %} <span class="badge text-bg-danger ms-1">{{ expired_count }}</span>
         </a>
