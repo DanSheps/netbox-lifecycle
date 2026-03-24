@@ -1,20 +1,19 @@
 from django import forms
 from django.utils.translation import gettext as _
-
 from netbox.forms import NetBoxModelBulkEditForm
-from utilities.forms.fields import DynamicModelChoiceField, CommentField
-
-from netbox_lifecycle.models import (
-    SupportContract,
-    SupportSKU,
-    SupportContractAssignment,
-    LicenseAssignment,
-    License,
-    HardwareLifecycle,
-    Vendor,
-)
+from utilities.forms.fields import CommentField, DynamicModelChoiceField
 from utilities.forms.rendering import FieldSet
 from utilities.forms.widgets import DatePicker
+
+from netbox_lifecycle.models import (
+    HardwareLifecycle,
+    License,
+    LicenseAssignment,
+    SupportContract,
+    SupportContractAssignment,
+    SupportSKU,
+    Vendor,
+)
 
 
 class VendorBulkEditForm(NetBoxModelBulkEditForm):

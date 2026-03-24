@@ -1,11 +1,10 @@
-import datetime
-from datetime import date, timedelta
+from datetime import datetime, timedelta, timezone
 
+from dcim.models import Device, DeviceRole, DeviceType, Manufacturer, Site
 from django.core.exceptions import ValidationError
 from django.test import TestCase
-
-from dcim.models import Manufacturer, Site, DeviceRole, DeviceType, Device
 from virtualization.models import Cluster, ClusterType, VirtualMachine
+
 from netbox_lifecycle.constants import (
     CONTRACT_STATUS_ACTIVE,
     CONTRACT_STATUS_EXPIRED,
@@ -13,12 +12,12 @@ from netbox_lifecycle.constants import (
     CONTRACT_STATUS_UNSPECIFIED,
 )
 from netbox_lifecycle.models import (
-    Vendor,
-    SupportContract,
-    SupportSKU,
-    SupportContractAssignment,
     License,
     LicenseAssignment,
+    SupportContract,
+    SupportContractAssignment,
+    SupportSKU,
+    Vendor,
 )
 
 
@@ -37,9 +36,9 @@ class SupportContractTestCase(TestCase):
         contract = SupportContract(
             vendor=Vendor.objects.first(),
             contract_id='1234',
-            start=datetime.date.today(),
-            renewal=datetime.date.today() + datetime.timedelta(days=1),
-            end=datetime.date.today() + datetime.timedelta(days=2),
+            start=datetime.now(tz=timezone.utc).date(),
+            renewal=datetime.now(tz=timezone.utc).date() + timedelta(days=1),
+            end=datetime.now(tz=timezone.utc).date() + timedelta(days=2),
         )
         contract.full_clean()
         contract.save()
@@ -155,9 +154,9 @@ class SupportContractAssignmentTestCase(TestCase):
         SupportContract.objects.create(
             vendor=Vendor.objects.first(),
             contract_id='1234',
-            start=datetime.date.today(),
-            renewal=datetime.date.today() + datetime.timedelta(days=1),
-            end=datetime.date.today() + datetime.timedelta(days=2),
+            start=datetime.now(tz=timezone.utc).date(),
+            renewal=datetime.now(tz=timezone.utc).date() + timedelta(days=1),
+            end=datetime.now(tz=timezone.utc).date() + timedelta(days=2),
         )
 
         LicenseAssignment.objects.create(
@@ -203,7 +202,7 @@ class SupportContractAssignmentStatusTest(TestCase):
         contract = SupportContract.objects.create(
             vendor=self.vendor,
             contract_id='ACTIVE-001',
-            end=date.today() + timedelta(days=30),
+            end=datetime.now(tz=timezone.utc).date() + timedelta(days=30),
         )
         assignment = SupportContractAssignment.objects.create(contract=contract)
         self.assertEqual(assignment.status, CONTRACT_STATUS_ACTIVE)
@@ -212,7 +211,7 @@ class SupportContractAssignmentStatusTest(TestCase):
         contract = SupportContract.objects.create(
             vendor=self.vendor,
             contract_id='ACTIVE-002',
-            end=date.today(),
+            end=datetime.now(tz=timezone.utc).date(),
         )
         assignment = SupportContractAssignment.objects.create(contract=contract)
         self.assertEqual(assignment.status, CONTRACT_STATUS_ACTIVE)
@@ -221,8 +220,8 @@ class SupportContractAssignmentStatusTest(TestCase):
         contract = SupportContract.objects.create(
             vendor=self.vendor,
             contract_id='FUTURE-001',
-            start=date.today() + timedelta(days=30),
-            end=date.today() + timedelta(days=60),
+            start=datetime.now(tz=timezone.utc).date() + timedelta(days=30),
+            end=datetime.now(tz=timezone.utc).date() + timedelta(days=60),
         )
         assignment = SupportContractAssignment.objects.create(contract=contract)
         self.assertEqual(assignment.status, CONTRACT_STATUS_FUTURE)
@@ -231,7 +230,7 @@ class SupportContractAssignmentStatusTest(TestCase):
         contract = SupportContract.objects.create(
             vendor=self.vendor,
             contract_id='EXPIRED-001',
-            end=date.today() - timedelta(days=1),
+            end=datetime.now(tz=timezone.utc).date() - timedelta(days=1),
         )
         assignment = SupportContractAssignment.objects.create(contract=contract)
         self.assertEqual(assignment.status, CONTRACT_STATUS_EXPIRED)
@@ -248,11 +247,11 @@ class SupportContractAssignmentStatusTest(TestCase):
         contract = SupportContract.objects.create(
             vendor=self.vendor,
             contract_id='OVERRIDE-001',
-            end=date.today() + timedelta(days=30),
+            end=datetime.now(tz=timezone.utc).date() + timedelta(days=30),
         )
         assignment = SupportContractAssignment.objects.create(
             contract=contract,
-            end=date.today() - timedelta(days=1),
+            end=datetime.now(tz=timezone.utc).date() - timedelta(days=1),
         )
         self.assertEqual(assignment.status, CONTRACT_STATUS_EXPIRED)
 
@@ -349,7 +348,7 @@ class SupportContractAssignmentVMTestCase(TestCase):
         cls.contract = SupportContract.objects.create(
             vendor=cls.vendor,
             contract_id='CONTRACT-VM-1',
-            end=date.today() + timedelta(days=30),
+            end=datetime.now(tz=timezone.utc).date() + timedelta(days=30),
         )
 
     def test_contract_assignment_with_vm(self):

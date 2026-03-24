@@ -3,7 +3,6 @@ from django.db import models
 from django.db.models.functions import Lower
 from django.urls import reverse
 from django.utils.translation import gettext as _
-
 from netbox.models import PrimaryModel
 
 __all__ = ('License', 'LicenseAssignment')

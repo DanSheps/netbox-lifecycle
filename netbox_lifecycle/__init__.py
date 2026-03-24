@@ -26,8 +26,9 @@ class NetBoxLifeCycle(PluginConfig):
 
         super().ready()
 
-        from django.contrib.contenttypes.fields import GenericRelation
         from dcim.models import DeviceType, ModuleType
+        from django.contrib.contenttypes.fields import GenericRelation
+
         from netbox_lifecycle.models import HardwareLifecycle
 
         # Add Generic Relations to appropriate models

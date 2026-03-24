@@ -1,23 +1,23 @@
 import django_filters
+from dcim.models import Device, Manufacturer, Module
 from django.db.models import Q
 from django.utils.translation import gettext as _
-
-from dcim.models import Manufacturer, Device, Module
 from netbox.filtersets import NetBoxModelFilterSet
 from virtualization.models import VirtualMachine
+
 from netbox_lifecycle.models import (
-    Vendor,
+    License,
     SupportContract,
     SupportContractAssignment,
     SupportSKU,
-    License,
+    Vendor,
 )
 
 __all__ = (
+    'SupportContractAssignmentFilterSet',
     'SupportContractFilterSet',
     'SupportSKUFilterSet',
     'VendorFilterSet',
-    'SupportContractAssignmentFilterSet',
 )
 
 
