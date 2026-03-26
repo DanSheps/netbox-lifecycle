@@ -1,9 +1,9 @@
-from dcim.models import Manufacturer, DeviceType, ModuleType
-from netbox_lifecycle.utilities.gfk_mixins import HardwareLifecycleViewMixin
-from netbox_lifecycle.utilities.testing import create_test_vendor
+from dcim.models import DeviceType, Manufacturer, ModuleType
 from utilities.testing import ViewTestCases, create_test_device
 
 from netbox_lifecycle.models import *
+from netbox_lifecycle.utilities.gfk_mixins import HardwareLifecycleViewMixin
+from netbox_lifecycle.utilities.testing import create_test_vendor
 
 
 class VendorTestCase(

@@ -1,10 +1,9 @@
+from dcim.models import DeviceType, Manufacturer, Module, ModuleBay, ModuleType
 from django.urls import reverse
-from rest_framework import status
-
-from dcim.models import Manufacturer, DeviceType, Module, ModuleBay, ModuleType
 from extras.models import Tag
+from rest_framework import status
+from utilities.testing import APITestCase, APIViewTestCases, create_test_device
 from virtualization.models import Cluster, ClusterType, VirtualMachine
-from utilities.testing import APIViewTestCases, APITestCase, create_test_device
 
 from netbox_lifecycle.models import *
 from netbox_lifecycle.utilities.gfk_mixins import DateFieldMixin

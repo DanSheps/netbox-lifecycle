@@ -1,4 +1,4 @@
-from netbox.plugins import PluginMenuItem, PluginMenu
+from netbox.plugins import PluginMenu, PluginMenuItem
 
 lifecycle = PluginMenuItem(
     link='plugins:netbox_lifecycle:hardwarelifecycle_list',

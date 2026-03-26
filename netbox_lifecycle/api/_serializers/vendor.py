@@ -1,6 +1,6 @@
+from netbox.api.serializers import NetBoxModelSerializer
 from rest_framework import serializers
 
-from netbox.api.serializers import NetBoxModelSerializer
 from netbox_lifecycle.models import Vendor
 
 __all__ = ('VendorSerializer',)

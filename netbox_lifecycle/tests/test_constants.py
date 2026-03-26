@@ -2,10 +2,10 @@ from django.test import TestCase
 
 from netbox_lifecycle.constants import (
     CONTRACT_STATUS_ACTIVE,
+    CONTRACT_STATUS_COLOR,
     CONTRACT_STATUS_EXPIRED,
     CONTRACT_STATUS_FUTURE,
     CONTRACT_STATUS_UNSPECIFIED,
-    CONTRACT_STATUS_COLOR,
 )
 
 
@@ -23,6 +23,6 @@ class ContractStatusConstantsTest(TestCase):
         self.assertIn(CONTRACT_STATUS_EXPIRED, CONTRACT_STATUS_COLOR)
 
     def test_status_color_format(self):
-        for status, (label, color) in CONTRACT_STATUS_COLOR.items():
+        for label, color in CONTRACT_STATUS_COLOR.values():
             self.assertIsInstance(str(label), str)
             self.assertIn(color, ['success', 'info', 'secondary', 'danger'])

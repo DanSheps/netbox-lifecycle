@@ -1,29 +1,29 @@
-from typing import Annotated, Union
+from typing import Annotated
 
 import strawberry
 import strawberry_django
-
 from dcim.graphql.types import (
-    ManufacturerType,
     DeviceType,
     DeviceTypeType,
-    ModuleTypeType,
+    ManufacturerType,
     ModuleType,
+    ModuleTypeType,
 )
-from virtualization.graphql.types import VirtualMachineType
 from netbox.graphql.types import PrimaryObjectType
-from .filters import *
+from virtualization.graphql.types import VirtualMachineType
 
 from netbox_lifecycle import models
 
+from .filters import *
+
 __all__ = (
-    'VendorType',
-    'SupportSKUType',
-    'SupportContractType',
-    'SupportContractAssignmentType',
-    'LicenseType',
-    'LicenseAssignmentType',
     'HardwareLifecycleType',
+    'LicenseAssignmentType',
+    'LicenseType',
+    'SupportContractAssignmentType',
+    'SupportContractType',
+    'SupportSKUType',
+    'VendorType',
 )
 
 
@@ -94,10 +94,8 @@ class HardwareLifecycleType(PrimaryObjectType):
     assigned_object_id: int
     assigned_object: (
         Annotated[
-            Union[
-                Annotated["DeviceType", strawberry.lazy('dcim.graphql.types')],
-                Annotated["ModuleType", strawberry.lazy('dcim.graphql.types')],
-            ],
+            Annotated["DeviceType", strawberry.lazy('dcim.graphql.types')]
+            | Annotated["ModuleType", strawberry.lazy('dcim.graphql.types')],
             strawberry.union("HardwareLifecycleObjectTypes"),
         ]
         | None

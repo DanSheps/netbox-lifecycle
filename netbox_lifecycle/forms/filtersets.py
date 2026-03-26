@@ -1,37 +1,37 @@
+from dcim.choices import DeviceStatusChoices
+from dcim.models import Device, Manufacturer, Module
 from django import forms
-from django.utils.translation import gettext as _
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.forms import DateField
-
-from dcim.choices import DeviceStatusChoices
-from dcim.models import Device, Manufacturer, Module
+from django.utils.translation import gettext as _
 from netbox.forms import NetBoxModelFilterSetForm
-from virtualization.models import VirtualMachine
-from netbox_lifecycle.models import (
-    HardwareLifecycle,
-    SupportContract,
-    Vendor,
-    License,
-    LicenseAssignment,
-    SupportContractAssignment,
-    SupportSKU,
-)
 from utilities.forms.fields import (
     DynamicModelMultipleChoiceField,
     TagFilterField,
 )
 from utilities.forms.rendering import FieldSet
 from utilities.forms.widgets import APISelectMultiple, DatePicker
+from virtualization.models import VirtualMachine
+
+from netbox_lifecycle.models import (
+    HardwareLifecycle,
+    License,
+    LicenseAssignment,
+    SupportContract,
+    SupportContractAssignment,
+    SupportSKU,
+    Vendor,
+)
 
 __all__ = (
     'HardwareLifecycleFilterForm',
-    'SupportSKUFilterForm',
-    'SupportContractFilterForm',
-    'VendorFilterForm',
-    'LicenseFilterForm',
     'LicenseAssignmentFilterForm',
+    'LicenseFilterForm',
     'SupportContractAssignmentFilterForm',
+    'SupportContractFilterForm',
+    'SupportSKUFilterForm',
+    'VendorFilterForm',
 )
 
 

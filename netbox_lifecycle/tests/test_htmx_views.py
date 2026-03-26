@@ -1,10 +1,9 @@
-from datetime import date, timedelta
+from datetime import datetime, timedelta, timezone
 
+from dcim.models import Device, DeviceRole, DeviceType, Manufacturer, Site
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
-
-from dcim.models import Device, DeviceRole, DeviceType, Manufacturer, Site
 
 from netbox_lifecycle.models import (
     License,
@@ -42,7 +41,7 @@ class DeviceContractsHTMXViewTest(TestCase):
         contract = SupportContract.objects.create(
             vendor=self.vendor,
             contract_id='TEST-001',
-            end=date.today() + timedelta(days=30),
+            end=datetime.now(tz=timezone.utc).date() + timedelta(days=30),
         )
         SupportContractAssignment.objects.create(contract=contract, device=self.device)
 
@@ -61,7 +60,7 @@ class DeviceContractsHTMXViewTest(TestCase):
         contract = SupportContract.objects.create(
             vendor=self.vendor,
             contract_id='EXPIRED-001',
-            end=date.today() - timedelta(days=1),
+            end=datetime.now(tz=timezone.utc).date() - timedelta(days=1),
         )
         SupportContractAssignment.objects.create(contract=contract, device=self.device)
 
@@ -92,7 +91,7 @@ class DeviceContractsHTMXViewTest(TestCase):
         contract = SupportContract.objects.create(
             vendor=self.vendor,
             contract_id='TEST-SKU-001',
-            end=date.today() + timedelta(days=30),
+            end=datetime.now(tz=timezone.utc).date() + timedelta(days=30),
         )
         SupportContractAssignment.objects.create(
             contract=contract, device=self.device, sku=sku
@@ -114,8 +113,8 @@ class DeviceContractsHTMXViewTest(TestCase):
         contract = SupportContract.objects.create(
             vendor=self.vendor,
             contract_id='FUTURE-001',
-            start=date.today() + timedelta(days=30),
-            end=date.today() + timedelta(days=365),
+            start=datetime.now(tz=timezone.utc).date() + timedelta(days=30),
+            end=datetime.now(tz=timezone.utc).date() + timedelta(days=365),
         )
         SupportContractAssignment.objects.create(contract=contract, device=self.device)
 
@@ -135,7 +134,7 @@ class DeviceContractsHTMXViewTest(TestCase):
         contract = SupportContract.objects.create(
             vendor=self.vendor,
             contract_id='UNSPEC-001',
-            start=date.today() - timedelta(days=30),
+            start=datetime.now(tz=timezone.utc).date() - timedelta(days=30),
             end=None,
         )
         SupportContractAssignment.objects.create(contract=contract, device=self.device)
@@ -169,7 +168,7 @@ class DeviceContractsHTMXViewTest(TestCase):
         active_contract = SupportContract.objects.create(
             vendor=self.vendor,
             contract_id='ACTIVE-MULTI',
-            end=date.today() + timedelta(days=30),
+            end=datetime.now(tz=timezone.utc).date() + timedelta(days=30),
         )
         SupportContractAssignment.objects.create(
             contract=active_contract, device=self.device
@@ -179,8 +178,8 @@ class DeviceContractsHTMXViewTest(TestCase):
         future_contract = SupportContract.objects.create(
             vendor=self.vendor,
             contract_id='FUTURE-MULTI',
-            start=date.today() + timedelta(days=30),
-            end=date.today() + timedelta(days=365),
+            start=datetime.now(tz=timezone.utc).date() + timedelta(days=30),
+            end=datetime.now(tz=timezone.utc).date() + timedelta(days=365),
         )
         SupportContractAssignment.objects.create(
             contract=future_contract, device=self.device
@@ -190,7 +189,7 @@ class DeviceContractsHTMXViewTest(TestCase):
         expired_contract = SupportContract.objects.create(
             vendor=self.vendor,
             contract_id='EXPIRED-MULTI',
-            end=date.today() - timedelta(days=1),
+            end=datetime.now(tz=timezone.utc).date() - timedelta(days=1),
         )
         SupportContractAssignment.objects.create(
             contract=expired_contract, device=self.device
@@ -228,7 +227,7 @@ class DeviceContractsHTMXViewTest(TestCase):
         contract = SupportContract.objects.create(
             vendor=self.vendor,
             contract_id='LICENSE-001',
-            end=date.today() + timedelta(days=30),
+            end=datetime.now(tz=timezone.utc).date() + timedelta(days=30),
         )
         SupportContractAssignment.objects.create(
             contract=contract,
@@ -264,7 +263,7 @@ class DeviceContractsHTMXViewTest(TestCase):
         contract = SupportContract.objects.create(
             vendor=self.vendor,
             contract_id='EXPIRED-SKU-001',
-            end=date.today() - timedelta(days=1),
+            end=datetime.now(tz=timezone.utc).date() - timedelta(days=1),
         )
         SupportContractAssignment.objects.create(
             contract=contract, device=self.device, sku=sku

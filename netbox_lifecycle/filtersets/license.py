@@ -1,15 +1,15 @@
 import django_filters
+from dcim.models import Device, Manufacturer
 from django.db.models import Q
 from django.utils.translation import gettext as _
-
-from dcim.models import Manufacturer, Device
 from netbox.filtersets import NetBoxModelFilterSet
 from virtualization.models import VirtualMachine
-from netbox_lifecycle.models import Vendor, License, LicenseAssignment
+
+from netbox_lifecycle.models import License, LicenseAssignment, Vendor
 
 __all__ = (
-    'LicenseFilterSet',
     'LicenseAssignmentFilterSet',
+    'LicenseFilterSet',
 )
 
 

@@ -1,20 +1,19 @@
-from django.utils.translation import gettext as _
-
 import django_tables2 as tables
+from django.utils.translation import gettext as _
+from netbox.tables import ChoiceFieldColumn, NetBoxTable
 
-from netbox.tables import NetBoxTable, ChoiceFieldColumn
 from netbox_lifecycle.models import (
     SupportContract,
-    Vendor,
     SupportContractAssignment,
     SupportSKU,
+    Vendor,
 )
 
 __all__ = (
-    'VendorTable',
-    'SupportSKUTable',
-    'SupportContractTable',
     'SupportContractAssignmentTable',
+    'SupportContractTable',
+    'SupportSKUTable',
+    'VendorTable',
 )
 
 

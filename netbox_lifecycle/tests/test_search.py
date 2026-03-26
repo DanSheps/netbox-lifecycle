@@ -2,8 +2,8 @@ from django.core.exceptions import FieldDoesNotExist
 from django.test import TestCase
 
 from netbox_lifecycle.search import (
-    SupportContractAssignmentIndex,
     LicenseAssignmentIndex,
+    SupportContractAssignmentIndex,
 )
 
 

@@ -1,32 +1,32 @@
+from dcim.models import Device, DeviceType, Manufacturer, Module, ModuleType
 from django import forms
 from django.utils.translation import gettext as _
-
-from dcim.models import DeviceType, ModuleType, Manufacturer, Device, Module
 from netbox.forms import NetBoxModelForm
-from virtualization.models import VirtualMachine
-from netbox_lifecycle.models import (
-    HardwareLifecycle,
-    Vendor,
-    SupportContract,
-    LicenseAssignment,
-    License,
-    SupportContractAssignment,
-    SupportSKU,
-)
 from utilities.forms.fields import (
     DynamicModelChoiceField,
 )
 from utilities.forms.rendering import FieldSet, TabbedGroups
 from utilities.forms.widgets import DatePicker
+from virtualization.models import VirtualMachine
+
+from netbox_lifecycle.models import (
+    HardwareLifecycle,
+    License,
+    LicenseAssignment,
+    SupportContract,
+    SupportContractAssignment,
+    SupportSKU,
+    Vendor,
+)
 
 __all__ = (
-    'VendorForm',
-    'SupportSKUForm',
-    'SupportContractForm',
-    'SupportContractAssignmentForm',
-    'LicenseForm',
-    'LicenseAssignmentForm',
     'HardwareLifecycleForm',
+    'LicenseAssignmentForm',
+    'LicenseForm',
+    'SupportContractAssignmentForm',
+    'SupportContractForm',
+    'SupportSKUForm',
+    'VendorForm',
 )
 
 

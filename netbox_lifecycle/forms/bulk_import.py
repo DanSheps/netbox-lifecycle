@@ -1,6 +1,5 @@
-from django.utils.translation import gettext_lazy as _
-
 from dcim.models import Device, DeviceType, Manufacturer, Module, ModuleType
+from django.utils.translation import gettext_lazy as _
 from netbox.forms import NetBoxModelImportForm
 from utilities.forms.fields import CSVModelChoiceField
 from virtualization.models import VirtualMachine
@@ -16,13 +15,13 @@ from netbox_lifecycle.models import (
 )
 
 __all__ = (
-    'VendorImportForm',
-    'SupportSKUImportForm',
-    'SupportContractImportForm',
-    'SupportContractAssignmentImportForm',
-    'LicenseImportForm',
-    'LicenseAssignmentImportForm',
     'HardwareLifecycleImportForm',
+    'LicenseAssignmentImportForm',
+    'LicenseImportForm',
+    'SupportContractAssignmentImportForm',
+    'SupportContractImportForm',
+    'SupportSKUImportForm',
+    'VendorImportForm',
 )
 
 

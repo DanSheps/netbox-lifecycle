@@ -1,10 +1,10 @@
 import django_filters
+from dcim.models import DeviceType, ModuleType
 from django.contrib.contenttypes.models import ContentType
-from django.utils.translation import gettext as _
 from django.db.models import Q
-
-from dcim.models import ModuleType, DeviceType
+from django.utils.translation import gettext as _
 from netbox.filtersets import NetBoxModelFilterSet
+
 from netbox_lifecycle.models import HardwareLifecycle
 
 __all__ = ('HardwareLifecycleFilterSet',)

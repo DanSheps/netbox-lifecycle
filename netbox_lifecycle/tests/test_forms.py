@@ -1,6 +1,5 @@
-from django.test import TestCase
-
 from dcim.models import Device, DeviceType, Manufacturer
+from django.test import TestCase
 from utilities.testing import create_test_device
 
 from netbox_lifecycle.forms import *
