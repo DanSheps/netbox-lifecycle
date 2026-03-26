@@ -1,10 +1,11 @@
 from dcim.models import Manufacturer
-from netbox_lifecycle.models import Vendor, SupportSKU, SupportContract
+
+from netbox_lifecycle.models import SupportContract, SupportSKU, Vendor
 
 __all__ = (
-    'create_test_vendor',
-    'create_test_supportsku',
     'create_test_supportcontract',
+    'create_test_supportsku',
+    'create_test_vendor',
 )
 
 

@@ -1,11 +1,9 @@
+from dcim.models import Device, DeviceType, Manufacturer, Module, ModuleBay, ModuleType
 from django.test import TestCase
-
-from dcim.models import Manufacturer, Device, DeviceType, Module, ModuleBay, ModuleType
 from utilities.testing import create_test_device
 
 from netbox_lifecycle.filtersets import *
 from netbox_lifecycle.models import *
-
 from netbox_lifecycle.utilities.testing import *
 
 

@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
-
 from netbox.plugins import PluginTemplateExtension
 
 from .models import hardware

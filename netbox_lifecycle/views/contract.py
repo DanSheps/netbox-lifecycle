@@ -8,11 +8,13 @@ from netbox.views.generic import (
     ObjectListView,
     ObjectView,
 )
+from utilities.views import GetRelatedModelsMixin, ViewTab, register_model_view
+
 from netbox_lifecycle.filtersets import (
-    SupportContractFilterSet,
-    VendorFilterSet,
     SupportContractAssignmentFilterSet,
+    SupportContractFilterSet,
     SupportSKUFilterSet,
+    VendorFilterSet,
 )
 from netbox_lifecycle.forms import (
     SupportContractAssignmentBulkEditForm,
@@ -34,35 +36,26 @@ from netbox_lifecycle.forms import (
 )
 from netbox_lifecycle.models import (
     SupportContract,
-    Vendor,
     SupportContractAssignment,
     SupportSKU,
+    Vendor,
 )
 from netbox_lifecycle.tables import (
-    SupportContractTable,
-    VendorTable,
     SupportContractAssignmentTable,
+    SupportContractTable,
     SupportSKUTable,
+    VendorTable,
 )
-from utilities.views import ViewTab, register_model_view, GetRelatedModelsMixin
 
 __all__ = (
-    # Vendor
-    'VendorBulkDeleteView',
-    'VendorBulkEditView',
-    'VendorBulkImportView',
-    'VendorDeleteView',
-    'VendorEditView',
-    'VendorListView',
-    'VendorView',
-    # SupportSKU
-    'SupportSKUBulkDeleteView',
-    'SupportSKUBulkEditView',
-    'SupportSKUBulkImportView',
-    'SupportSKUDeleteView',
-    'SupportSKUEditView',
-    'SupportSKUListView',
-    'SupportSKUView',
+    # SupportContractAssignment
+    'SupportContractAssignmentBulkDeleteView',
+    'SupportContractAssignmentBulkEditView',
+    'SupportContractAssignmentBulkImportView',
+    'SupportContractAssignmentDeleteView',
+    'SupportContractAssignmentEditView',
+    'SupportContractAssignmentListView',
+    'SupportContractAssignmentView',
     # SupportContract
     'SupportContractAssignmentsView',
     'SupportContractBulkDeleteView',
@@ -72,14 +65,22 @@ __all__ = (
     'SupportContractEditView',
     'SupportContractListView',
     'SupportContractView',
-    # SupportContractAssignment
-    'SupportContractAssignmentBulkDeleteView',
-    'SupportContractAssignmentBulkEditView',
-    'SupportContractAssignmentBulkImportView',
-    'SupportContractAssignmentDeleteView',
-    'SupportContractAssignmentEditView',
-    'SupportContractAssignmentListView',
-    'SupportContractAssignmentView',
+    # SupportSKU
+    'SupportSKUBulkDeleteView',
+    'SupportSKUBulkEditView',
+    'SupportSKUBulkImportView',
+    'SupportSKUDeleteView',
+    'SupportSKUEditView',
+    'SupportSKUListView',
+    'SupportSKUView',
+    # Vendor
+    'VendorBulkDeleteView',
+    'VendorBulkEditView',
+    'VendorBulkImportView',
+    'VendorDeleteView',
+    'VendorEditView',
+    'VendorListView',
+    'VendorView',
 )
 
 

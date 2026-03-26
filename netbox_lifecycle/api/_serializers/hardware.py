@@ -1,8 +1,8 @@
 from django.contrib.contenttypes.models import ContentType
-from rest_framework import serializers
-
 from netbox.api.fields import ContentTypeField
 from netbox.api.serializers import NetBoxModelSerializer
+from rest_framework import serializers
+
 from netbox_lifecycle.models import HardwareLifecycle
 
 __all__ = ('HardwareLifecycleSerializer',)

@@ -1,9 +1,9 @@
-from rest_framework import serializers
-
 from dcim.api.serializers_.devices import DeviceSerializer, ModuleSerializer
 from dcim.api.serializers_.manufacturers import ManufacturerSerializer
 from netbox.api.serializers import NetBoxModelSerializer
+from rest_framework import serializers
 from virtualization.api.serializers_.virtualmachines import VirtualMachineSerializer
+
 from netbox_lifecycle.api._serializers.license import LicenseAssignmentSerializer
 from netbox_lifecycle.api._serializers.vendor import VendorSerializer
 from netbox_lifecycle.models import (
@@ -13,9 +13,9 @@ from netbox_lifecycle.models import (
 )
 
 __all__ = (
-    'SupportSKUSerializer',
-    'SupportContractSerializer',
     'SupportContractAssignmentSerializer',
+    'SupportContractSerializer',
+    'SupportSKUSerializer',
 )
 
 

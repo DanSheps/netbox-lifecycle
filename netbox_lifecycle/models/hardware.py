@@ -1,9 +1,8 @@
+from dcim.models import Device, DeviceType, Module, ModuleType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.urls import reverse
-
-from dcim.models import DeviceType, ModuleType, Device, Module
 from netbox.models import PrimaryModel
 
 from netbox_lifecycle.constants import HARDWARE_LIFECYCLE_MODELS

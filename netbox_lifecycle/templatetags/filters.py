@@ -1,4 +1,5 @@
-from datetime import datetime, date
+from datetime import datetime, timezone
+
 from dateutil.relativedelta import relativedelta
 from django import template
 from django.utils.safestring import mark_safe
@@ -7,11 +8,11 @@ register = template.Library()
 
 
 def is_expired(value):
-    return value < datetime.now().date()
+    return value < datetime.now(tz=timezone.utc).date()
 
 
 def expires_within_six_months(value):
-    return value < (date.today() + relativedelta(months=+6))
+    return value < (datetime.now(tz=timezone.utc).date() + relativedelta(months=+6))
 
 
 @register.filter(is_safe=True)

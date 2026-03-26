@@ -1,8 +1,7 @@
+from dcim.models import Device
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, render
 from django.views import View
-
-from dcim.models import Device
 from virtualization.models import VirtualMachine
 
 from netbox_lifecycle.constants import (
@@ -14,10 +13,10 @@ from netbox_lifecycle.constants import (
 from netbox_lifecycle.models import SupportContractAssignment
 
 __all__ = (
-    'DeviceContractsHTMXView',
     'DeviceContractsExpiredHTMXView',
-    'VirtualMachineContractsHTMXView',
+    'DeviceContractsHTMXView',
     'VirtualMachineContractsExpiredHTMXView',
+    'VirtualMachineContractsHTMXView',
 )
 
 

@@ -1,11 +1,10 @@
-from datetime import date
+from datetime import datetime, timezone
 
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.functions import Lower
 from django.urls import reverse
 from django.utils.translation import gettext as _
-
 from netbox.models import PrimaryModel
 
 from netbox_lifecycle.constants import (
@@ -16,10 +15,10 @@ from netbox_lifecycle.constants import (
 )
 
 __all__ = (
-    'Vendor',
-    'SupportSKU',
     'SupportContract',
     'SupportContractAssignment',
+    'SupportSKU',
+    'Vendor',
 )
 
 
@@ -218,7 +217,7 @@ class SupportContractAssignment(PrimaryModel):
 
     @property
     def status(self):
-        today = date.today()
+        today = datetime.now(tz=timezone.utc).date()
 
         # Check if contract starts in the future
         if self.contract.start and self.contract.start > today:
@@ -265,26 +264,30 @@ class SupportContractAssignment(PrimaryModel):
             )
 
         # If license has a device, it must match the assignment's device
-        if self.license and self.license.device and self.device:
-            if self.device != self.license.device:
-                raise ValidationError(
-                    {
-                        'device': _(
-                            'Device must match the device assigned to the license'
-                        )
-                    }
-                )
+        if (
+            self.license
+            and self.license.device
+            and self.device
+            and self.device != self.license.device
+        ):
+            raise ValidationError(
+                {'device': _('Device must match the device assigned to the license')}
+            )
 
         # If license has a virtual_machine, it must match the assignment's virtual_machine
-        if self.license and self.license.virtual_machine and self.virtual_machine:
-            if self.virtual_machine != self.license.virtual_machine:
-                raise ValidationError(
-                    {
-                        'virtual_machine': _(
-                            'Virtual machine must match the virtual machine assigned to the license'
-                        )
-                    }
-                )
+        if (
+            self.license
+            and self.license.virtual_machine
+            and self.virtual_machine
+            and self.virtual_machine != self.license.virtual_machine
+        ):
+            raise ValidationError(
+                {
+                    'virtual_machine': _(
+                        'Virtual machine must match the virtual machine assigned to the license'
+                    )
+                }
+            )
 
         # Uniqueness check: contract + device + module + virtual_machine + license + sku
         if (

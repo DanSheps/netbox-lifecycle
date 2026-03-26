@@ -7,6 +7,8 @@ from netbox.views.generic import (
     ObjectListView,
     ObjectView,
 )
+from utilities.views import register_model_view
+
 from netbox_lifecycle.filtersets import HardwareLifecycleFilterSet
 from netbox_lifecycle.forms import (
     HardwareLifecycleBulkEditForm,
@@ -16,7 +18,6 @@ from netbox_lifecycle.forms import (
 from netbox_lifecycle.forms.model_forms import HardwareLifecycleForm
 from netbox_lifecycle.models import HardwareLifecycle
 from netbox_lifecycle.tables import HardwareLifecycleTable
-from utilities.views import register_model_view
 
 __all__ = (
     'HardwareLifecycleBulkDeleteView',

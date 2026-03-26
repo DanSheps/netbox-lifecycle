@@ -8,6 +8,8 @@ from netbox.views.generic import (
     ObjectListView,
     ObjectView,
 )
+from utilities.views import ViewTab, register_model_view
+
 from netbox_lifecycle.filtersets import LicenseAssignmentFilterSet, LicenseFilterSet
 from netbox_lifecycle.forms import (
     LicenseAssignmentBulkEditForm,
@@ -21,7 +23,6 @@ from netbox_lifecycle.forms import (
 )
 from netbox_lifecycle.models import License, LicenseAssignment
 from netbox_lifecycle.tables import LicenseAssignmentTable, LicenseTable
-from utilities.views import ViewTab, register_model_view
 
 __all__ = (
     'LicenseAssignmentBulkDeleteView',
@@ -30,8 +31,8 @@ __all__ = (
     'LicenseAssignmentDeleteView',
     'LicenseAssignmentEditView',
     'LicenseAssignmentListView',
-    'LicenseAssignmentsView',
     'LicenseAssignmentView',
+    'LicenseAssignmentsView',
     'LicenseBulkDeleteView',
     'LicenseBulkEditView',
     'LicenseBulkImportView',

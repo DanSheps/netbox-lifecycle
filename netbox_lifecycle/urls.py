@@ -1,12 +1,12 @@
 from django.urls import path
-
 from netbox.views.generic import ObjectChangeLogView
+
 from . import views
 from .models import (
     HardwareLifecycle,
-    SupportContract,
     License,
     LicenseAssignment,
+    SupportContract,
     SupportContractAssignment,
     SupportSKU,
     Vendor,
