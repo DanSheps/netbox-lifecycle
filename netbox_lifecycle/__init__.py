@@ -18,6 +18,7 @@ class NetBoxLifeCycle(PluginConfig):
     default_settings = {
         'lifecycle_card_position': 'right_page',
         'contract_card_position': 'right_page',
+        'license_card_position': 'right_page',
     }
     queues = []
     graphql_schema = 'graphql.schema.schema'
