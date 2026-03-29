@@ -1,0 +1,47 @@
+{% load i18n %}
+
+<div class="card">
+  <h5 class="card-header">
+    {% trans "Licenses" %}
+    <div class="card-actions">
+      <a href="{% url 'plugins:netbox_lifecycle:licenseassignment_add' %}?device={{ device.pk }}&return_url={{ device.get_absolute_url }}" class="btn btn-ghost-primary btn-sm">
+        <span class="mdi mdi-plus-thick" aria-hidden="true"></span> {% trans "Assign License" %}
+      </a>
+    </div>
+  </h5>
+  {% if assignments %}
+  <div class="card-body">
+    <table class="table table-sm table-hover table-vcenter mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>{% trans "License" %}</th>
+          <th>{% trans "Manufacturer" %}</th>
+          <th>{% trans "Vendor" %}</th>
+          <th>{% trans "Quantity" %}</th>
+          <th>{% trans "Description" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for assignment in assignments %}
+        <tr>
+          <td><a href="{{ assignment.license.get_absolute_url }}">{{ assignment.license.name }}</a></td>
+          <td class="text-muted">{{ assignment.license.manufacturer|default:"-" }}</td>
+          <td class="text-muted">{{ assignment.vendor|default:"-" }}</td>
+          <td>{{ assignment.quantity|default:"-" }}</td>
+          <td class="text-muted">{{ assignment.description|default:"-" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if show_all_url %}
+    <div class="text-end mt-2">
+      <small class="text-muted"><a href="{{ show_all_url }}">{% trans "Show all Licenses" %}</a></small>
+    </div>
+    {% endif %}
+  </div>
+  {% else %}
+  <div class="card-body">
+    <span class="text-muted">{% trans "None" %}</span>
+  </div>
+  {% endif %}
+</div>

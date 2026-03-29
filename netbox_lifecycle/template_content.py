@@ -4,6 +4,7 @@ from django.urls import reverse
 from netbox.plugins import PluginTemplateExtension
 
 from .models import hardware
+from .models.license import LicenseAssignment
 
 PLUGIN_SETTINGS = settings.PLUGINS_CONFIG.get('netbox_lifecycle', {})
 
@@ -58,6 +59,9 @@ class DeviceLifecycleContent(BaseLifecycleContent):
     def get_contract_card_position(self):
         return PLUGIN_SETTINGS.get('contract_card_position', 'right_page')
 
+    def get_license_card_position(self):
+        return PLUGIN_SETTINGS.get('license_card_position', 'right_page')
+
     def _render_contract_card(self):
         obj = self.context.get('object')
         return self.render(
@@ -70,12 +74,28 @@ class DeviceLifecycleContent(BaseLifecycleContent):
             },
         )
 
+    def _render_license_card(self):
+        obj = self.context.get('object')
+        if not LicenseAssignment.objects.filter(device=obj).exists():
+            return ''
+        return self.render(
+            'netbox_lifecycle/inc/license_card_placeholder.html',
+            extra_context={
+                'htmx_url': reverse(
+                    'plugins:netbox_lifecycle:device_licenses_htmx',
+                    kwargs={'pk': obj.pk},
+                ),
+            },
+        )
+
     def right_page(self):
         result = ''
         if self.get_lifecycle_card_position() == 'right_page':
             result += self._render_lifecycle_info()
         if self.get_contract_card_position() == 'right_page':
             result += self._render_contract_card()
+        if self.get_license_card_position() == 'right_page':
+            result += self._render_license_card()
         return result
 
     def left_page(self):
@@ -84,6 +104,8 @@ class DeviceLifecycleContent(BaseLifecycleContent):
             result += self._render_lifecycle_info()
         if self.get_contract_card_position() == 'left_page':
             result += self._render_contract_card()
+        if self.get_license_card_position() == 'left_page':
+            result += self._render_license_card()
         return result
 
     def full_width_page(self):
@@ -92,6 +114,8 @@ class DeviceLifecycleContent(BaseLifecycleContent):
             result += self._render_lifecycle_info()
         if self.get_contract_card_position() == 'full_width_page':
             result += self._render_contract_card()
+        if self.get_license_card_position() == 'full_width_page':
+            result += self._render_license_card()
         return result
 
 
@@ -114,12 +138,15 @@ class ModuleTypeLifecycleContent(BaseLifecycleContent):
 
 
 class VirtualMachineContractContent(PluginTemplateExtension):
-    """Template extension for VirtualMachine detail pages showing contracts."""
+    """Template extension for VirtualMachine detail pages showing contracts and licenses."""
 
     models = ['virtualization.virtualmachine']
 
     def get_contract_card_position(self):
         return PLUGIN_SETTINGS.get('contract_card_position', 'right_page')
+
+    def get_license_card_position(self):
+        return PLUGIN_SETTINGS.get('license_card_position', 'right_page')
 
     def _render_contract_card(self):
         obj = self.context.get('object')
@@ -133,20 +160,43 @@ class VirtualMachineContractContent(PluginTemplateExtension):
             },
         )
 
+    def _render_license_card(self):
+        obj = self.context.get('object')
+        if not LicenseAssignment.objects.filter(virtual_machine=obj).exists():
+            return ''
+        return self.render(
+            'netbox_lifecycle/inc/license_card_placeholder.html',
+            extra_context={
+                'htmx_url': reverse(
+                    'plugins:netbox_lifecycle:virtualmachine_licenses_htmx',
+                    kwargs={'pk': obj.pk},
+                ),
+            },
+        )
+
     def right_page(self):
+        result = ''
         if self.get_contract_card_position() == 'right_page':
-            return self._render_contract_card()
-        return ''
+            result += self._render_contract_card()
+        if self.get_license_card_position() == 'right_page':
+            result += self._render_license_card()
+        return result
 
     def left_page(self):
+        result = ''
         if self.get_contract_card_position() == 'left_page':
-            return self._render_contract_card()
-        return ''
+            result += self._render_contract_card()
+        if self.get_license_card_position() == 'left_page':
+            result += self._render_license_card()
+        return result
 
     def full_width_page(self):
+        result = ''
         if self.get_contract_card_position() == 'full_width_page':
-            return self._render_contract_card()
-        return ''
+            result += self._render_contract_card()
+        if self.get_license_card_position() == 'full_width_page':
+            result += self._render_license_card()
+        return result
 
 
 template_extensions = (
