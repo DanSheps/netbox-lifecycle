@@ -6,7 +6,7 @@ from netbox_lifecycle.constants import (
     CONTRACT_STATUS_FUTURE,
     CONTRACT_STATUS_UNSPECIFIED,
 )
-from netbox_lifecycle.templatetags.filters import contract_status_badge
+from netbox_lifecycle.templatetags.netbox_lifecycle_filters import contract_status_badge
 
 
 class ContractStatusBadgeFilterTest(TestCase):
