@@ -58,7 +58,7 @@ class LicenseIndex(SearchIndex):
         ('description', 4000),
         ('comments', 5000),
     )
-    display_attrs = ('description', )
+    display_attrs = ('description',)
 
 
 @register_search

@@ -177,7 +177,7 @@ class SupportContractAssignment(PrimaryModel):
         ordering = ['contract', 'device', 'virtual_machine', 'module', 'license']
         constraints = (
             models.CheckConstraint(
-                check=(
+                condition=(
                     models.Q(device__isnull=True, virtual_machine__isnull=False)
                     | models.Q(device__isnull=False, virtual_machine__isnull=True)
                     | models.Q(device__isnull=True, virtual_machine__isnull=True)

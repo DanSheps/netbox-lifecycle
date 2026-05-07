@@ -90,7 +90,7 @@ jobs:
     - name: Check Black
       uses: psf/black@stable
       with:
-        options: "--check --skip-string-normalization"
+        options: "--check --skip-string-normalization --fast"
         src: "netbox-lifecycle/netbox_lifecycle"
 
     - name: Run tests
