@@ -61,7 +61,7 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name='licenseassignment',
             constraint=models.CheckConstraint(
-                check=models.Q(device__isnull=True, virtual_machine__isnull=False)
+                condition=models.Q(device__isnull=True, virtual_machine__isnull=False)
                 | models.Q(device__isnull=False, virtual_machine__isnull=True)
                 | models.Q(device__isnull=True, virtual_machine__isnull=True),
                 name='netbox_lifecycle_licenseassignment_device_vm_exclusive',
@@ -72,7 +72,7 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name='supportcontractassignment',
             constraint=models.CheckConstraint(
-                check=models.Q(device__isnull=True, virtual_machine__isnull=False)
+                condition=models.Q(device__isnull=True, virtual_machine__isnull=False)
                 | models.Q(device__isnull=False, virtual_machine__isnull=True)
                 | models.Q(device__isnull=True, virtual_machine__isnull=True),
                 name='netbox_lifecycle_supportcontractassignment_device_vm_exclusive',
