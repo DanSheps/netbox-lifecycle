@@ -259,8 +259,6 @@ class SupportContractAssignmentListView(ObjectListView):
     actions = {
         'add': {'add'},
         'export': {'view'},
-        'edit': {'change'},
-        'delete': {'delete'},
         'bulk_edit': {'change'},
         'bulk_delete': {'delete'},
     }
