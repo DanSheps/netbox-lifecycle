@@ -62,6 +62,7 @@ class SupportSKUFilterSet(NetBoxModelFilterSet):
             'id',
             'q',
             'manufacturer_id',
+            'sku',
         )
 
     def search(self, queryset, name, value):
