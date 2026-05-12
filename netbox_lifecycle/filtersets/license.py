@@ -3,6 +3,7 @@ from dcim.models import Device, Manufacturer
 from django.db.models import Q
 from django.utils.translation import gettext as _
 from netbox.filtersets import NetBoxModelFilterSet
+from utilities.filtersets import register_filterset
 from virtualization.models import VirtualMachine
 
 from netbox_lifecycle.models import License, LicenseAssignment, Vendor
@@ -13,6 +14,7 @@ __all__ = (
 )
 
 
+@register_filterset
 class LicenseFilterSet(NetBoxModelFilterSet):
     manufacturer_id = django_filters.ModelMultipleChoiceFilter(
         field_name='manufacturer',
@@ -32,6 +34,7 @@ class LicenseFilterSet(NetBoxModelFilterSet):
             'id',
             'q',
             'name',
+            'manufacturer_id',
         )
 
     def search(self, queryset, name, value):
@@ -41,6 +44,7 @@ class LicenseFilterSet(NetBoxModelFilterSet):
         return queryset.filter(qs_filter).distinct()
 
 
+@register_filterset
 class LicenseAssignmentFilterSet(NetBoxModelFilterSet):
     license_id = django_filters.ModelMultipleChoiceFilter(
         field_name='license',
@@ -92,6 +96,10 @@ class LicenseAssignmentFilterSet(NetBoxModelFilterSet):
         fields = (
             'id',
             'q',
+            'license_id',
+            'vendor_id',
+            'device_id',
+            'virtual_machine_id',
         )
 
     def search(self, queryset, name, value):

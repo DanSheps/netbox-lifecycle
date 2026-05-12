@@ -1,3 +1,4 @@
+from extras.ui.panels import TagsPanel, CustomFieldsPanel
 from netbox.views.generic import (
     BulkDeleteView,
     BulkEditView,
@@ -7,6 +8,12 @@ from netbox.views.generic import (
     ObjectEditView,
     ObjectListView,
     ObjectView,
+)
+from netbox.ui import panels, layout
+from netbox_lifecycle.ui import LicensePanel, LicenseAssignmentPanel
+from netbox_lifecycle.ui.panels.license import (
+    LicenseAssignmentDevicePanel,
+    LicenseAssignmentVMPanel,
 )
 from utilities.views import ViewTab, register_model_view
 
@@ -43,7 +50,7 @@ __all__ = (
 )
 
 
-@register_model_view(License, name='list')
+@register_model_view(License, name='list', path='', detail=False)
 class LicenseListView(ObjectListView):
     queryset = License.objects.all()
     table = LicenseTable
@@ -54,20 +61,25 @@ class LicenseListView(ObjectListView):
 @register_model_view(License)
 class LicenseView(ObjectView):
     queryset = License.objects.all()
+    template_name = 'generic/object.html'
+    layout = layout.SimpleLayout(
+        left_panels=[
+            LicensePanel(),
+            TagsPanel(),
+        ],
+        right_panels=[
+            CustomFieldsPanel(),
+            panels.CommentsPanel(),
+            panels.RelatedObjectsPanel(),
+        ],
+    )
 
 
+@register_model_view(License, 'add', detail=False)
 @register_model_view(License, 'edit')
 class LicenseEditView(ObjectEditView):
     queryset = License.objects.all()
     form = LicenseForm
-
-
-@register_model_view(License, 'bulk_edit')
-class LicenseBulkEditView(BulkEditView):
-    queryset = License.objects.all()
-    filterset = LicenseFilterSet
-    table = LicenseTable
-    form = LicenseBulkEditForm
 
 
 @register_model_view(License, 'delete')
@@ -75,14 +87,22 @@ class LicenseDeleteView(ObjectDeleteView):
     queryset = License.objects.all()
 
 
-@register_model_view(License, 'bulk_delete')
+@register_model_view(License, 'bulk_edit', detail=False)
+class LicenseBulkEditView(BulkEditView):
+    queryset = License.objects.all()
+    filterset = LicenseFilterSet
+    table = LicenseTable
+    form = LicenseBulkEditForm
+
+
+@register_model_view(License, 'bulk_delete', detail=False)
 class LicenseBulkDeleteView(BulkDeleteView):
     queryset = License.objects.all()
     filterset = LicenseFilterSet
     table = LicenseTable
 
 
-@register_model_view(License, 'bulk_import')
+@register_model_view(License, 'bulk_import', detail=False)
 class LicenseBulkImportView(BulkImportView):
     queryset = License.objects.all()
     model_form = LicenseImportForm
@@ -90,13 +110,11 @@ class LicenseBulkImportView(BulkImportView):
 
 @register_model_view(License, 'assignments')
 class LicenseAssignmentsView(ObjectChildrenView):
-    template_name = 'netbox_lifecycle/license/assignments.html'
     queryset = License.objects.all()
     child_model = LicenseAssignment
     table = LicenseAssignmentTable
     filterset = LicenseAssignmentFilterSet
     viewname = None
-    actions = {'add': {'add'}, 'edit': {'change'}, 'delete': {'delete'}}
     tab = ViewTab(
         label='License Assignments',
         badge=lambda obj: LicenseAssignment.objects.filter(license=obj).count(),
@@ -106,7 +124,7 @@ class LicenseAssignmentsView(ObjectChildrenView):
         return self.child_model.objects.filter(license=parent)
 
 
-@register_model_view(LicenseAssignment, name='list')
+@register_model_view(LicenseAssignment, name='list', path='', detail=False)
 class LicenseAssignmentListView(ObjectListView):
     queryset = LicenseAssignment.objects.all()
     table = LicenseAssignmentTable
@@ -117,8 +135,23 @@ class LicenseAssignmentListView(ObjectListView):
 @register_model_view(LicenseAssignment)
 class LicenseAssignmentView(ObjectView):
     queryset = LicenseAssignment.objects.all()
+    template_name = 'generic/object.html'
+    layout = layout.SimpleLayout(
+        left_panels=[
+            LicenseAssignmentPanel(),
+            LicenseAssignmentDevicePanel(),
+            LicenseAssignmentVMPanel(),
+            TagsPanel(),
+        ],
+        right_panels=[
+            CustomFieldsPanel(),
+            panels.CommentsPanel(),
+            panels.RelatedObjectsPanel(),
+        ],
+    )
 
 
+@register_model_view(LicenseAssignment, 'add', detail=False)
 @register_model_view(LicenseAssignment, 'edit')
 class LicenseAssignmentEditView(ObjectEditView):
     queryset = LicenseAssignment.objects.all()
@@ -130,7 +163,7 @@ class LicenseAssignmentDeleteView(ObjectDeleteView):
     queryset = LicenseAssignment.objects.all()
 
 
-@register_model_view(LicenseAssignment, 'bulk_edit')
+@register_model_view(LicenseAssignment, 'bulk_edit', detail=False)
 class LicenseAssignmentBulkEditView(BulkEditView):
     queryset = LicenseAssignment.objects.all()
     filterset = LicenseAssignmentFilterSet
@@ -138,14 +171,14 @@ class LicenseAssignmentBulkEditView(BulkEditView):
     form = LicenseAssignmentBulkEditForm
 
 
-@register_model_view(LicenseAssignment, 'bulk_delete')
+@register_model_view(LicenseAssignment, 'bulk_delete', detail=False)
 class LicenseAssignmentBulkDeleteView(BulkDeleteView):
     queryset = LicenseAssignment.objects.all()
     filterset = LicenseAssignmentFilterSet
     table = LicenseAssignmentTable
 
 
-@register_model_view(LicenseAssignment, 'bulk_import')
+@register_model_view(LicenseAssignment, 'bulk_import', detail=False)
 class LicenseAssignmentBulkImportView(BulkImportView):
     queryset = LicenseAssignment.objects.all()
     model_form = LicenseAssignmentImportForm
