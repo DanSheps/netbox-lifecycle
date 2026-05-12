@@ -235,7 +235,7 @@ class ModuleTypeLifecycleContent(LifecycleMixin, BaseMixin, PluginTemplateExtens
     models = ['dcim.moduletype']
 
 
-class VirtualMachineContractContent(LicenseMixin, BaseMixin, PluginTemplateExtension):
+class VirtualMachineContractContent(ContractMixin, LicenseMixin, BaseMixin, PluginTemplateExtension):
     """Template extension for VirtualMachine detail pages showing contracts and licenses."""
 
     models = ['virtualization.virtualmachine']
