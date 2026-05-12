@@ -2,6 +2,8 @@ from django.utils.translation import gettext_lazy as _
 
 from netbox.ui import attrs, panels
 
+from netbox_lifecycle.ui.attributes import ColoredDateTimeAttr
+
 __all__ = (
     'VendorPanel',
     'SupportSKUPanel',
@@ -12,8 +14,6 @@ __all__ = (
     'SupportContractAssignmentVMPanel',
     'SupportContractAssignmentLicensePanel',
 )
-
-from netbox_lifecycle.ui import ColoredDateTimeAttr
 
 
 class VendorPanel(panels.ObjectAttributesPanel):
