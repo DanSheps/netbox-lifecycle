@@ -8,6 +8,8 @@ from netbox.filtersets import NetBoxModelFilterSet
 from utilities.filtersets import register_filterset
 from virtualization.models import VirtualMachine
 
+from netbox_lifecycle import constants
+from netbox_lifecycle.choices import ContractStatusChoices
 from netbox_lifecycle.models import (
     License,
     SupportContract,
@@ -187,9 +189,10 @@ class SupportContractAssignmentFilterSet(NetBoxModelFilterSet):
         to_field_name='status',
         label=_('Device Status'),
     )
-    expired = django_filters.BooleanFilter(
-        method='filter_expired',
-        label=_('Expired'),
+    status = django_filters.ChoiceFilter(
+        choices=ContractStatusChoices.CHOICES,
+        method='filter_status',
+        label=_('Status'),
     )
 
     class Meta:
@@ -205,6 +208,7 @@ class SupportContractAssignmentFilterSet(NetBoxModelFilterSet):
             'virtual_machine_id',
             'license_id',
             'device_status',
+            'status',
         )
 
     def search(self, queryset, name, value):
@@ -224,9 +228,16 @@ class SupportContractAssignmentFilterSet(NetBoxModelFilterSet):
         )
         return queryset.filter(qs_filter).distinct()
 
-    def filter_expired(self, queryset, name, value):
+    def filter_status(self, queryset, name, value):
         today = timezone.now().date()
         expired = Q(end__lt=today) | Q(end__isnull=True, contract__end__lt=today)
-        if value:
+        future = Q(contract__start__gt=today)
+        if value == constants.CONTRACT_STATUS_ACTIVE:
+            return queryset.exclude(expired).exclude(future)
+        elif value == constants.CONTRACT_STATUS_FUTURE:
+            return queryset.filter(future)
+        elif value == constants.CONTRACT_STATUS_EXPIRED:
             return queryset.filter(expired)
-        return queryset.exclude(expired)
+        elif value == constants.CONTRACT_STATUS_UNSPECIFIED:
+            return queryset.filter(end__isnull=True, contract__end__isnull=True)
+        return queryset
