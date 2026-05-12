@@ -225,6 +225,8 @@ class SupportContractAssignmentFilterSet(NetBoxModelFilterSet):
         return queryset.filter(qs_filter).distinct()
 
     def filter_expired(self, queryset, name, value):
+        today = timezone.now().date()
+        expired = Q(end__lt=today) | Q(end__isnull=True, contract__end__lt=today)
         if value:
-            return queryset.filter(end__lt=timezone.now())
-        return queryset.exclude(end__lt=timezone.now())
+            return queryset.filter(expired)
+        return queryset.exclude(expired)

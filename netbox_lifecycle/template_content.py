@@ -198,7 +198,7 @@ class LicenseMixin:
             model='netbox_lifecycle.licenseassignment',
             filters={self.field_name: lambda ctx: ctx['object'].pk},
             include_columns=[
-                'vendor' 'license',
+                'vendor', 'license',
                 'quantity',
             ],
             exclude_columns=[
