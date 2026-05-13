@@ -1,0 +1,141 @@
+{% extends 'base/layout.html' %}
+{% load helpers %}
+{% load perms %}
+
+{% block title %}Cisco EoX Settings{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col col-md-6">
+
+    <!-- Settings card -->
+    <div class="card">
+      <h5 class="card-header d-flex justify-content-between align-items-center">
+        Cisco EoX API Settings
+        {% if perms.netbox_lifecycle.change_ciscoeoxsettings %}
+          <a href="{% url 'plugins:netbox_lifecycle:cisco_eox_settings_edit' %}" class="btn btn-warning btn-sm">
+            <span class="mdi mdi-pencil" aria-hidden="true"></span> Edit
+          </a>
+        {% endif %}
+      </h5>
+      <div class="card-body">
+        <table class="table table-hover attr-table">
+          <tr>
+            <th>Enabled</th>
+            <td>
+              {% if settings_obj.enabled %}
+                <span class="badge bg-success">Yes</span>
+              {% else %}
+                <span class="badge bg-secondary">No</span>
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <th>OAuth Client ID</th>
+            <td>
+              {% if settings_obj.client_id %}
+                <code>{{ settings_obj.client_id }}</code>
+              {% else %}
+                <span class="text-muted">&mdash;</span>
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <th>OAuth Client Secret</th>
+            <td>
+              {% if settings_obj._client_secret %}
+                <span class="text-muted">&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull; (stored encrypted)</span>
+              {% else %}
+                <span class="text-muted">&mdash;</span>
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <th>Sync Interval</th>
+            <td>{{ settings_obj.sync_interval_display }}</td>
+          </tr>
+          <tr>
+            <th>Manufacturer Names</th>
+            <td>{{ settings_obj.manufacturer_names|placeholder }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Run Now -->
+    {% if perms.netbox_lifecycle.change_ciscoeoxsettings %}
+      <div class="card mt-3">
+        <h5 class="card-header">Manual Trigger</h5>
+        <div class="card-body">
+          <p class="text-muted">
+            Immediately queue a Cisco EoX sync job. The job will run on the
+            next available RQ worker.
+          </p>
+          <form method="post" action="{% url 'plugins:netbox_lifecycle:cisco_eox_run_now' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary"
+              {% if not settings_obj.enabled or not settings_obj.client_id %}disabled{% endif %}>
+              <span class="mdi mdi-play" aria-hidden="true"></span> Run Now
+            </button>
+            {% if not settings_obj.enabled or not settings_obj.client_id %}
+              <small class="text-muted ms-2">Enable the sync and provide credentials first.</small>
+            {% endif %}
+          </form>
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+
+  <!-- Recent jobs -->
+  <div class="col col-md-6">
+    <div class="card">
+      <h5 class="card-header">Recent Sync Jobs</h5>
+      <div class="card-body p-0">
+        {% if recent_jobs %}
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Started</th>
+                <th>Status</th>
+                <th>Completed</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for job in recent_jobs %}
+                <tr>
+                  <td>
+                    {% if job.url %}
+                      <a href="{{ job.url }}">{{ job.created }}</a>
+                    {% else %}
+                      {{ job.created }}
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if job.status == 'completed' %}
+                      <span class="badge bg-success">Completed</span>
+                    {% elif job.status == 'running' %}
+                      <span class="badge bg-primary">Running</span>
+                    {% elif job.status == 'pending' %}
+                      <span class="badge bg-secondary">Pending</span>
+                    {% elif job.status == 'failed' %}
+                      <span class="badge bg-danger">Failed</span>
+                    {% elif job.status == 'errored' %}
+                      <span class="badge bg-warning text-dark">Errored</span>
+                    {% else %}
+                      <span class="badge bg-light text-dark">{{ job.status }}</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ job.completed|placeholder }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p class="text-muted p-3 mb-0">No sync jobs have run yet.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -285,4 +285,20 @@ urlpatterns = [
         views.VirtualMachineLicensesHTMXView.as_view(),
         name='virtualmachine_licenses_htmx',
     ),
+    # Cisco EoX settings
+    path(
+        'cisco-eox/settings/',
+        views.CiscoEoXSettingsView.as_view(),
+        name='cisco_eox_settings',
+    ),
+    path(
+        'cisco-eox/settings/edit/',
+        views.CiscoEoXSettingsEditView.as_view(),
+        name='cisco_eox_settings_edit',
+    ),
+    path(
+        'cisco-eox/run-now/',
+        views.CiscoEoXRunNowView.as_view(),
+        name='cisco_eox_run_now',
+    ),
 ]

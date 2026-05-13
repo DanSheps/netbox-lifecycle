@@ -1,0 +1,84 @@
+{% extends 'base/layout.html' %}
+{% load helpers %}
+
+{% block title %}Edit Cisco EoX Settings{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col col-md-6">
+    <div class="card">
+      <h5 class="card-header">Cisco EoX API Settings</h5>
+      <div class="card-body">
+
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <div class="form-check form-switch">
+              {{ form.enabled }}
+              <label class="form-check-label" for="{{ form.enabled.id_for_label }}">
+                {{ form.enabled.label }}
+              </label>
+            </div>
+            {% if form.enabled.help_text %}
+              <div class="form-text text-muted">{{ form.enabled.help_text }}</div>
+            {% endif %}
+            {% for error in form.enabled.errors %}
+              <div class="invalid-feedback d-block">{{ error }}</div>
+            {% endfor %}
+          </div>
+
+          {% for field in form %}
+            {% if field.name != 'enabled' %}
+              <div class="mb-3">
+                <label for="{{ field.id_for_label }}" class="form-label fw-bold">
+                  {{ field.label }}
+                  {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+                </label>
+                {{ field }}
+                {% if field.help_text %}
+                  <div class="form-text text-muted">{{ field.help_text|safe }}</div>
+                {% endif %}
+                {% for error in field.errors %}
+                  <div class="invalid-feedback d-block">{{ error }}</div>
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% endfor %}
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">
+              <span class="mdi mdi-content-save" aria-hidden="true"></span> Save
+            </button>
+            <a href="{% url 'plugins:netbox_lifecycle:cisco_eox_settings' %}" class="btn btn-outline-secondary">
+              Cancel
+            </a>
+          </div>
+        </form>
+
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <h5 class="card-header">About Cisco EoX API Credentials</h5>
+      <div class="card-body text-muted small">
+        <p>
+          Access to the Cisco EoX API requires an active Cisco Smart Net Total Care (SNTC)
+          or Partner Support Services (PSS) agreement.
+        </p>
+        <ol>
+          <li>Register an application at
+            <a href="https://apiconsole.cisco.com/" target="_blank" rel="noopener">apiconsole.cisco.com</a>.
+          </li>
+          <li>Enable the <strong>EoX API</strong> for your application.</li>
+          <li>Copy the generated <strong>Key</strong> (Client ID) and <strong>Client Secret</strong> here.</li>
+        </ol>
+        <p class="mb-0">
+          The client secret is stored Fernet-encrypted in the database using a key
+          derived from Django's <code>SECRET_KEY</code>.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

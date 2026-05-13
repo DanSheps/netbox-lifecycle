@@ -38,12 +38,19 @@ license_assignments = PluginMenuItem(
 )
 
 
+cisco_eox_settings = PluginMenuItem(
+    link='plugins:netbox_lifecycle:cisco_eox_settings',
+    link_text='Cisco EoX Settings',
+    permissions=['netbox_lifecycle.view_ciscoeoxsettings'],
+)
+
 menu = PluginMenu(
     label='Hardware Lifecycle',
     groups=(
         ('Lifecycle', (lifecycle,)),
         ('Vendor Support', (vendors, skus, contracts, contract_assignments)),
         ('Licensing', (licenses, license_assignments)),
+        ('Cisco EoX', (cisco_eox_settings,)),
     ),
     icon_class='mdi mdi-server',
 )
