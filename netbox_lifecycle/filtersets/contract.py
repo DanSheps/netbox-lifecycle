@@ -232,6 +232,7 @@ class SupportContractAssignmentFilterSet(NetBoxModelFilterSet):
         today = timezone.now().date()
         expired = Q(end__lt=today) | Q(end__isnull=True, contract__end__lt=today)
         future = Q(contract__start__gt=today)
+        unspecified = Q(end__isnull=True, contract__end__isnull=True)
         if value == constants.CONTRACT_STATUS_ACTIVE:
             return queryset.exclude(expired).exclude(future)
         elif value == constants.CONTRACT_STATUS_FUTURE:
@@ -239,5 +240,5 @@ class SupportContractAssignmentFilterSet(NetBoxModelFilterSet):
         elif value == constants.CONTRACT_STATUS_EXPIRED:
             return queryset.filter(expired)
         elif value == constants.CONTRACT_STATUS_UNSPECIFIED:
-            return queryset.filter(end__isnull=True, contract__end__isnull=True)
+            return queryset.filter(unspecified).exclude(future)
         return queryset
