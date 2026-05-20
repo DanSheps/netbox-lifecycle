@@ -1,10 +1,15 @@
 import django_filters
-from dcim.models import Device, Manufacturer, Module
+from django.utils import timezone
+
+from dcim.models import Device, Manufacturer, Module, DeviceType
 from django.db.models import Q
 from django.utils.translation import gettext as _
 from netbox.filtersets import NetBoxModelFilterSet
+from utilities.filtersets import register_filterset
 from virtualization.models import VirtualMachine
 
+from netbox_lifecycle import constants
+from netbox_lifecycle.choices import ContractStatusChoices
 from netbox_lifecycle.models import (
     License,
     SupportContract,
@@ -21,6 +26,7 @@ __all__ = (
 )
 
 
+@register_filterset
 class VendorFilterSet(NetBoxModelFilterSet):
 
     class Meta:
@@ -38,6 +44,7 @@ class VendorFilterSet(NetBoxModelFilterSet):
         return queryset.filter(qs_filter).distinct()
 
 
+@register_filterset
 class SupportSKUFilterSet(NetBoxModelFilterSet):
     manufacturer_id = django_filters.ModelMultipleChoiceFilter(
         field_name='manufacturer',
@@ -56,6 +63,7 @@ class SupportSKUFilterSet(NetBoxModelFilterSet):
         fields = (
             'id',
             'q',
+            'manufacturer_id',
             'sku',
         )
 
@@ -66,6 +74,7 @@ class SupportSKUFilterSet(NetBoxModelFilterSet):
         return queryset.filter(qs_filter).distinct()
 
 
+@register_filterset
 class SupportContractFilterSet(NetBoxModelFilterSet):
     vendor_id = django_filters.ModelMultipleChoiceFilter(
         field_name='vendor',
@@ -85,6 +94,7 @@ class SupportContractFilterSet(NetBoxModelFilterSet):
             'id',
             'q',
             'contract_id',
+            'vendor_id',
         )
 
     def search(self, queryset, name, value):
@@ -94,6 +104,7 @@ class SupportContractFilterSet(NetBoxModelFilterSet):
         return queryset.filter(qs_filter).distinct()
 
 
+@register_filterset
 class SupportContractAssignmentFilterSet(NetBoxModelFilterSet):
     contract_id = django_filters.ModelMultipleChoiceFilter(
         field_name='contract',
@@ -116,6 +127,17 @@ class SupportContractAssignmentFilterSet(NetBoxModelFilterSet):
         queryset=SupportSKU.objects.all(),
         to_field_name='sku',
         label=_('SKU'),
+    )
+    device_type_id = django_filters.ModelMultipleChoiceFilter(
+        field_name='device__device_type',
+        queryset=DeviceType.objects.all(),
+        label=_('Device Type (ID)'),
+    )
+    device_type = django_filters.ModelMultipleChoiceFilter(
+        field_name='device__device_type__model',
+        queryset=DeviceType.objects.all(),
+        to_field_name='model',
+        label=_('Device Type (model)'),
     )
     device_id = django_filters.ModelMultipleChoiceFilter(
         field_name='device',
@@ -167,12 +189,26 @@ class SupportContractAssignmentFilterSet(NetBoxModelFilterSet):
         to_field_name='status',
         label=_('Device Status'),
     )
+    status = django_filters.ChoiceFilter(
+        choices=ContractStatusChoices.CHOICES,
+        method='filter_status',
+        label=_('Status'),
+    )
 
     class Meta:
         model = SupportContractAssignment
         fields = (
             'id',
             'q',
+            'contract_id',
+            'sku_id',
+            'device_type_id',
+            'device_id',
+            'module_id',
+            'virtual_machine_id',
+            'license_id',
+            'device_status',
+            'status',
         )
 
     def search(self, queryset, name, value):
@@ -191,3 +227,18 @@ class SupportContractAssignmentFilterSet(NetBoxModelFilterSet):
             | Q(license__license__name__icontains=value)
         )
         return queryset.filter(qs_filter).distinct()
+
+    def filter_status(self, queryset, name, value):
+        today = timezone.now().date()
+        expired = Q(end__lt=today) | Q(end__isnull=True, contract__end__lt=today)
+        future = Q(contract__start__gt=today)
+        unspecified = Q(end__isnull=True, contract__end__isnull=True)
+        if value == constants.CONTRACT_STATUS_ACTIVE:
+            return queryset.exclude(expired).exclude(future)
+        elif value == constants.CONTRACT_STATUS_FUTURE:
+            return queryset.filter(future)
+        elif value == constants.CONTRACT_STATUS_EXPIRED:
+            return queryset.filter(expired)
+        elif value == constants.CONTRACT_STATUS_UNSPECIFIED:
+            return queryset.filter(unspecified).exclude(future)
+        return queryset
