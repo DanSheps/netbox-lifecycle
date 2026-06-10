@@ -9,12 +9,14 @@ output-format = "github"
 
 [lint]
 extend-select = ["E1", "E2", "E3", "E501", "W"]
-ignore = ["F403", "F405", "RUF012"]
+ignore = ["F403", "F405", "RUF012", "I001", "RUF022", ]
 preview = true
 
 [lint.per-file-ignores]
-"template_code.py" = ["E501"]
-"netbox_lifecycle/graphql/filters.py" = ["F821"]
+"urls.py" = ["F401", ]
+"netbox_lifecycle/graphql/filters.py" = ["F821", ]
+"netbox_lifecycle/ui/panels/contract.py" = ["SIM103", ]
+"netbox_lifecycle/ui/panels/license.py" = ["SIM103", ]
 
 [format]
 quote-style = "single"
