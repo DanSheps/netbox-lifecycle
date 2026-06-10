@@ -13,9 +13,9 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import redirect, render
 from django.views import View
 
-from netbox_lifecycle.forms.cisco_eox import CiscoEoXSettingsForm
+from netbox_lifecycle.forms.eox import CiscoEoXSettingsForm
 from netbox_lifecycle.jobs import CiscoEoXSyncJob
-from netbox_lifecycle.models.cisco_eox import CiscoEoXSettings
+from netbox_lifecycle.models.eox import CiscoEoXSettings
 
 __all__ = (
     'CiscoEoXSettingsView',

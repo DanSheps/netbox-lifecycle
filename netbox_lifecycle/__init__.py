@@ -18,13 +18,7 @@ class NetBoxLifeCycle(PluginConfig):
     default_settings = {
         'lifecycle_card_position': 'right_page',
         'contract_card_position': 'right_page',
-        'license_card_position': 'right_page',
-        # Cisco EoX API — fallback to PLUGINS_CONFIG when no DB settings exist
-        'cisco_eox_enabled': False,
-        'cisco_eox_client_id': '',
-        'cisco_eox_client_secret': '',
-        'cisco_eox_sync_interval': 10080,  # weekly, in minutes
-        'cisco_eox_manufacturer_names': 'Cisco',
+        'license_card_position': 'right_page'
     }
     queues = []
     graphql_schema = 'graphql.schema.schema'
@@ -32,7 +26,7 @@ class NetBoxLifeCycle(PluginConfig):
     def ready(self):
 
         super().ready()
-
+        # TODO: Loop here and queue jobs that are not queued.
         from netbox_lifecycle.jobs import CiscoEoXSyncJob  # noqa: F401 — registers job
 
         from dcim.models import DeviceType, ModuleType
