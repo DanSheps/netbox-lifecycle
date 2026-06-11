@@ -17,6 +17,7 @@ from netbox_lifecycle import models
 from .filters import *
 
 __all__ = (
+    'EoXAPISettingsType',
     'HardwareLifecycleType',
     'LicenseAssignmentType',
     'LicenseType',
@@ -25,6 +26,15 @@ __all__ = (
     'SupportSKUType',
     'VendorType',
 )
+
+
+@strawberry_django.type(
+    models.EoXAPISettings, fields='__all__', filters=EoXAPISettingsFilter
+)
+class EoXAPISettingsType(PrimaryObjectType):
+    driver: str
+    url: str
+    enabled: bool
 
 
 @strawberry_django.type(models.Vendor, fields='__all__', filters=VendorFilter)

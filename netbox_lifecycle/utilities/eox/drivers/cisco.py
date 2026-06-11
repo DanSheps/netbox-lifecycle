@@ -1,50 +1,40 @@
 """
-Cisco EoX (End-of-Life) API client.
+Cisco EoX (End-of-Life) API driver.
 
 Authentication: OAuth 2.0 client_credentials grant.
-Credentials are retrieved via the plugin's settings loader; see
-netbox_lifecycle.utilities.settings_loader.
 
 API documentation:
   https://developer.cisco.com/docs/support-apis/eox/
 """
 
 import logging
-from datetime import date, datetime
+from datetime import date
 
 import requests
 from django.core.cache import cache
 
+from ..base import BaseEoXDriver, EoXAPIError
+
 logger = logging.getLogger(__name__)
 
-EOX_API_BASE = 'https://apix.cisco.com/supporttools/eox/rest/5'
 TOKEN_URL = 'https://id.cisco.com/oauth2/default/v1/token'
 TOKEN_CACHE_KEY = 'netbox_lifecycle__cisco_eox_token'
 # Sentinel date Cisco returns when no specific date exists
 _CISCO_NULL_DATE = 'Y-Y-Y-Y'
 
 
-class CiscoEoXAPIError(Exception):
-    """Raised for authentication failures or API-level errors."""
-
-
-class CiscoEoXApiClient:
+class CiscoEoXDriver(BaseEoXDriver):
     """
     Thin wrapper around the Cisco EoX REST API v5.
 
     Usage::
 
-        client = CiscoEoXApiClient(client_id='…', client_secret='…')
-        records = client.get_eox_by_product_id(['WS-C3750X-48P-S'])
+        driver = CiscoEoXDriver(client_id='…', client_secret='…',
+            base_url='https://apix.cisco.com/supporttools/eox/rest/5')
+        records = driver.get_eox_by_product_id(['WS-C3750X-48P-S'])
         for r in records:
-            parsed = client.parse_eox_record(r)
+            parsed = driver.parse_eox_record(r)
     """
-
-    def __init__(self, client_id: str, client_secret: str):
-        if not client_id or not client_secret:
-            raise CiscoEoXAPIError('client_id and client_secret must be non-empty.')
-        self._client_id = client_id
-        self._client_secret = client_secret
 
     # ------------------------------------------------------------------
     # Authentication
@@ -53,25 +43,28 @@ class CiscoEoXApiClient:
     def _get_token(self) -> str:
         """
         Return a valid Bearer token, fetching a new one if the cached token
-        has expired.  Tokens are cached for 58 minutes (Cisco tokens expire
+        has expired. Tokens are cached for 58 minutes (Cisco tokens expire
         after ~60 minutes).
         """
         token = cache.get(TOKEN_CACHE_KEY)
         if token:
             return token
 
-        response = requests.post(
-            TOKEN_URL,
-            data={
-                'grant_type': 'client_credentials',
-                'client_id': self._client_id,
-                'client_secret': self._client_secret,
-            },
-            timeout=30,
-        )
+        try:
+            response = requests.post(
+                TOKEN_URL,
+                data={
+                    'grant_type': 'client_credentials',
+                    'client_id': self._client_id,
+                    'client_secret': self._client_secret,
+                },
+                timeout=30,
+            )
+        except requests.RequestException as exc:
+            raise EoXAPIError(f'Cisco OAuth token request failed: {exc}') from exc
 
         if response.status_code != 200:
-            raise CiscoEoXAPIError(
+            raise EoXAPIError(
                 f'Cisco OAuth token request failed ({response.status_code}): '
                 f'{response.text[:300]}'
             )
@@ -79,9 +72,7 @@ class CiscoEoXApiClient:
         payload = response.json()
         token = payload.get('access_token')
         if not token:
-            raise CiscoEoXAPIError(
-                f'Cisco OAuth response missing access_token: {payload}'
-            )
+            raise EoXAPIError(f'Cisco OAuth response missing access_token: {payload}')
 
         # Cache for 58 minutes to avoid using an about-to-expire token
         cache.set(TOKEN_CACHE_KEY, token, timeout=58 * 60)
@@ -99,11 +90,10 @@ class CiscoEoXApiClient:
 
     def get_eox_by_serial(self, serial_numbers: list[str]) -> list[dict]:
         """
-        Look up EoX records for up to 20 serial numbers.
+        Look up EoX records for up to 20 serial numbers per chunk.
 
-        Returns a list of raw EoX record dicts from the API.  Records where
-        the API returned an error (e.g. serial not found) are silently
-        filtered out.
+        Records where the API returned an error (e.g. serial not found) are
+        silently filtered out.
         """
         if not serial_numbers:
             return []
@@ -111,28 +101,20 @@ class CiscoEoXApiClient:
         results = []
         for chunk in _chunks(serial_numbers, 20):
             serials_str = ','.join(chunk)
-            url = f'{EOX_API_BASE}/EOXBySerialNumber/1/{serials_str}'
-            records = self._fetch_eox(url)
-            results.extend(records)
-
+            url = f'{self._base_url}/EOXBySerialNumber/1/{serials_str}'
+            results.extend(self._fetch_eox(url))
         return results
 
     def get_eox_by_product_id(self, product_ids: list[str]) -> list[dict]:
-        """
-        Look up EoX records for up to 20 Product IDs (part numbers).
-
-        Returns a list of raw EoX record dicts.
-        """
+        """Look up EoX records for up to 20 Product IDs (part numbers) per chunk."""
         if not product_ids:
             return []
 
         results = []
         for chunk in _chunks(product_ids, 20):
             pids_str = ','.join(chunk)
-            url = f'{EOX_API_BASE}/EOXByProductID/1/{pids_str}'
-            records = self._fetch_eox(url)
-            results.extend(records)
-
+            url = f'{self._base_url}/EOXByProductID/1/{pids_str}'
+            results.extend(self._fetch_eox(url))
         return results
 
     def _fetch_eox(self, url: str) -> list[dict]:
@@ -145,7 +127,7 @@ class CiscoEoXApiClient:
                 timeout=30,
             )
         except requests.RequestException as exc:
-            raise CiscoEoXAPIError(f'HTTP request failed: {exc}') from exc
+            raise EoXAPIError(f'HTTP request failed: {exc}') from exc
 
         if response.status_code == 401:
             # Invalidate cached token and retry once
@@ -158,10 +140,10 @@ class CiscoEoXApiClient:
                     timeout=30,
                 )
             except requests.RequestException as exc:
-                raise CiscoEoXAPIError(f'HTTP request failed on retry: {exc}') from exc
+                raise EoXAPIError(f'HTTP request failed on retry: {exc}') from exc
 
         if response.status_code != 200:
-            raise CiscoEoXAPIError(
+            raise EoXAPIError(
                 f'Cisco EoX API returned {response.status_code}: {response.text[:300]}'
             )
 
@@ -169,10 +151,9 @@ class CiscoEoXApiClient:
         raw_records = data.get('EOXRecord', [])
 
         # Filter out error records (no EoX data for this product/serial)
-        good_records = [
+        return [
             r for r in raw_records if not r.get('EOXError') and r.get('EOLProductID')
         ]
-        return good_records
 
     # ------------------------------------------------------------------
     # Parsing
@@ -182,10 +163,8 @@ class CiscoEoXApiClient:
     def parse_eox_record(record: dict) -> dict:
         """
         Convert a raw Cisco EoX API record into a dict whose keys match
-        HardwareLifecycle field names.
-
-        Date values are returned as ``datetime.date`` objects (or ``None``
-        when the API returns a sentinel / missing value).
+        HardwareLifecycle field names. Date values are ``datetime.date``
+        instances or ``None`` when the API returns a sentinel/missing value.
         """
 
         def _date(field_name: str) -> date | None:
@@ -194,10 +173,10 @@ class CiscoEoXApiClient:
                 value = obj.get('value', '')
             else:
                 value = str(obj) if obj else ''
-            if not value or value == _CISCO_NULL_DATE or value == '':
+            if not value or value == _CISCO_NULL_DATE:
                 return None
             try:
-                return datetime.strptime(value, '%Y-%m-%d').date()
+                return date.fromisoformat(value)
             except ValueError:
                 logger.debug('Cannot parse date %r for field %s', value, field_name)
                 return None

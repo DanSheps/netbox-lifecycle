@@ -18,7 +18,7 @@ class NetBoxLifeCycle(PluginConfig):
     default_settings = {
         'lifecycle_card_position': 'right_page',
         'contract_card_position': 'right_page',
-        'license_card_position': 'right_page'
+        'license_card_position': 'right_page',
     }
     queues = []
     graphql_schema = 'graphql.schema.schema'
@@ -26,8 +26,8 @@ class NetBoxLifeCycle(PluginConfig):
     def ready(self):
 
         super().ready()
-        # TODO: Loop here and queue jobs that are not queued.
-        from netbox_lifecycle.jobs import CiscoEoXSyncJob  # noqa: F401 — registers job
+        # Import EoX job classes so JobRunner registration takes effect at startup.
+        from netbox_lifecycle.jobs import EoXManualSyncJob, EoXSyncJob  # noqa: F401
 
         from dcim.models import DeviceType, ModuleType
         from django.contrib.contenttypes.fields import GenericRelation

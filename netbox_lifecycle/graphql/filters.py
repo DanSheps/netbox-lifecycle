@@ -7,6 +7,7 @@ from netbox.graphql.filters import PrimaryModelFilter
 from netbox_lifecycle import models
 
 __all__ = (
+    'EoXAPISettingsFilter',
     'HardwareLifecycleFilter',
     'LicenseAssignmentFilter',
     'LicenseFilter',
@@ -15,6 +16,11 @@ __all__ = (
     'SupportSKUFilter',
     'VendorFilter',
 )
+
+
+@strawberry_django.filter(models.EoXAPISettings, lookups=True)
+class EoXAPISettingsFilter(PrimaryModelFilter):
+    pass
 
 
 @strawberry_django.filter(models.Vendor, lookups=True)

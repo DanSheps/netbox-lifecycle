@@ -40,20 +40,13 @@ urlpatterns = [
         'license-assignments/<int:pk>/',
         include(get_model_urls(app_name, 'licenseassignment')),
     ),
-    # Cisco EoX settings
+    # EoX API settings
     path(
-        'cisco-eox/settings/',
-        views.CiscoEoXSettingsView.as_view(),
-        name='cisco_eox_settings',
+        'eox/',
+        include(get_model_urls(app_name, 'eoxapisettings', detail=False)),
     ),
     path(
-        'cisco-eox/settings/edit/',
-        views.CiscoEoXSettingsEditView.as_view(),
-        name='cisco_eox_settings_edit',
-    ),
-    path(
-        'cisco-eox/run-now/',
-        views.CiscoEoXRunNowView.as_view(),
-        name='cisco_eox_run_now',
+        'eox/<int:pk>/',
+        include(get_model_urls(app_name, 'eoxapisettings')),
     ),
 ]

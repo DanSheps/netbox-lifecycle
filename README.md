@@ -42,20 +42,9 @@ PLUGINS_CONFIG = {
         'lifecycle_card_position': 'right_page',
         'contract_card_position': 'right_page',
         'license_card_position': 'right_page',
-
-        # Cisco EoX API sync (optional — can also be configured via the Web UI)
-        'cisco_eox_enabled': False,
-        'cisco_eox_client_id': '',
-        'cisco_eox_client_secret': '',
-        'cisco_eox_sync_interval': 10080,  # minutes (default: weekly)
-        'cisco_eox_manufacturer_names': 'Cisco',
     },
 }
 ```
-
-> **Note:** Cisco EoX credentials configured here are read as plain text from your configuration file.
-> For production deployments it is recommended to configure them instead through the Web UI
-> (`/lifecycle/cisco-eox/settings/`), where the client secret is stored Fernet-encrypted at rest.
 
 ### Available Settings
 
@@ -67,28 +56,23 @@ PLUGINS_CONFIG = {
 | `contract_card_position` | `right_page` | Position of the Support Contracts card on Device and VirtualMachine detail pages. Options: `left_page`, `right_page`, `full_width_page`. |
 | `license_card_position` | `right_page` | Position of the Licenses card on Device and VirtualMachine detail pages. Options: `left_page`, `right_page`, `full_width_page`. |
 
-#### Cisco EoX API (`PLUGINS_CONFIG` fallback)
+### EoX Integration
 
-These settings are only used when no database configuration record exists. The Web UI (`/lifecycle/cisco-eox/settings/`) takes precedence when configured.
+The plugin includes a vendor-agnostic EoX sync system. Each row in **EoX Settings** (`/lifecycle/eox/`) configures one endpoint — driver, URL, OAuth credentials, sync interval, and a set of in-scope manufacturers. Multiple rows per driver are permitted (e.g. distinct credentials per environment). The OAuth client secret is stored Fernet-encrypted at rest using a key derived from Django's `SECRET_KEY`.
 
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `cisco_eox_enabled` | `False` | Enable the Cisco EoX background sync job. |
-| `cisco_eox_client_id` | `''` | OAuth Client ID from [Cisco API Console](https://apiconsole.cisco.com/). Requires an active SNTC or PSS agreement. |
-| `cisco_eox_client_secret` | `''` | OAuth Client Secret. Stored as plain text here; use the Web UI for encrypted storage. |
-| `cisco_eox_sync_interval` | `10080` | Sync frequency in minutes. Common values: `60` (hourly), `1440` (daily), `10080` (weekly), `20160` (biweekly), `43200` (monthly). |
-| `cisco_eox_manufacturer_names` | `'Cisco'` | Comma-separated list of manufacturer names whose DeviceTypes and ModuleTypes are queried (e.g. `'Cisco,Cisco Systems'`). |
+Drivers are pluggable. The currently shipped driver is **Cisco EoX**; add a vendor by implementing `BaseEoXDriver` under `netbox_lifecycle/utilities/eox/drivers/` and registering it in `DRIVERS`.
 
-### Cisco EoX Integration
+**Two background jobs:**
 
-The plugin includes a background job (`CiscoEoXSyncJob`) that automatically populates `HardwareLifecycle` records with end-of-life dates from the [Cisco EoX API](https://developer.cisco.com/docs/support-apis/eox/).
+- `EoXSyncJob` — automatically scheduled per row via `enqueue_once(interval=row.sync_interval)` whenever the row is saved with `enabled=True`. Re-enqueues itself at the end of each run so interval changes are honored.
+- `EoXManualSyncJob` — one-shot, triggered by the **Run Now** action on the row's detail page.
 
-**Lookup order per DeviceType / ModuleType:**
+**Lookup order per DeviceType / ModuleType (Cisco driver):**
 
 1. Finds a serial number from a related Device or Module and queries `EOXBySerialNumber`.
 2. Falls back to the `part_number` field and queries `EOXByProductID` if no serial is available or the serial lookup returns no data.
 
-**Fields populated:**
+**Fields populated by the Cisco driver:**
 
 | Cisco API field | HardwareLifecycle field |
 |---|---|
@@ -99,7 +83,7 @@ The plugin includes a background job (`CiscoEoXSyncJob`) that automatically popu
 | `EndOfServiceContractRenewal` | `last_contract_renewal` |
 | `LinkToProductBulletinURL` | `documentation` |
 
-**Web UI configuration** is available at `/lifecycle/cisco-eox/settings/`. After entering credentials and enabling the sync, the job is automatically scheduled at the configured interval. An on-demand **Run Now** button is also provided. Job history is displayed on the settings page and in NetBox's built-in **System → Jobs** view.
+Cisco EoX API access requires an active SNTC or PSS agreement and an OAuth client registered at [apiconsole.cisco.com](https://apiconsole.cisco.com/). Job history is visible on the row's detail page and in NetBox's built-in **System → Jobs** view.
 
 ### Hardware Lifecycle Info Card
 
