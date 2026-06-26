@@ -36,12 +36,11 @@ def _run_sync(cfg, log) -> None:
     client = driver_cls(
         client_id=cfg.client_id,
         client_secret=cfg.client_secret,
-        base_url=cfg.url,
     )
 
-    manufacturer_ids = list(cfg.manufacturers.values_list('pk', flat=True))
-    if not manufacturer_ids:
-        log.info('No manufacturers configured for %s — nothing to sync.', cfg)
+    manufacturer_id = cfg.manufacturer_id
+    if not manufacturer_id:
+        log.info('No manufacturer configured for %s — nothing to sync.', cfg)
         return
 
     updated = skipped = errored = 0
@@ -111,7 +110,7 @@ def _run_sync(cfg, log) -> None:
 
     dt_ct = ContentType.objects.get_for_model(DeviceType)
     device_types = DeviceType.objects.filter(
-        manufacturer_id__in=manufacturer_ids
+        manufacturer_id=manufacturer_id
     ).select_related('manufacturer')
     log.info('Processing %d DeviceTypes for %s.', device_types.count(), cfg)
     for dt in device_types:
@@ -119,7 +118,7 @@ def _run_sync(cfg, log) -> None:
 
     mt_ct = ContentType.objects.get_for_model(ModuleType)
     module_types = ModuleType.objects.filter(
-        manufacturer_id__in=manufacturer_ids
+        manufacturer_id=manufacturer_id
     ).select_related('manufacturer')
     log.info('Processing %d ModuleTypes for %s.', module_types.count(), cfg)
     for mt in module_types:

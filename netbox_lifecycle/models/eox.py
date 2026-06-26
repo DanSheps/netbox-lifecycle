@@ -26,9 +26,13 @@ def _get_fernet():
 
 class EoXAPISettings(JobsMixin, PrimaryModel):
     """
-    Stores EoX API credentials, parameters, and sync configuration for a single
-    vendor driver. Each row represents one configured EoX endpoint; multiple
-    rows for the same driver (e.g. different URLs) are permitted.
+    Stores EoX API credentials and sync configuration for a single
+    driver/manufacturer pair. The API URL itself lives on the driver class
+    (``BaseEoXDriver.api_url``); operators only supply credentials, the
+    manufacturer the credentials apply to, and the schedule.
+
+    Multiple rows for the same driver are permitted (e.g. one row per
+    manufacturer), but each (driver, manufacturer) pair must be unique.
 
     The OAuth client secret is stored Fernet-encrypted at rest using a key
     derived from Django's SECRET_KEY.
@@ -41,17 +45,12 @@ class EoXAPISettings(JobsMixin, PrimaryModel):
         help_text=_('The EoX driver implementation used to query this endpoint.'),
     )
 
-    url = models.URLField(
-        max_length=300,
-        verbose_name=_('API URL'),
-        help_text=_('Base URL of the EoX API.'),
-    )
-
-    manufacturers = models.ManyToManyField(
+    manufacturer = models.ForeignKey(
         to='dcim.Manufacturer',
+        on_delete=models.CASCADE,
         related_name='eox_settings',
-        verbose_name=_('Manufacturers'),
-        help_text=_('DeviceTypes/ModuleTypes from these manufacturers are queried.'),
+        verbose_name=_('Manufacturer'),
+        help_text=_('DeviceTypes/ModuleTypes from this manufacturer are queried.'),
     )
 
     enabled = models.BooleanField(
@@ -86,25 +85,26 @@ class EoXAPISettings(JobsMixin, PrimaryModel):
         editable=False,
     )
 
-    clone_fields = ('driver', 'url', 'sync_interval')
+    clone_fields = ('driver', 'sync_interval')
 
     class Meta:
         verbose_name = _('EoX API Settings')
         verbose_name_plural = _('EoX API Settings')
-        ordering = ('driver', 'url', 'pk')
+        ordering = ('driver', 'manufacturer', 'pk')
         constraints = (
             models.UniqueConstraint(
-                fields=('driver', 'url'),
-                name='%(app_label)s_%(class)s_unique_driver_url',
+                fields=('driver', 'manufacturer'),
+                name='%(app_label)s_%(class)s_unique_driver_manufacturer',
                 violation_error_message=_(
-                    'An EoX settings record for this driver and URL already exists.'
+                    'An EoX settings record for this driver and manufacturer '
+                    'already exists.'
                 ),
             ),
         )
         permissions = (('sync', _('Trigger an EoX sync')),)
 
     def __str__(self):
-        return f'{self.get_driver_display()} — {self.url}'
+        return f'{self.get_driver_display()} — {self.manufacturer}'
 
     def get_absolute_url(self):
         return reverse('plugins:netbox_lifecycle:eoxapisettings', args=[self.pk])

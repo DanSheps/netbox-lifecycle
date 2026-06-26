@@ -17,17 +17,17 @@ class EoXAPISettingsModelTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.manufacturer = Manufacturer.objects.create(name='Cisco', slug='cisco')
+        cls.manufacturer2 = Manufacturer.objects.create(name='Meraki', slug='meraki')
 
-    def _make_cfg(self, url='https://apix.example.com/eox/rest/5', enabled=False):
+    def _make_cfg(self, manufacturer=None, enabled=False):
         cfg = EoXAPISettings.objects.create(
             driver=DriverChoices.CISCO,
-            url=url,
+            manufacturer=manufacturer or self.manufacturer,
             enabled=enabled,
             client_id='client-id',
         )
         cfg.client_secret = 's3cret'
         cfg.save()
-        cfg.manufacturers.add(self.manufacturer)
         return cfg
 
     def test_client_secret_round_trip(self):
@@ -45,18 +45,18 @@ class EoXAPISettingsModelTests(TestCase):
         self.assertEqual(cfg.client_secret, '')
         self.assertEqual(cfg._client_secret, '')
 
-    def test_multiple_rows_allowed_no_singleton(self):
-        self._make_cfg(url='https://apix.example.com/eox/rest/5')
-        # Same driver, different URL — must succeed (no singleton).
-        self._make_cfg(url='https://apix.example.com/eox/rest/6')
+    def test_multiple_rows_allowed_per_driver(self):
+        self._make_cfg(manufacturer=self.manufacturer)
+        # Same driver, different manufacturer — must succeed.
+        self._make_cfg(manufacturer=self.manufacturer2)
         self.assertEqual(EoXAPISettings.objects.count(), 2)
 
-    def test_unique_driver_url(self):
-        self._make_cfg(url='https://apix.example.com/eox/rest/5')
+    def test_unique_driver_manufacturer(self):
+        self._make_cfg(manufacturer=self.manufacturer)
         with self.assertRaises(IntegrityError):
             EoXAPISettings.objects.create(
                 driver=DriverChoices.CISCO,
-                url='https://apix.example.com/eox/rest/5',
+                manufacturer=self.manufacturer,
             )
 
     def test_save_schedules_job_when_enabled(self):
@@ -85,7 +85,11 @@ class EoXDriverRegistryTests(TestCase):
 
     def test_driver_requires_credentials(self):
         with self.assertRaises(EoXAPIError):
-            CiscoEoXDriver(client_id='', client_secret='', base_url='https://x')
+            CiscoEoXDriver(client_id='', client_secret='')
+
+    def test_driver_exposes_api_url(self):
+        # The API URL lives on the driver class, not in user-managed config.
+        self.assertTrue(CiscoEoXDriver.api_url)
 
 
 class EoXSyncViewTests(TestCase):
@@ -95,11 +99,10 @@ class EoXSyncViewTests(TestCase):
         cls.manufacturer = Manufacturer.objects.create(name='Cisco', slug='cisco')
         cls.cfg = EoXAPISettings.objects.create(
             driver=DriverChoices.CISCO,
-            url='https://apix.example.com/eox/rest/5',
+            manufacturer=cls.manufacturer,
             enabled=False,
             client_id='client-id',
         )
-        cls.cfg.manufacturers.add(cls.manufacturer)
 
     def test_sync_view_enqueues_manual_job(self):
         request = RequestFactory().post(f'/plugins/lifecycle/eox/{self.cfg.pk}/sync/')

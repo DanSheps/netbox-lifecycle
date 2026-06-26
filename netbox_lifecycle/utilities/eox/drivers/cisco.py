@@ -29,12 +29,13 @@ class CiscoEoXDriver(BaseEoXDriver):
 
     Usage::
 
-        driver = CiscoEoXDriver(client_id='…', client_secret='…',
-            base_url='https://apix.cisco.com/supporttools/eox/rest/5')
+        driver = CiscoEoXDriver(client_id='…', client_secret='…')
         records = driver.get_eox_by_product_id(['WS-C3750X-48P-S'])
         for r in records:
             parsed = driver.parse_eox_record(r)
     """
+
+    api_url = 'https://apix.cisco.com/supporttools/eox/rest/5'
 
     # ------------------------------------------------------------------
     # Authentication

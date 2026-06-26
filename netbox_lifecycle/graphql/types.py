@@ -33,7 +33,7 @@ __all__ = (
 )
 class EoXAPISettingsType(PrimaryObjectType):
     driver: str
-    url: str
+    manufacturer: ManufacturerType
     enabled: bool
 
 

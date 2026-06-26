@@ -9,6 +9,8 @@ from netbox.forms import (
 )
 from utilities.forms.fields import (
     CSVChoiceField,
+    CSVModelChoiceField,
+    DynamicModelChoiceField,
     DynamicModelMultipleChoiceField,
     TagFilterField,
 )
@@ -26,11 +28,11 @@ __all__ = (
 
 
 class EoXAPISettingsForm(NetBoxModelForm):
-    manufacturers = DynamicModelMultipleChoiceField(
+    manufacturer = DynamicModelChoiceField(
         queryset=Manufacturer.objects.all(),
         required=True,
         selector=True,
-        label=_('Manufacturers'),
+        label=_('Manufacturer'),
     )
     client_secret = forms.CharField(
         label=_('OAuth Client Secret'),
@@ -42,7 +44,7 @@ class EoXAPISettingsForm(NetBoxModelForm):
     )
 
     fieldsets = (
-        FieldSet('driver', 'url', 'manufacturers', 'enabled', name=_('Endpoint')),
+        FieldSet('driver', 'manufacturer', 'enabled', name=_('Endpoint')),
         FieldSet('client_id', 'client_secret', name=_('Credentials')),
         FieldSet('sync_interval', name=_('Schedule')),
     )
@@ -51,8 +53,7 @@ class EoXAPISettingsForm(NetBoxModelForm):
         model = EoXAPISettings
         fields = (
             'driver',
-            'url',
-            'manufacturers',
+            'manufacturer',
             'enabled',
             'client_id',
             'client_secret',
@@ -101,12 +102,17 @@ class EoXAPISettingsImportForm(NetBoxModelImportForm):
         choices=DriverChoices,
         label=_('Driver'),
     )
+    manufacturer = CSVModelChoiceField(
+        queryset=Manufacturer.objects.all(),
+        to_field_name='name',
+        label=_('Manufacturer'),
+    )
 
     class Meta:
         model = EoXAPISettings
         fields = (
             'driver',
-            'url',
+            'manufacturer',
             'enabled',
             'client_id',
             'sync_interval',

@@ -1,3 +1,4 @@
+from dcim.api.serializers_.manufacturers import ManufacturerSerializer
 from netbox.api.serializers import NetBoxModelSerializer
 from rest_framework import serializers
 
@@ -10,6 +11,7 @@ class EoXAPISettingsSerializer(NetBoxModelSerializer):
     url_field = serializers.HyperlinkedIdentityField(
         view_name='plugins-api:netbox_lifecycle-api:eoxapisettings-detail'
     )
+    manufacturer = ManufacturerSerializer(nested=True)
 
     class Meta:
         model = EoXAPISettings
@@ -18,8 +20,7 @@ class EoXAPISettingsSerializer(NetBoxModelSerializer):
             'id',
             'display',
             'driver',
-            'url',
-            'manufacturers',
+            'manufacturer',
             'enabled',
             'client_id',
             'sync_interval',
@@ -34,5 +35,5 @@ class EoXAPISettingsSerializer(NetBoxModelSerializer):
             'id',
             'display',
             'driver',
-            'url',
+            'manufacturer',
         )

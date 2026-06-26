@@ -18,12 +18,12 @@ class EoXAPISettingsFilterSet(NetBoxModelFilterSet):
         label=_('Driver'),
     )
     manufacturer_id = django_filters.ModelMultipleChoiceFilter(
-        field_name='manufacturers',
+        field_name='manufacturer',
         queryset=Manufacturer.objects.all(),
         label=_('Manufacturer'),
     )
     manufacturer = django_filters.ModelMultipleChoiceFilter(
-        field_name='manufacturers__name',
+        field_name='manufacturer__name',
         queryset=Manufacturer.objects.all(),
         to_field_name='name',
         label=_('Manufacturer (name)'),
@@ -35,7 +35,6 @@ class EoXAPISettingsFilterSet(NetBoxModelFilterSet):
             'id',
             'q',
             'driver',
-            'url',
             'enabled',
             'manufacturer_id',
             'sync_interval',
@@ -44,5 +43,5 @@ class EoXAPISettingsFilterSet(NetBoxModelFilterSet):
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-        qs_filter = Q(url__icontains=value) | Q(client_id__icontains=value)
+        qs_filter = Q(client_id__icontains=value) | Q(description__icontains=value)
         return queryset.filter(qs_filter).distinct()

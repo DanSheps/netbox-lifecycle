@@ -8,8 +8,8 @@ __all__ = ('EoXAPISettingsTable',)
 
 
 class EoXAPISettingsTable(NetBoxTable):
-    driver = ChoiceFieldColumn(verbose_name=_('Driver'))
-    url = tables.Column(linkify=True, verbose_name=_('API URL'))
+    driver = ChoiceFieldColumn(verbose_name=_('Driver'), linkify=True)
+    manufacturer = tables.Column(linkify=True, verbose_name=_('Manufacturer'))
     enabled = tables.BooleanColumn(verbose_name=_('Enabled'))
     sync_interval = tables.Column(verbose_name=_('Interval (min)'))
     last_synced = tables.DateTimeColumn(verbose_name=_('Last synced'))
@@ -19,7 +19,7 @@ class EoXAPISettingsTable(NetBoxTable):
         fields = (
             'pk',
             'driver',
-            'url',
+            'manufacturer',
             'enabled',
             'client_id',
             'sync_interval',
@@ -30,7 +30,7 @@ class EoXAPISettingsTable(NetBoxTable):
         default_columns = (
             'pk',
             'driver',
-            'url',
+            'manufacturer',
             'enabled',
             'sync_interval',
             'last_synced',

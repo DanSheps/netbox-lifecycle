@@ -58,9 +58,9 @@ PLUGINS_CONFIG = {
 
 ### EoX Integration
 
-The plugin includes a vendor-agnostic EoX sync system. Each row in **EoX Settings** (`/lifecycle/eox/`) configures one endpoint — driver, URL, OAuth credentials, sync interval, and a set of in-scope manufacturers. Multiple rows per driver are permitted (e.g. distinct credentials per environment). The OAuth client secret is stored Fernet-encrypted at rest using a key derived from Django's `SECRET_KEY`.
+The plugin includes a vendor-agnostic EoX sync system. Each row in **EoX Settings** (`/lifecycle/eox/`) configures one driver/manufacturer pair — OAuth credentials, sync interval, and the manufacturer whose DeviceTypes/ModuleTypes are queried. The vendor API URL is owned by the driver, not by the row, so an operator cannot point the wrong driver at the wrong API. Multiple rows per driver are permitted (one per manufacturer); each `(driver, manufacturer)` pair must be unique. The OAuth client secret is stored Fernet-encrypted at rest using a key derived from Django's `SECRET_KEY`.
 
-Drivers are pluggable. The currently shipped driver is **Cisco EoX**; add a vendor by implementing `BaseEoXDriver` under `netbox_lifecycle/utilities/eox/drivers/` and registering it in `DRIVERS`.
+Drivers are pluggable. The currently shipped driver is **Cisco EoX**; add a vendor by implementing `BaseEoXDriver` under `netbox_lifecycle/utilities/eox/drivers/` (setting the class-level `api_url`) and registering it in `DRIVERS`.
 
 **Two background jobs:**
 

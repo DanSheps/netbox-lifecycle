@@ -16,14 +16,24 @@ class BaseEoXDriver(ABC):
     Interface a driver must implement so the sync job can query EoX records
     by serial number and by product/part number, then translate the vendor's
     record format into HardwareLifecycle field values.
+
+    Subclasses MUST set ``api_url`` to the vendor's EoX API base URL. The URL
+    lives on the driver — not in user-managed configuration — so operators
+    cannot point the wrong driver at the wrong API.
     """
 
-    def __init__(self, client_id: str, client_secret: str, base_url: str):
+    api_url: str = ''
+
+    def __init__(self, client_id: str, client_secret: str):
         if not client_id or not client_secret:
             raise EoXAPIError('client_id and client_secret must be non-empty.')
+        if not self.api_url:
+            raise EoXAPIError(
+                f'{type(self).__name__} did not set an api_url class attribute.'
+            )
         self._client_id = client_id
         self._client_secret = client_secret
-        self._base_url = base_url.rstrip('/')
+        self._base_url = self.api_url.rstrip('/')
 
     @abstractmethod
     def get_eox_by_serial(self, serial_numbers: list[str]) -> list[dict]:

@@ -65,12 +65,11 @@ class LicenseIndex(SearchIndex):
 class EoXAPISettingsIndex(SearchIndex):
     model = EoXAPISettings
     fields = (
-        ('url', 100),
         ('client_id', 200),
         ('description', 4000),
         ('comments', 5000),
     )
-    display_attrs = ('driver', 'url', 'description')
+    display_attrs = ('driver', 'manufacturer', 'description')
 
 
 @register_search
