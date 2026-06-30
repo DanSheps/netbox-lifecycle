@@ -125,6 +125,8 @@ class ContractMixin:
         if self.get_contract_card_position() != location:
             return ''
 
+        context = self.get_context(self.context)
+
         title = _('Contracts')
         action = [
             actions.AddObject(
@@ -159,7 +161,6 @@ class ContractMixin:
         filter = {
             self.field_name: lambda ctx: ctx['object'].pk,
         }
-        context = self.get_context(self.context)
         panel = TabbedTablePanel(
             title=title,
             tabs={
@@ -209,6 +210,8 @@ class LicenseMixin:
         if self.get_license_card_position() != location:
             return ''
 
+        context = self.get_context(self.context)
+
         action = [
             actions.AddObject(
                 'netbox_lifecycle.LicenseAssignment',
@@ -218,7 +221,6 @@ class LicenseMixin:
             ),
         ]
 
-        context = self.get_context(self.context)
         panel = panels.ObjectsTablePanel(
             title=_('Licenses'),
             model='netbox_lifecycle.licenseassignment',
