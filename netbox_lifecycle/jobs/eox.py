@@ -10,17 +10,13 @@ Two distinct job classes, both per-instance (bound to a single EoXAPISettings ro
 * EoXManualSyncJob — one-shot, operator-initiated. Triggered by the "Run
                      Now" action; does NOT re-enqueue.
 
-Both share ``_run_sync(cfg, logger)`` so the actual API work lives in one
+Both share ``_run_sync(cfg, log)`` so the actual API work lives in one
 place.
 """
-
-import logging
 
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 from netbox.jobs import JobRunner
-
-logger = logging.getLogger(__name__)
 
 __all__ = ('EoXSyncJob', 'EoXManualSyncJob')
 
@@ -40,18 +36,18 @@ def _run_sync(cfg, log) -> None:
 
     manufacturer_id = cfg.manufacturer_id
     if not manufacturer_id:
-        log.info('No manufacturer configured for %s — nothing to sync.', cfg)
+        log.info(f'No manufacturer configured for {cfg} — nothing to sync.')
         return
 
     updated = skipped = errored = 0
 
-    def _sync_item(item, ct, serial_qs):
+    def _sync_item(item, ct, serial_qs, type_field):
         nonlocal updated, skipped, errored
         eox_data = None
         label = f'{item._meta.verbose_name} "{item}"'
 
         serial = (
-            serial_qs.filter(**{f'{item._meta.model_name}__pk': item.pk})
+            serial_qs.filter(**{f'{type_field}__pk': item.pk})
             .exclude(serial='')
             .values_list('serial', flat=True)
             .first()
@@ -62,16 +58,12 @@ def _run_sync(cfg, log) -> None:
                 if records:
                     eox_data = client.parse_eox_record(records[0])
                     log.debug(
-                        '%s — EoX data found via serial %s (product: %s)',
-                        label,
-                        serial,
-                        eox_data.get('_eol_product_id'),
+                        f'{label} — EoX data found via serial {serial} '
+                        f'(product: {eox_data.get("_eol_product_id")})'
                     )
             except EoXAPIError as exc:
                 log.debug(
-                    '%s — serial lookup failed (%s), will try part_number.',
-                    label,
-                    exc,
+                    f'{label} — serial lookup failed ({exc}), will try part_number.'
                 )
 
         if eox_data is None:
@@ -82,17 +74,15 @@ def _run_sync(cfg, log) -> None:
                     if records:
                         eox_data = client.parse_eox_record(records[0])
                         log.debug(
-                            '%s — EoX data found via part_number %s',
-                            label,
-                            part_number,
+                            f'{label} — EoX data found via part_number {part_number}'
                         )
                 except EoXAPIError as exc:
-                    log.warning('%s — part_number lookup failed: %s', label, exc)
+                    log.warning(f'{label} — part_number lookup failed: {exc}')
                     errored += 1
                     return
 
         if eox_data is None:
-            log.debug('%s — no EoX data found; skipping.', label)
+            log.debug(f'{label} — no EoX data found; skipping.')
             skipped += 1
             return
 
@@ -112,24 +102,20 @@ def _run_sync(cfg, log) -> None:
     device_types = DeviceType.objects.filter(
         manufacturer_id=manufacturer_id
     ).select_related('manufacturer')
-    log.info('Processing %d DeviceTypes for %s.', device_types.count(), cfg)
+    log.info(f'Processing {device_types.count()} DeviceTypes for {cfg}.')
     for dt in device_types:
-        _sync_item(dt, dt_ct, Device.objects)
+        _sync_item(dt, dt_ct, Device.objects, 'device_type')
 
     mt_ct = ContentType.objects.get_for_model(ModuleType)
     module_types = ModuleType.objects.filter(
         manufacturer_id=manufacturer_id
     ).select_related('manufacturer')
-    log.info('Processing %d ModuleTypes for %s.', module_types.count(), cfg)
+    log.info(f'Processing {module_types.count()} ModuleTypes for {cfg}.')
     for mt in module_types:
-        _sync_item(mt, mt_ct, Module.objects)
+        _sync_item(mt, mt_ct, Module.objects, 'module_type')
 
     log.info(
-        'EoX sync complete for %s — updated: %d, skipped: %d, errored: %d',
-        cfg,
-        updated,
-        skipped,
-        errored,
+        f'EoX sync complete for {cfg} — updated: {updated}, skipped: {skipped}, errored: {errored}'
     )
 
 
@@ -161,7 +147,7 @@ class EoXSyncJob(JobRunner):
         if cfg.enabled:
             EoXSyncJob.enqueue_once(instance=cfg, interval=cfg.sync_interval)
             self.logger.debug(
-                'Rescheduled EoX sync for %s in %d minutes.', cfg, cfg.sync_interval
+                f'Rescheduled EoX sync for {cfg} in {cfg.sync_interval} minutes.'
             )
 
 

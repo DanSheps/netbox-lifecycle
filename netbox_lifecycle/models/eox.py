@@ -39,6 +39,7 @@ class EoXAPISettings(JobsMixin, PrimaryModel):
     """
 
     driver = models.CharField(
+        max_length=50,
         choices=DriverChoices,
         default=DriverChoices.CISCO,
         verbose_name=_('Driver'),
@@ -108,6 +109,9 @@ class EoXAPISettings(JobsMixin, PrimaryModel):
 
     def get_absolute_url(self):
         return reverse('plugins:netbox_lifecycle:eoxapisettings', args=[self.pk])
+
+    def get_driver_display(self):
+        return dict(DriverChoices).get(self.driver, self.driver)
 
     # ------------------------------------------------------------------
     # Encrypted client secret
