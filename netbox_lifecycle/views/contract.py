@@ -1,3 +1,4 @@
+from extras.ui.panels import TagsPanel, CustomFieldsPanel
 from netbox.views.generic import (
     BulkDeleteView,
     BulkEditView,
@@ -8,6 +9,7 @@ from netbox.views.generic import (
     ObjectListView,
     ObjectView,
 )
+from netbox.ui import panels, layout
 from utilities.views import GetRelatedModelsMixin, ViewTab, register_model_view
 
 from netbox_lifecycle.filtersets import (
@@ -45,6 +47,16 @@ from netbox_lifecycle.tables import (
     SupportContractTable,
     SupportSKUTable,
     VendorTable,
+)
+from netbox_lifecycle.ui import (
+    VendorPanel,
+    SupportContractPanel,
+    SupportContractDatesPanel,
+    SupportContractAssignmentPanel,
+    SupportContractAssignmentDevicePanel,
+    SupportContractAssignmentVMPanel,
+    SupportContractAssignmentLicensePanel,
+    SupportSKUPanel,
 )
 
 __all__ = (
@@ -84,7 +96,7 @@ __all__ = (
 )
 
 
-@register_model_view(Vendor, name='list')
+@register_model_view(Vendor, name='list', path='', detail=False)
 class VendorListView(ObjectListView):
     queryset = Vendor.objects.all()
     table = VendorTable
@@ -95,6 +107,16 @@ class VendorListView(ObjectListView):
 @register_model_view(Vendor)
 class VendorView(GetRelatedModelsMixin, ObjectView):
     queryset = Vendor.objects.all()
+    template_name = 'generic/object.html'
+    layout = layout.SimpleLayout(
+        left_panels=[
+            VendorPanel(),
+        ],
+        right_panels=[
+            panels.RelatedObjectsPanel(),
+            panels.CommentsPanel(),
+        ],
+    )
 
     def get_extra_context(self, request, instance):
         assignments = SupportContractAssignment.objects.filter(
@@ -107,18 +129,11 @@ class VendorView(GetRelatedModelsMixin, ObjectView):
         }
 
 
+@register_model_view(Vendor, 'add', detail=False)
 @register_model_view(Vendor, 'edit')
 class VendorEditView(ObjectEditView):
     queryset = Vendor.objects.all()
     form = VendorForm
-
-
-@register_model_view(Vendor, 'bulk_edit')
-class VendorBulkEditView(BulkEditView):
-    queryset = Vendor.objects.all()
-    filterset = VendorFilterSet
-    table = VendorTable
-    form = VendorBulkEditForm
 
 
 @register_model_view(Vendor, 'delete')
@@ -126,20 +141,28 @@ class VendorDeleteView(ObjectDeleteView):
     queryset = Vendor.objects.all()
 
 
-@register_model_view(Vendor, 'bulk_delete')
+@register_model_view(Vendor, 'bulk_edit', detail=False)
+class VendorBulkEditView(BulkEditView):
+    queryset = Vendor.objects.all()
+    filterset = VendorFilterSet
+    table = VendorTable
+    form = VendorBulkEditForm
+
+
+@register_model_view(Vendor, 'bulk_delete', detail=False)
 class VendorBulkDeleteView(BulkDeleteView):
     queryset = Vendor.objects.all()
     filterset = VendorFilterSet
     table = VendorTable
 
 
-@register_model_view(Vendor, 'bulk_import')
+@register_model_view(Vendor, 'bulk_import', detail=False)
 class VendorBulkImportView(BulkImportView):
     queryset = Vendor.objects.all()
     model_form = VendorImportForm
 
 
-@register_model_view(SupportSKU, name='list')
+@register_model_view(SupportSKU, name='list', path='', detail=False)
 class SupportSKUListView(ObjectListView):
     queryset = SupportSKU.objects.all()
     table = SupportSKUTable
@@ -150,20 +173,24 @@ class SupportSKUListView(ObjectListView):
 @register_model_view(SupportSKU)
 class SupportSKUView(ObjectView):
     queryset = SupportSKU.objects.all()
+    template_name = 'generic/object.html'
+    layout = layout.SimpleLayout(
+        left_panels=[
+            SupportSKUPanel(),
+            TagsPanel(),
+        ],
+        right_panels=[
+            panels.CommentsPanel(),
+            panels.RelatedObjectsPanel(),
+        ],
+    )
 
 
+@register_model_view(SupportSKU, 'add', detail=False)
 @register_model_view(SupportSKU, 'edit')
 class SupportSKUEditView(ObjectEditView):
     queryset = SupportSKU.objects.all()
     form = SupportSKUForm
-
-
-@register_model_view(SupportSKU, 'bulk_edit')
-class SupportSKUBulkEditView(BulkEditView):
-    queryset = SupportSKU.objects.all()
-    filterset = SupportSKUFilterSet
-    table = SupportSKUTable
-    form = SupportSKUBulkEditForm
 
 
 @register_model_view(SupportSKU, 'delete')
@@ -173,20 +200,28 @@ class SupportSKUDeleteView(ObjectDeleteView):
     table = SupportSKUTable
 
 
-@register_model_view(SupportSKU, 'bulk_delete')
+@register_model_view(SupportSKU, 'bulk_edit', detail=False)
+class SupportSKUBulkEditView(BulkEditView):
+    queryset = SupportSKU.objects.all()
+    filterset = SupportSKUFilterSet
+    table = SupportSKUTable
+    form = SupportSKUBulkEditForm
+
+
+@register_model_view(SupportSKU, 'bulk_delete', detail=False)
 class SupportSKUBulkDeleteView(BulkDeleteView):
     queryset = SupportSKU.objects.all()
     filterset = SupportSKUFilterSet
     table = SupportSKUTable
 
 
-@register_model_view(SupportSKU, 'bulk_import')
+@register_model_view(SupportSKU, 'bulk_import', detail=False)
 class SupportSKUBulkImportView(BulkImportView):
     queryset = SupportSKU.objects.all()
     model_form = SupportSKUImportForm
 
 
-@register_model_view(SupportContract, name='list')
+@register_model_view(SupportContract, name='list', path='', detail=False)
 class SupportContractListView(ObjectListView):
     queryset = SupportContract.objects.all()
     table = SupportContractTable
@@ -197,16 +232,26 @@ class SupportContractListView(ObjectListView):
 @register_model_view(SupportContract)
 class SupportContractView(ObjectView):
     queryset = SupportContract.objects.all()
+    template_name = 'generic/object.html'
+    layout = layout.SimpleLayout(
+        left_panels=[
+            SupportContractPanel(),
+            SupportContractDatesPanel(),
+            TagsPanel(),
+        ],
+        right_panels=[
+            panels.CommentsPanel(),
+            panels.RelatedObjectsPanel(),
+        ],
+    )
 
 
 @register_model_view(SupportContract, name='assignments')
 class SupportContractAssignmentsView(ObjectChildrenView):
-    template_name = 'netbox_lifecycle/supportcontract/assignments.html'
     queryset = SupportContract.objects.all()
     child_model = SupportContractAssignment
     table = SupportContractAssignmentTable
     filterset = SupportContractAssignmentFilterSet
-    actions = {'add': {'add'}, 'edit': {'change'}, 'delete': {'delete'}}
     tab = ViewTab(
         label='Assignments',
         badge=lambda obj: SupportContractAssignment.objects.filter(
@@ -218,18 +263,11 @@ class SupportContractAssignmentsView(ObjectChildrenView):
         return self.child_model.objects.filter(contract=parent)
 
 
+@register_model_view(SupportContract, 'add', detail=False)
 @register_model_view(SupportContract, 'edit')
 class SupportContractEditView(ObjectEditView):
     queryset = SupportContract.objects.all()
     form = SupportContractForm
-
-
-@register_model_view(SupportContract, 'bulk_edit')
-class SupportContractBulkEditView(BulkEditView):
-    queryset = SupportContract.objects.all()
-    filterset = SupportContractFilterSet
-    table = SupportContractTable
-    form = SupportContractBulkEditForm
 
 
 @register_model_view(SupportContract, 'delete')
@@ -237,20 +275,28 @@ class SupportContractDeleteView(ObjectDeleteView):
     queryset = SupportContract.objects.all()
 
 
-@register_model_view(SupportContract, 'bulk_delete')
+@register_model_view(SupportContract, 'bulk_edit', detail=False)
+class SupportContractBulkEditView(BulkEditView):
+    queryset = SupportContract.objects.all()
+    filterset = SupportContractFilterSet
+    table = SupportContractTable
+    form = SupportContractBulkEditForm
+
+
+@register_model_view(SupportContract, 'bulk_delete', detail=False)
 class SupportContractBulkDeleteView(BulkDeleteView):
     queryset = SupportContract.objects.all()
     filterset = SupportContractFilterSet
     table = SupportContractTable
 
 
-@register_model_view(SupportContract, 'bulk_import')
+@register_model_view(SupportContract, 'bulk_import', detail=False)
 class SupportContractBulkImportView(BulkImportView):
     queryset = SupportContract.objects.all()
     model_form = SupportContractImportForm
 
 
-@register_model_view(SupportContractAssignment, name='list')
+@register_model_view(SupportContractAssignment, name='list', path='', detail=False)
 class SupportContractAssignmentListView(ObjectListView):
     queryset = SupportContractAssignment.objects.all()
     table = SupportContractAssignmentTable
@@ -264,11 +310,27 @@ class SupportContractAssignmentListView(ObjectListView):
     }
 
 
-@register_model_view(SupportContract)
+@register_model_view(SupportContractAssignment)
 class SupportContractAssignmentView(ObjectView):
     queryset = SupportContractAssignment.objects.all()
+    template_name = 'generic/object.html'
+    layout = layout.SimpleLayout(
+        left_panels=[
+            SupportContractAssignmentPanel(),
+            SupportContractAssignmentDevicePanel(),
+            SupportContractAssignmentVMPanel(),
+            SupportContractAssignmentLicensePanel(),
+            TagsPanel(),
+        ],
+        right_panels=[
+            CustomFieldsPanel(),
+            panels.CommentsPanel(),
+            panels.RelatedObjectsPanel(),
+        ],
+    )
 
 
+@register_model_view(SupportContractAssignment, 'add', detail=False)
 @register_model_view(SupportContractAssignment, 'edit')
 class SupportContractAssignmentEditView(ObjectEditView):
     queryset = SupportContractAssignment.objects.all()
@@ -280,6 +342,7 @@ class SupportContractAssignmentDeleteView(ObjectDeleteView):
     queryset = SupportContractAssignment.objects.all()
 
 
+@register_model_view(SupportContractAssignment, 'bulk_edit', detail=False)
 class SupportContractAssignmentBulkEditView(BulkEditView):
     queryset = SupportContractAssignment.objects.all()
     filterset = SupportContractAssignmentFilterSet
@@ -287,13 +350,14 @@ class SupportContractAssignmentBulkEditView(BulkEditView):
     form = SupportContractAssignmentBulkEditForm
 
 
+@register_model_view(SupportContractAssignment, 'bulk_delete', detail=False)
 class SupportContractAssignmentBulkDeleteView(BulkDeleteView):
     queryset = SupportContractAssignment.objects.all()
     filterset = SupportContractAssignmentFilterSet
     table = SupportContractAssignmentTable
 
 
-@register_model_view(SupportContractAssignment, 'bulk_import')
+@register_model_view(SupportContractAssignment, 'bulk_import', detail=False)
 class SupportContractAssignmentBulkImportView(BulkImportView):
     queryset = SupportContractAssignment.objects.all()
     model_form = SupportContractAssignmentImportForm

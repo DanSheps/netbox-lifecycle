@@ -1,0 +1,39 @@
+{% extends "ui/panels/_base.html" %}
+{% load i18n %}
+
+{% block panel_content %}
+    <ul class="nav nav-tabs" role="tablist">
+        {% for tab in tabs %}
+            <li class="nav-item" role="presentation">
+                {% if tab.active %}
+                    <a href="#tab-{{ tab.name }}" class="nav-link active" data-bs-toggle="tab" role="tab"
+                       hx-get="{% url tab.viewname %}?embedded=True{% if tab.url_params %}&{{ tab.url_params.urlencode }}{% endif %}"
+                       hx-trigger="load" hx-target="#tab-{{ tab.name }}" hx-select=".htmx-container"
+                       hx-swap="innerHTML">
+                        {% trans tab.title %}
+                    </a>
+                {% else %}
+                    <a href="#tab-{{ tab.name }}" class="nav-link" data-bs-toggle="tab" role="tab"
+                       hx-get="{% url tab.viewname %}?embedded=True{% if tab.url_params %}&{{ tab.url_params.urlencode }}{% endif %}"
+                       hx-trigger="click once" hx-target="#tab-{{ tab.name }}" hx-select=".htmx-container"
+                       hx-swap="innerHTML">
+                        {% trans tab.title %}
+                    </a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+    <div class="tab-content">
+        {% for tab in tabs %}
+            {% if tab.active %}
+                <div class="tab-pane fade show active" id="tab-{{ tab.name }}" role="tabpanel">
+                    <div class="htmx-container table-responsive"></div>
+                </div>
+            {% else %}
+                <div class="tab-pane" id="tab-{{ tab.name }}" role="tabpanel">
+                    <div class="htmx-container table-responsive"></div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endblock panel_content %}
