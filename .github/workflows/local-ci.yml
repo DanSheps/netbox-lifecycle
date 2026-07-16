@@ -1,0 +1,91 @@
+name: CI
+on:
+  workflow_dispatch:
+    
+concurrency:
+  group: ci-${{ github.event_name }}-${{ github.ref }}-${{ github.actor }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  build:
+    name: Check Build
+    runs-on: ubuntu-latest
+    env:
+      NETBOX_CONFIGURATION: netbox.configuration_lifecycle
+    strategy:
+      matrix:
+        python-version: ['3.12', '3.13', '3.14']
+    services:
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: netbox
+          POSTGRES_PASSWORD: netbox
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    - name: Echo Github Variables
+      run: |
+        echo "${{ github.event_name }}"
+        echo "${{ github.action }}"
+        echo "${{ github.action_path }}"
+        echo "${{ github.action_ref }}"
+
+    - name: Check out NetBox
+      uses: actions/checkout@v4
+      with:
+        repository: 'netbox-community/netbox'
+        ref: 'main'
+        path: 'netbox'
+
+
+    - name: Check out repo
+      uses: actions/checkout@v4
+      with:
+        path: 'netbox-lifecycle'
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies & set up configuration
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r netbox/requirements.txt
+        pip install ruff black coverage tblib
+        pip install -e netbox-lifecycle
+        cp netbox-lifecycle/contrib/configuration_lifecycle.py netbox/netbox/netbox/configuration_lifecycle.py
+
+    - name: Collect static files
+      run: python netbox/netbox/manage.py collectstatic --no-input
+
+    - name: Check for missing migrations
+      run: python netbox/netbox/manage.py makemigrations --check
+
+    - name: Check PEP8 compliance
+      run: |
+        ruff check netbox-lifecycle/netbox_lifecycle/
+
+    - name: Check Black
+      uses: psf/black@stable
+      with:
+        options: "--check --skip-string-normalization --fast"
+        src: "netbox-lifecycle/netbox_lifecycle"
+
+    - name: Run tests
+      run: coverage run --source="netbox-lifecycle/netbox_lifecycle/" netbox/netbox/manage.py test netbox-lifecycle/netbox_lifecycle/ --parallel
+
+    - name: Show coverage report
+      run: coverage report --skip-covered --omit '*/migrations/*,*/tests/*'
