@@ -2,14 +2,15 @@ from unittest.mock import patch
 
 from dcim.models import Manufacturer
 from django.db.utils import IntegrityError
-from django.test import RequestFactory, TestCase
+from django.test import TestCase
+from django.urls import reverse
+from utilities.testing import TestCase as NetBoxTestCase
 
 from netbox_lifecycle.choices.eox import DriverChoices
 from netbox_lifecycle.jobs import EoXManualSyncJob, EoXSyncJob
 from netbox_lifecycle.models import EoXAPISettings
 from netbox_lifecycle.utilities.eox import DRIVERS, EoXAPIError, get_driver
 from netbox_lifecycle.utilities.eox.drivers import CiscoEoXDriver
-from netbox_lifecycle.views.eox import EoXAPISettingsSyncView
 
 
 class EoXAPISettingsModelTests(TestCase):
@@ -92,7 +93,8 @@ class EoXDriverRegistryTests(TestCase):
         self.assertTrue(CiscoEoXDriver.api_url)
 
 
-class EoXSyncViewTests(TestCase):
+class EoXSyncViewTests(NetBoxTestCase):
+    user_permissions = ('netbox_lifecycle.sync_eoxapisettings',)
 
     @classmethod
     def setUpTestData(cls):
@@ -105,21 +107,22 @@ class EoXSyncViewTests(TestCase):
         )
 
     def test_sync_view_enqueues_manual_job(self):
-        request = RequestFactory().post(f'/plugins/lifecycle/eox/{self.cfg.pk}/sync/')
-        view = EoXAPISettingsSyncView()
-        view.queryset = EoXAPISettings.objects.all()
-        # Bypass auth — call the POST handler directly with a patched enqueue.
-        request.user = type(
-            'U',
-            (),
-            {
-                'has_perms': lambda self, perms: True,
-                'has_perm': lambda self, perm: True,
-            },
-        )()
+        url = reverse(
+            'plugins:netbox_lifecycle:eoxapisettings_sync', kwargs={'pk': self.cfg.pk}
+        )
         with patch.object(EoXManualSyncJob, 'enqueue') as enqueue:
-            response = view.post(request, pk=self.cfg.pk)
+            response = self.client.post(url)
             enqueue.assert_called_once()
             self.assertEqual(enqueue.call_args.kwargs.get('instance'), self.cfg)
-        self.assertEqual(response.status_code, 302)
+        self.assertHttpStatus(response, 302)
         self.assertEqual(response.url, self.cfg.get_absolute_url())
+
+    def test_sync_view_requires_permission(self):
+        self.remove_permissions('netbox_lifecycle.sync_eoxapisettings')
+        url = reverse(
+            'plugins:netbox_lifecycle:eoxapisettings_sync', kwargs={'pk': self.cfg.pk}
+        )
+        with patch.object(EoXManualSyncJob, 'enqueue') as enqueue:
+            response = self.client.post(url)
+            enqueue.assert_not_called()
+        self.assertHttpStatus(response, 403)
