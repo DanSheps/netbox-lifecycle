@@ -1,8 +1,9 @@
 import django_filters
+from core.choices import JobIntervalChoices
 from dcim.models import Manufacturer
 from django.db.models import Q
 from django.utils.translation import gettext as _
-from netbox.filtersets import NetBoxModelFilterSet
+from netbox.filtersets import PrimaryModelFilterSet
 from utilities.filtersets import register_filterset
 
 from netbox_lifecycle.choices.eox import DriverChoices
@@ -12,10 +13,14 @@ __all__ = ('EoXAPISettingsFilterSet',)
 
 
 @register_filterset
-class EoXAPISettingsFilterSet(NetBoxModelFilterSet):
+class EoXAPISettingsFilterSet(PrimaryModelFilterSet):
     driver = django_filters.MultipleChoiceFilter(
         choices=DriverChoices,
         label=_('Driver'),
+    )
+    sync_interval = django_filters.MultipleChoiceFilter(
+        choices=JobIntervalChoices,
+        label=_('Sync interval'),
     )
     manufacturer_id = django_filters.ModelMultipleChoiceFilter(
         field_name='manufacturer',
