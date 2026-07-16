@@ -24,6 +24,8 @@ classifiers = [
 ]
 dependencies = [
     'django-polymorphic',
+    'cryptography>=41.0',
+    'requests>=2.31',
 ]
 
 [project.urls]

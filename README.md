@@ -38,18 +38,52 @@ The plugin can be configured via `PLUGINS_CONFIG` in your NetBox configuration f
 ```python
 PLUGINS_CONFIG = {
     'netbox_lifecycle': {
+        # UI card positions
         'lifecycle_card_position': 'right_page',
         'contract_card_position': 'right_page',
+        'license_card_position': 'right_page',
     },
 }
 ```
 
 ### Available Settings
 
+#### UI Card Positions
+
 | Setting | Default | Description |
 |---------|---------|-------------|
-| `lifecycle_card_position` | `right_page` | Position of the Hardware Lifecycle Info card on Device, Module, DeviceType, and ModuleType detail pages. Options: `left_page`, `right_page`, `full_width_page`. |
+| `lifecycle_card_position` | `right_page` | Position of the Hardware Lifecycle Info card on DeviceType and ModuleType detail pages. Options: `left_page`, `right_page`, `full_width_page`. |
 | `contract_card_position` | `right_page` | Position of the Support Contracts card on Device and VirtualMachine detail pages. Options: `left_page`, `right_page`, `full_width_page`. |
+| `license_card_position` | `right_page` | Position of the Licenses card on Device and VirtualMachine detail pages. Options: `left_page`, `right_page`, `full_width_page`. |
+
+### EoX Integration
+
+The plugin includes a vendor-agnostic EoX sync system. Each row in **EoX Settings** (`/lifecycle/eox/`) configures one driver/manufacturer pair — OAuth credentials, sync interval, and the manufacturer whose DeviceTypes/ModuleTypes are queried. The vendor API URL is owned by the driver, not by the row, so an operator cannot point the wrong driver at the wrong API. Multiple rows per driver are permitted (one per manufacturer); each `(driver, manufacturer)` pair must be unique. The OAuth client secret is stored Fernet-encrypted at rest using a key derived from Django's `SECRET_KEY`.
+
+Drivers are pluggable. The currently shipped driver is **Cisco EoX**; add a vendor by implementing `BaseEoXDriver` under `netbox_lifecycle/utilities/eox/drivers/` (setting the class-level `api_url`) and registering it in `DRIVERS`.
+
+**Two background jobs:**
+
+- `EoXSyncJob` — automatically scheduled per row via `enqueue_once(interval=row.sync_interval)` whenever the row is saved with `enabled=True`. Re-enqueues itself at the end of each run so interval changes are honored.
+- `EoXManualSyncJob` — one-shot, triggered by the **Run Now** action on the row's detail page.
+
+**Lookup order per DeviceType / ModuleType (Cisco driver):**
+
+1. Finds a serial number from a related Device or Module and queries `EOXBySerialNumber`.
+2. Falls back to the `part_number` field and queries `EOXByProductID` if no serial is available or the serial lookup returns no data.
+
+**Fields populated by the Cisco driver:**
+
+| Cisco API field | HardwareLifecycle field |
+|---|---|
+| `EndOfSaleDate` | `end_of_sale` |
+| `EndOfSWMaintenanceReleases` | `end_of_maintenance` |
+| `EndOfSecurityVulSupportDate` | `end_of_security` |
+| `LastDateOfSupport` | `end_of_support` |
+| `EndOfServiceContractRenewal` | `last_contract_renewal` |
+| `LinkToProductBulletinURL` | `documentation` |
+
+Cisco EoX API access requires an active SNTC or PSS agreement and an OAuth client registered at [apiconsole.cisco.com](https://apiconsole.cisco.com/). Job history is visible on the row's detail page and in NetBox's built-in **System → Jobs** view.
 
 ### Hardware Lifecycle Info Card
 

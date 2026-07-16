@@ -137,14 +137,32 @@ license_assignments = PluginMenuItem(
         ),
     ),
 )
-
-
+eox_settings = PluginMenuItem(
+    link='plugins:netbox_lifecycle:eoxapisettings_list',
+    link_text='EoX Settings',
+    permissions=['netbox_lifecycle.view_eoxapisettings'],
+    buttons=(
+        PluginMenuButton(
+            link='plugins:netbox_lifecycle:eoxapisettings_add',
+            title='Add',
+            icon_class=COL_ADD,
+            permissions=['netbox_lifecycle.add_eoxapisettings'],
+        ),
+        PluginMenuButton(
+            link='plugins:netbox_lifecycle:eoxapisettings_bulk_import',
+            title='Import',
+            icon_class=COL_IMPORT,
+            permissions=['netbox_lifecycle.add_eoxapisettings'],
+        ),
+    ),
+)
 menu = PluginMenu(
     label='Hardware Lifecycle',
     groups=(
         ('Lifecycle', (lifecycle,)),
         ('Vendor Support', (vendors, skus, contracts, contract_assignments)),
         ('Licensing', (licenses, license_assignments)),
+        ('EoX API Config', (eox_settings,)),
     ),
     icon_class='mdi mdi-server',
 )
