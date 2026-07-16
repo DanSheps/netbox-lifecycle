@@ -5,6 +5,7 @@ from rest_framework import status
 from utilities.testing import APITestCase, APIViewTestCases, create_test_device
 from virtualization.models import Cluster, ClusterType, VirtualMachine
 
+from netbox_lifecycle.choices.eox import DriverChoices
 from netbox_lifecycle.models import *
 from netbox_lifecycle.utilities.gfk_mixins import DateFieldMixin
 
@@ -557,3 +558,68 @@ class HardwareLifecycleTest(DateFieldMixin, APIViewTestCases.APIViewTestCase):
         self.assertHttpStatus(response, status.HTTP_200_OK)
         self.assertIsNone(response.data['end_of_sale'])
         self.assertIsNone(response.data['end_of_support'])
+
+
+class EoXAPISettingsTest(APIViewTestCases.APIViewTestCase):
+    model = EoXAPISettings
+    view_namespace = "plugins-api:netbox_lifecycle"
+    brief_fields = [
+        'display',
+        'driver',
+        'id',
+        'manufacturer',
+        'url',
+    ]
+
+    user_permissions = ('dcim.view_manufacturer',)
+
+    bulk_update_data = {'description': "An EoX API Settings description"}
+
+    @classmethod
+    def setUpTestData(cls):
+        manufacturers = [
+            Manufacturer(name=f'Manufacturer {i}', slug=f'manufacturer-{i}')
+            for i in range(1, 7)
+        ]
+        Manufacturer.objects.bulk_create(manufacturers)
+
+        eox_settings = (
+            EoXAPISettings(driver=DriverChoices.CISCO, manufacturer=manufacturers[0]),
+            EoXAPISettings(driver=DriverChoices.CISCO, manufacturer=manufacturers[1]),
+            EoXAPISettings(driver=DriverChoices.CISCO, manufacturer=manufacturers[2]),
+        )
+        EoXAPISettings.objects.bulk_create(eox_settings)
+
+        cls.create_data = [
+            {
+                'driver': DriverChoices.CISCO,
+                'manufacturer': manufacturers[3].pk,
+                'client_id': 'api-client-1',
+            },
+            {
+                'driver': DriverChoices.CISCO,
+                'manufacturer': manufacturers[4].pk,
+                'client_id': 'api-client-2',
+            },
+            {
+                'driver': DriverChoices.CISCO,
+                'manufacturer': manufacturers[5].pk,
+                'client_id': 'api-client-3',
+            },
+        ]
+
+    def test_client_secret_not_exposed(self):
+        """The client secret must never appear in API output, even encrypted."""
+        self.add_permissions('netbox_lifecycle.view_eoxapisettings')
+        cfg = EoXAPISettings.objects.first()
+        cfg.client_secret = 's3cret'
+        cfg.save()
+
+        url = reverse(
+            'plugins-api:netbox_lifecycle-api:eoxapisettings-detail',
+            kwargs={'pk': cfg.pk},
+        )
+        response = self.client.get(url, **self.header)
+        self.assertHttpStatus(response, status.HTTP_200_OK)
+        self.assertNotIn('client_secret', response.data)
+        self.assertNotIn('_client_secret', response.data)

@@ -29,7 +29,10 @@ __all__ = (
 
 
 @strawberry_django.type(
-    models.EoXAPISettings, fields='__all__', filters=EoXAPISettingsFilter
+    models.EoXAPISettings,
+    # The encrypted OAuth secret must never be queryable.
+    exclude=['_client_secret'],
+    filters=EoXAPISettingsFilter,
 )
 class EoXAPISettingsType(PrimaryObjectType):
     driver: str

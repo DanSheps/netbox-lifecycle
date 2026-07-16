@@ -8,7 +8,7 @@ __all__ = ('EoXAPISettingsSerializer',)
 
 
 class EoXAPISettingsSerializer(NetBoxModelSerializer):
-    url_field = serializers.HyperlinkedIdentityField(
+    url = serializers.HyperlinkedIdentityField(
         view_name='plugins-api:netbox_lifecycle-api:eoxapisettings-detail'
     )
     manufacturer = ManufacturerSerializer(nested=True)
@@ -16,7 +16,7 @@ class EoXAPISettingsSerializer(NetBoxModelSerializer):
     class Meta:
         model = EoXAPISettings
         fields = (
-            'url_field',
+            'url',
             'id',
             'display',
             'driver',
@@ -31,7 +31,7 @@ class EoXAPISettingsSerializer(NetBoxModelSerializer):
             'custom_fields',
         )
         brief_fields = (
-            'url_field',
+            'url',
             'id',
             'display',
             'driver',
