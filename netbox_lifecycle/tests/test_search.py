@@ -15,6 +15,42 @@ class SearchIndexDisplayAttrsTestCase(TestCase):
     Search error "SupportContractAssignment has no field named 'vendor'"
     """
 
+    def test_support_sku_display_attrs_are_valid_fields(self):
+        """
+        SupportSKUIndex.display_attrs should only reference
+        fields that exist on the SupportSKU model.
+        """
+        index = SupportSKUIndex()
+        model = index.model
+
+        for attr in index.display_attrs:
+            # This should not raise FieldDoesNotExist
+            try:
+                model._meta.get_field(attr)
+            except FieldDoesNotExist:
+                self.fail(
+                    f"SupportSKUIndex.display_attrs references "
+                    f"non-existent field '{attr}' on {model.__name__}"
+                )
+
+    def test_support_contract_display_attrs_are_valid_fields(self):
+        """
+        SupportContractIndex.display_attrs should only reference
+        fields that exist on the SupportContract model.
+        """
+        index = SupportContractIndex()
+        model = index.model
+
+        for attr in index.display_attrs:
+            # This should not raise FieldDoesNotExist
+            try:
+                model._meta.get_field(attr)
+            except FieldDoesNotExist:
+                self.fail(
+                    f"SupportContractIndex.display_attrs references "
+                    f"non-existent field '{attr}' on {model.__name__}"
+                )
+
     def test_support_contract_assignment_display_attrs_are_valid_fields(self):
         """
         SupportContractAssignmentIndex.display_attrs should only reference
