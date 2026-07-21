@@ -15,10 +15,14 @@ The Netbox Lifecycle plugin is a Hardware EOS/EOL, License and Support Contract 
 
 ## Compatibility Matrix
 
-|        | Netbox 3.2.x   | NetBox 4.1.x   | 
-|--------|----------------|----------------|
-| 1.0.0+ | Compatible     | Not Compatible |
-| 1.1.3+ | Not Compatible | Compatible     |
+| NetBox Version | Plugin Version |
+| -------------- | ---------------|
+| 4.1.x | 1.1.5 |
+| 4.2.x | 1.1.5 |
+| 4.3.x | 1.1.6 |
+| 4.4.x | 1.1.6 | 
+| 4.5.x | 1.1.8 |
+
 
 ## Installation
 
