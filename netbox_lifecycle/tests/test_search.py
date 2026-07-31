@@ -4,6 +4,8 @@ from django.test import TestCase
 from netbox_lifecycle.search import (
     LicenseAssignmentIndex,
     SupportContractAssignmentIndex,
+    SupportContractIndex,
+    SupportSKUIndex,
 )
 
 
