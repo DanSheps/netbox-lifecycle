@@ -6,6 +6,7 @@ from netbox_lifecycle.constants.contract import (
     CONTRACT_STATUS_UNSPECIFIED,
 )
 from netbox_lifecycle.constants.hardware import HARDWARE_LIFECYCLE_MODELS
+from netbox_lifecycle.constants.eox import DRIVER_CISCO
 
 __all__ = (
     'CONTRACT_STATUS_ACTIVE',
@@ -14,4 +15,5 @@ __all__ = (
     'CONTRACT_STATUS_FUTURE',
     'CONTRACT_STATUS_UNSPECIFIED',
     'HARDWARE_LIFECYCLE_MODELS',
+    'DRIVER_CISCO',
 )

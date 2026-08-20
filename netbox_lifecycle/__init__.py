@@ -26,6 +26,8 @@ class NetBoxLifeCycle(PluginConfig):
     def ready(self):
 
         super().ready()
+        # Import EoX job classes so JobRunner registration takes effect at startup.
+        from netbox_lifecycle.jobs import EoXManualSyncJob, EoXSyncJob  # noqa: F401
 
         from dcim.models import DeviceType, ModuleType
         from django.contrib.contenttypes.fields import GenericRelation

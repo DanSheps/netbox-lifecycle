@@ -15,4 +15,5 @@ __all__ = (
     'LicenseAssignmentPanel',
     'HardwareLifecyclePanel',
     'HardwareLifecycleDatesPanel',
+    'EoXAPISettingsPanel',
 )

@@ -1,6 +1,8 @@
+from core.choices import JobIntervalChoices
 from dcim.models import DeviceType, Manufacturer, ModuleType
 from utilities.testing import ViewTestCases, create_test_device
 
+from netbox_lifecycle.choices.eox import DriverChoices
 from netbox_lifecycle.models import *
 from netbox_lifecycle.utilities.gfk_mixins import HardwareLifecycleViewMixin
 from netbox_lifecycle.utilities.testing import create_test_vendor
@@ -328,3 +330,61 @@ class HardwareLifecycleTestCase(
 
     def _get_base_url(self):
         return 'plugins:netbox_lifecycle:hardwarelifecycle_{}'
+
+
+class EoXAPISettingsTestCase(
+    ViewTestCases.GetObjectViewTestCase,
+    ViewTestCases.GetObjectChangelogViewTestCase,
+    ViewTestCases.CreateObjectViewTestCase,
+    ViewTestCases.EditObjectViewTestCase,
+    ViewTestCases.DeleteObjectViewTestCase,
+    ViewTestCases.ListObjectsViewTestCase,
+    ViewTestCases.BulkImportObjectsViewTestCase,
+    ViewTestCases.BulkEditObjectsViewTestCase,
+    ViewTestCases.BulkDeleteObjectsViewTestCase,
+):
+    model = EoXAPISettings
+
+    @classmethod
+    def setUpTestData(cls):
+        manufacturers = [
+            Manufacturer(name=f'Manufacturer {i}', slug=f'manufacturer-{i}')
+            for i in range(1, 8)
+        ]
+        Manufacturer.objects.bulk_create(manufacturers)
+
+        eox_settings = (
+            EoXAPISettings(driver=DriverChoices.CISCO, manufacturer=manufacturers[0]),
+            EoXAPISettings(driver=DriverChoices.CISCO, manufacturer=manufacturers[1]),
+            EoXAPISettings(driver=DriverChoices.CISCO, manufacturer=manufacturers[2]),
+        )
+        EoXAPISettings.objects.bulk_create(eox_settings)
+
+        cls.form_data = {
+            'driver': DriverChoices.CISCO,
+            'manufacturer': manufacturers[3].pk,
+            'enabled': False,
+            'client_id': 'client-id-x',
+            'client_secret': 's3cret-x',
+            'sync_interval': JobIntervalChoices.INTERVAL_DAILY,
+        }
+
+        cls.csv_data = (
+            'driver,manufacturer,enabled,client_id,sync_interval',
+            f'cisco,{manufacturers[4].name},false,csv-client-1,1440',
+            f'cisco,{manufacturers[5].name},false,csv-client-2,1440',
+            f'cisco,{manufacturers[6].name},false,csv-client-3,1440',
+        )
+
+        cls.csv_update_data = (
+            'id,description',
+            f'{eox_settings[0].pk},updated description 1',
+            f'{eox_settings[1].pk},updated description 2',
+        )
+
+        cls.bulk_edit_data = {
+            'description': 'An EoX API Settings description',
+        }
+
+    def _get_base_url(self):
+        return 'plugins:netbox_lifecycle:eoxapisettings_{}'
