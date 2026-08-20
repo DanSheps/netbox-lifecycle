@@ -1,3 +1,4 @@
+from extras.ui.panels import TagsPanel, CustomFieldsPanel
 from netbox.views.generic import (
     BulkDeleteView,
     BulkEditView,
@@ -7,6 +8,8 @@ from netbox.views.generic import (
     ObjectListView,
     ObjectView,
 )
+from netbox.ui import panels, layout
+from netbox_lifecycle.ui import HardwareLifecyclePanel, HardwareLifecycleDatesPanel
 from utilities.views import register_model_view
 
 from netbox_lifecycle.filtersets import HardwareLifecycleFilterSet
@@ -30,7 +33,7 @@ __all__ = (
 )
 
 
-@register_model_view(HardwareLifecycle, name='list')
+@register_model_view(HardwareLifecycle, name='list', path='', detail=False)
 class HardwareLifecycleListView(ObjectListView):
     queryset = HardwareLifecycle.objects.all()
     table = HardwareLifecycleTable
@@ -41,24 +44,26 @@ class HardwareLifecycleListView(ObjectListView):
 @register_model_view(HardwareLifecycle)
 class HardwareLifecycleView(ObjectView):
     queryset = HardwareLifecycle.objects.all()
+    template_name = 'generic/object.html'
+    layout = layout.SimpleLayout(
+        left_panels=[
+            HardwareLifecyclePanel(),
+            HardwareLifecycleDatesPanel(),
+            TagsPanel(),
+        ],
+        right_panels=[
+            CustomFieldsPanel(),
+            panels.RelatedObjectsPanel(),
+            panels.CommentsPanel(),
+        ],
+    )
 
-    def get_extra_context(self, request, instance):
 
-        return {}
-
-
+@register_model_view(HardwareLifecycle, 'add', detail=False)
 @register_model_view(HardwareLifecycle, 'edit')
 class HardwareLifecycleEditView(ObjectEditView):
     queryset = HardwareLifecycle.objects.all()
     form = HardwareLifecycleForm
-
-
-@register_model_view(HardwareLifecycle, 'bulk_edit')
-class HardwareLifecycleBulkEditView(BulkEditView):
-    queryset = HardwareLifecycle.objects.all()
-    filterset = HardwareLifecycleFilterSet
-    table = HardwareLifecycleTable
-    form = HardwareLifecycleBulkEditForm
 
 
 @register_model_view(HardwareLifecycle, 'delete')
@@ -66,14 +71,22 @@ class HardwareLifecycleDeleteView(ObjectDeleteView):
     queryset = HardwareLifecycle.objects.all()
 
 
-@register_model_view(HardwareLifecycle, 'bulk_delete')
+@register_model_view(HardwareLifecycle, 'bulk_edit', detail=False)
+class HardwareLifecycleBulkEditView(BulkEditView):
+    queryset = HardwareLifecycle.objects.all()
+    filterset = HardwareLifecycleFilterSet
+    table = HardwareLifecycleTable
+    form = HardwareLifecycleBulkEditForm
+
+
+@register_model_view(HardwareLifecycle, 'bulk_delete', detail=False)
 class HardwareLifecycleBulkDeleteView(BulkDeleteView):
     queryset = HardwareLifecycle.objects.all()
     filterset = HardwareLifecycleFilterSet
     table = HardwareLifecycleTable
 
 
-@register_model_view(HardwareLifecycle, 'bulk_import')
+@register_model_view(HardwareLifecycle, 'bulk_import', detail=False)
 class HardwareLifecycleBulkImportView(BulkImportView):
     queryset = HardwareLifecycle.objects.all()
     model_form = HardwareLifecycleImportForm

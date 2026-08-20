@@ -9,7 +9,10 @@ from netbox_lifecycle.models import HardwareLifecycle
 
 __all__ = ('HardwareLifecycleFilterSet',)
 
+from utilities.filtersets import register_filterset
 
+
+@register_filterset
 class HardwareLifecycleFilterSet(NetBoxModelFilterSet):
     assigned_object_type_id = django_filters.ModelMultipleChoiceFilter(
         queryset=ContentType.objects.all()

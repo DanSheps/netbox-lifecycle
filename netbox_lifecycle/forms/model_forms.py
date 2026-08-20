@@ -46,6 +46,7 @@ class SupportSKUForm(NetBoxModelForm):
     manufacturer = DynamicModelChoiceField(
         queryset=Manufacturer.objects.all(),
         selector=False,
+        quick_add=True,
     )
 
     class Meta:
@@ -63,6 +64,7 @@ class SupportContractForm(NetBoxModelForm):
     vendor = DynamicModelChoiceField(
         queryset=Vendor.objects.all(),
         selector=True,
+        quick_add=True,
     )
 
     class Meta:
@@ -88,11 +90,13 @@ class SupportContractAssignmentForm(NetBoxModelForm):
     contract = DynamicModelChoiceField(
         queryset=SupportContract.objects.all(),
         selector=True,
+        quick_add=True,
     )
     sku = DynamicModelChoiceField(
         queryset=SupportSKU.objects.all(),
         required=False,
         selector=True,
+        quick_add=True,
         label=_('SKU'),
     )
     device = DynamicModelChoiceField(
@@ -238,6 +242,7 @@ class LicenseForm(NetBoxModelForm):
     manufacturer = DynamicModelChoiceField(
         queryset=Manufacturer.objects.all(),
         selector=False,
+        quick_add=True,
     )
 
     class Meta:
@@ -255,10 +260,12 @@ class LicenseAssignmentForm(NetBoxModelForm):
     vendor = DynamicModelChoiceField(
         queryset=Vendor.objects.all(),
         selector=True,
+        quick_add=True,
     )
     license = DynamicModelChoiceField(
         queryset=License.objects.all(),
         selector=True,
+        quick_add=True,
     )
     device = DynamicModelChoiceField(
         queryset=Device.objects.all(),

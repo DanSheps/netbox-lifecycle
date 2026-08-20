@@ -1,19 +1,92 @@
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
-from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 from netbox.plugins import PluginTemplateExtension
+from netbox.ui import panels, actions
 
-from .models import hardware
-from .models.license import LicenseAssignment
+from netbox_lifecycle import constants
+from netbox_lifecycle.models import hardware
+from netbox_lifecycle.ui import HardwareLifecyclePanel, HardwareLifecycleDatesPanel
+from netbox_lifecycle.ui.panels.tabbed import TabbedTablePanel
 
 PLUGIN_SETTINGS = settings.PLUGINS_CONFIG.get('netbox_lifecycle', {})
 
 
-class BaseLifecycleContent(PluginTemplateExtension):
-    """Base class for lifecycle template extensions."""
+class BaseMixin:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.model_name = None
+        self.field_name = None
+        self.lifecycle_content_type = None
+        self.lifecycle_object_id_attr = None
 
-    lifecycle_content_type = None  # Override: 'devicetype' or 'moduletype'
-    lifecycle_object_id_attr = None  # Override: attribute name for object ID
+    def get_context(self, context):
+        """
+        Return the context data to be used when rendering the panel.
+        Borrowed from netbox/ui/panels.py
+
+        Parameters:
+            context (dict): The template context
+        """
+        obj = context.get('object')
+        self.model_name = obj._meta.model_name if obj is not None else None
+        if self.model_name in ['device', 'devicetype']:
+            self.lifecycle_content_type = 'devicetype'
+            self.lifecycle_object_id_attr = 'device_type_id'
+        elif self.model_name in ['module', 'moduletype']:
+            self.lifecycle_content_type = 'moduletype'
+            self.lifecycle_object_id_attr = 'module_type_id'
+        else:
+            self.lifecycle_content_type = None
+
+        if self.model_name == 'device':
+            self.field_name = 'device_id'
+        elif self.model_name == 'module':
+            self.field_name = 'module_id'
+        elif self.model_name == 'virtualmachine':
+            self.field_name = 'virtual_machine_id'
+        else:
+            self.field_name = None
+
+        return {
+            'request': context.get('request'),
+            'object': context.get('object'),
+            'perms': context.get('perms'),
+            'panel_class': self.__class__.__name__,
+        }
+
+    def right_page(self):
+        result = ''
+        if hasattr(self, '_render_lifecycle_info'):
+            result += self._render_lifecycle_info('right_page')
+        if hasattr(self, '_render_contract_card'):
+            result += self._render_contract_card('right_page')
+        if hasattr(self, '_render_license_card'):
+            result += self._render_license_card('right_page')
+        return result
+
+    def left_page(self):
+        result = ''
+        if hasattr(self, '_render_lifecycle_info'):
+            result += self._render_lifecycle_info('left_page')
+        if hasattr(self, '_render_contract_card'):
+            result += self._render_contract_card('left_page')
+        if hasattr(self, '_render_license_card'):
+            result += self._render_license_card('left_page')
+        return result
+
+    def full_width_page(self):
+        result = ''
+        if hasattr(self, '_render_lifecycle_info'):
+            result += self._render_lifecycle_info('full_width_page')
+        if hasattr(self, '_render_contract_card'):
+            result += self._render_contract_card('full_width_page')
+        if hasattr(self, '_render_license_card'):
+            result += self._render_license_card('full_width_page')
+        return result
+
+
+class LifecycleMixin:
 
     def get_lifecycle_card_position(self):
         return PLUGIN_SETTINGS.get('lifecycle_card_position', 'right_page')
@@ -29,178 +102,176 @@ class BaseLifecycleContent(PluginTemplateExtension):
             assigned_object_type_id=content_type.id,
         ).first()
 
-    def _render_lifecycle_info(self):
-        return self.render(
-            'netbox_lifecycle/inc/hardware_lifecycle_info.html',
-            extra_context={'lifecycle_info': self._get_lifecycle_info()},
+    def _render_lifecycle_info(self, location=None):
+        if self.get_lifecycle_card_position() != location:
+            return ''
+
+        context = self.get_context(self.context)
+        obj = self._get_lifecycle_info()
+        context['object'] = obj
+
+        content = HardwareLifecyclePanel().render(
+            context
+        ) + HardwareLifecycleDatesPanel().render(context)
+        return content
+
+
+class ContractMixin:
+
+    def get_contract_card_position(self):
+        return PLUGIN_SETTINGS.get('contract_card_position', 'right_page')
+
+    def _render_contract_card(self, location=None):
+        if self.get_contract_card_position() != location:
+            return ''
+
+        title = _('Contracts')
+        action = [
+            actions.AddObject(
+                'netbox_lifecycle.SupportContractAssignment',
+                url_params={
+                    self.model_name: lambda ctx: ctx['object'].pk,
+                },
+            ),
+        ]
+
+        include_columns = [
+            'contract',
+            'sku',
+        ]
+        exclude_columns = [
+            'device_name',
+            'module_name',
+            'virtual_machine_name',
+            'license_name',
+            'device_model',
+            'device_serial',
+            'module_serial',
+            'device_status',
+            'virtual_machine_status',
+            'quantity',
+            'renewal',
+            'end',
+            'description',
+            'comments',
+            'actions',
+        ]
+        filter = {
+            self.field_name: lambda ctx: ctx['object'].pk,
+        }
+        context = self.get_context(self.context)
+        panel = TabbedTablePanel(
+            title=title,
+            tabs={
+                'active': panels.ObjectsTablePanel(
+                    title=_('Active'),
+                    model='netbox_lifecycle.supportcontractassignment',
+                    filters={**filter, 'status': constants.CONTRACT_STATUS_ACTIVE},
+                    include_columns=include_columns,
+                    exclude_columns=exclude_columns,
+                ),
+                'expired': panels.ObjectsTablePanel(
+                    title=_('Expired'),
+                    model='netbox_lifecycle.supportcontractassignment',
+                    filters={**filter, 'status': constants.CONTRACT_STATUS_EXPIRED},
+                    include_columns=include_columns,
+                    exclude_columns=exclude_columns,
+                ),
+                'future': panels.ObjectsTablePanel(
+                    title=_('Future'),
+                    model='netbox_lifecycle.supportcontractassignment',
+                    filters={**filter, 'status': constants.CONTRACT_STATUS_FUTURE},
+                    include_columns=include_columns,
+                    exclude_columns=exclude_columns,
+                ),
+                'unspecified': panels.ObjectsTablePanel(
+                    title=_('Unspecified'),
+                    model='netbox_lifecycle.supportcontractassignment',
+                    filters={
+                        **filter,
+                        'status': constants.CONTRACT_STATUS_UNSPECIFIED,
+                    },
+                    include_columns=include_columns,
+                    exclude_columns=exclude_columns,
+                ),
+            },
+            actions=action,
         )
-
-    def right_page(self):
-        if self.get_lifecycle_card_position() == 'right_page':
-            return self._render_lifecycle_info()
-        return ''
-
-    def left_page(self):
-        if self.get_lifecycle_card_position() == 'left_page':
-            return self._render_lifecycle_info()
-        return ''
-
-    def full_width_page(self):
-        if self.get_lifecycle_card_position() == 'full_width_page':
-            return self._render_lifecycle_info()
-        return ''
+        return panel.render(context=context)
 
 
-class DeviceLifecycleContent(BaseLifecycleContent):
+class LicenseMixin:
+
+    def get_license_card_position(self):
+        return PLUGIN_SETTINGS.get('license_card_position', 'right_page')
+
+    def _render_license_card(self, location=None, exclude=None, include=None):
+        if self.get_license_card_position() != location:
+            return ''
+
+        action = [
+            actions.AddObject(
+                'netbox_lifecycle.LicenseAssignment',
+                url_params={
+                    self.model_name: lambda ctx: ctx['object'].pk,
+                },
+            ),
+        ]
+
+        context = self.get_context(self.context)
+        panel = panels.ObjectsTablePanel(
+            title=_('Licenses'),
+            model='netbox_lifecycle.licenseassignment',
+            filters={self.field_name: lambda ctx: ctx['object'].pk},
+            include_columns=[
+                'vendor',
+                'license',
+                'quantity',
+            ],
+            exclude_columns=[
+                'device',
+                'virtual_machine',
+                'description',
+                'comments',
+                'actions',
+            ],
+            actions=action,
+        )
+        return panel.render(context=context)
+
+
+class DeviceContent(
+    ContractMixin, LicenseMixin, LifecycleMixin, BaseMixin, PluginTemplateExtension
+):
     models = ['dcim.device']
     lifecycle_content_type = 'devicetype'
     lifecycle_object_id_attr = 'device_type_id'
 
-    def get_contract_card_position(self):
-        return PLUGIN_SETTINGS.get('contract_card_position', 'right_page')
 
-    def get_license_card_position(self):
-        return PLUGIN_SETTINGS.get('license_card_position', 'right_page')
-
-    def _render_contract_card(self):
-        obj = self.context.get('object')
-        return self.render(
-            'netbox_lifecycle/inc/contract_card_placeholder.html',
-            extra_context={
-                'htmx_url': reverse(
-                    'plugins:netbox_lifecycle:device_contracts_htmx',
-                    kwargs={'pk': obj.pk},
-                ),
-            },
-        )
-
-    def _render_license_card(self):
-        obj = self.context.get('object')
-        if not LicenseAssignment.objects.filter(device=obj).exists():
-            return ''
-        return self.render(
-            'netbox_lifecycle/inc/license_card_placeholder.html',
-            extra_context={
-                'htmx_url': reverse(
-                    'plugins:netbox_lifecycle:device_licenses_htmx',
-                    kwargs={'pk': obj.pk},
-                ),
-            },
-        )
-
-    def right_page(self):
-        result = ''
-        if self.get_lifecycle_card_position() == 'right_page':
-            result += self._render_lifecycle_info()
-        if self.get_contract_card_position() == 'right_page':
-            result += self._render_contract_card()
-        if self.get_license_card_position() == 'right_page':
-            result += self._render_license_card()
-        return result
-
-    def left_page(self):
-        result = ''
-        if self.get_lifecycle_card_position() == 'left_page':
-            result += self._render_lifecycle_info()
-        if self.get_contract_card_position() == 'left_page':
-            result += self._render_contract_card()
-        if self.get_license_card_position() == 'left_page':
-            result += self._render_license_card()
-        return result
-
-    def full_width_page(self):
-        result = ''
-        if self.get_lifecycle_card_position() == 'full_width_page':
-            result += self._render_lifecycle_info()
-        if self.get_contract_card_position() == 'full_width_page':
-            result += self._render_contract_card()
-        if self.get_license_card_position() == 'full_width_page':
-            result += self._render_license_card()
-        return result
-
-
-class ModuleLifecycleContent(BaseLifecycleContent):
+class ModuleLifecycleContent(
+    ContractMixin, LifecycleMixin, BaseMixin, PluginTemplateExtension
+):
     models = ['dcim.module']
-    lifecycle_content_type = 'moduletype'
-    lifecycle_object_id_attr = 'module_type_id'
 
 
-class DeviceTypeLifecycleContent(BaseLifecycleContent):
+class DeviceTypeLifecycleContent(LifecycleMixin, BaseMixin, PluginTemplateExtension):
     models = ['dcim.devicetype']
-    lifecycle_content_type = 'devicetype'
-    lifecycle_object_id_attr = 'id'
 
 
-class ModuleTypeLifecycleContent(BaseLifecycleContent):
+class ModuleTypeLifecycleContent(LifecycleMixin, BaseMixin, PluginTemplateExtension):
     models = ['dcim.moduletype']
-    lifecycle_content_type = 'moduletype'
-    lifecycle_object_id_attr = 'id'
 
 
-class VirtualMachineContractContent(PluginTemplateExtension):
+class VirtualMachineContractContent(
+    ContractMixin, LicenseMixin, BaseMixin, PluginTemplateExtension
+):
     """Template extension for VirtualMachine detail pages showing contracts and licenses."""
 
     models = ['virtualization.virtualmachine']
 
-    def get_contract_card_position(self):
-        return PLUGIN_SETTINGS.get('contract_card_position', 'right_page')
-
-    def get_license_card_position(self):
-        return PLUGIN_SETTINGS.get('license_card_position', 'right_page')
-
-    def _render_contract_card(self):
-        obj = self.context.get('object')
-        return self.render(
-            'netbox_lifecycle/inc/contract_card_placeholder.html',
-            extra_context={
-                'htmx_url': reverse(
-                    'plugins:netbox_lifecycle:virtualmachine_contracts_htmx',
-                    kwargs={'pk': obj.pk},
-                ),
-            },
-        )
-
-    def _render_license_card(self):
-        obj = self.context.get('object')
-        if not LicenseAssignment.objects.filter(virtual_machine=obj).exists():
-            return ''
-        return self.render(
-            'netbox_lifecycle/inc/license_card_placeholder.html',
-            extra_context={
-                'htmx_url': reverse(
-                    'plugins:netbox_lifecycle:virtualmachine_licenses_htmx',
-                    kwargs={'pk': obj.pk},
-                ),
-            },
-        )
-
-    def right_page(self):
-        result = ''
-        if self.get_contract_card_position() == 'right_page':
-            result += self._render_contract_card()
-        if self.get_license_card_position() == 'right_page':
-            result += self._render_license_card()
-        return result
-
-    def left_page(self):
-        result = ''
-        if self.get_contract_card_position() == 'left_page':
-            result += self._render_contract_card()
-        if self.get_license_card_position() == 'left_page':
-            result += self._render_license_card()
-        return result
-
-    def full_width_page(self):
-        result = ''
-        if self.get_contract_card_position() == 'full_width_page':
-            result += self._render_contract_card()
-        if self.get_license_card_position() == 'full_width_page':
-            result += self._render_license_card()
-        return result
-
 
 template_extensions = (
-    DeviceLifecycleContent,
+    DeviceContent,
     ModuleLifecycleContent,
     DeviceTypeLifecycleContent,
     ModuleTypeLifecycleContent,

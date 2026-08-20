@@ -51,13 +51,15 @@ class SupportSKU(PrimaryModel):
         on_delete=models.CASCADE,
         related_name='skus',
     )
-    sku = models.CharField(max_length=100)
+    sku = models.CharField(verbose_name=_('SKU'), max_length=100)
 
     clone_fields = ('manufacturer',)
     prerequisite_models = ('dcim.Manufacturer',)
 
     class Meta:
         ordering = ['manufacturer', 'sku']
+        verbose_name = 'Support SKU'
+        verbose_name_plural = 'Support SKUs'
         constraints = (
             models.UniqueConstraint(
                 'manufacturer',
