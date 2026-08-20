@@ -51,7 +51,7 @@ class VendorTest(APIViewTestCases.APIViewTestCase):
 
     def test_create_vendor_with_tags(self):
         """Test creating a vendor with tags via the API."""
-        self.add_permissions('netbox_lifecycle.add_vendor')
+        self.add_permissions('netbox_lifecycle.add_vendor', 'extras.view_tag')
         Tag.objects.create(name='Test Tag', slug='test-tag')
         url = reverse('plugins-api:netbox_lifecycle-api:vendor-list')
         data = {
