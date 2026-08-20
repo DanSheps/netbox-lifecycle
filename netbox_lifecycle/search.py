@@ -22,7 +22,7 @@ class SupportSKUIndex(SearchIndex):
         ('description', 4000),
         ('comments', 5000),
     )
-    display_attrs = ('vendor', 'description')
+    display_attrs = ('manufacturer', 'description')
 
 
 @register_search
@@ -33,7 +33,7 @@ class SupportContractIndex(SearchIndex):
         ('description', 4000),
         ('comments', 5000),
     )
-    display_attrs = ('contract', 'sku', 'device', 'license', 'description')
+    display_attrs = ('vendor', 'start', 'renewal', 'end', 'description')
 
 
 @register_search
