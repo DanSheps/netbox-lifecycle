@@ -1,3 +1,4 @@
+from netbox.object_actions import AddObject, BulkDelete, BulkEdit, BulkExport
 from extras.ui.panels import TagsPanel, CustomFieldsPanel
 from netbox.views.generic import (
     BulkDeleteView,
@@ -298,16 +299,11 @@ class SupportContractBulkImportView(BulkImportView):
 
 @register_model_view(SupportContractAssignment, name='list', path='', detail=False)
 class SupportContractAssignmentListView(ObjectListView):
+    actions = (AddObject, BulkExport, BulkEdit, BulkDelete)
     queryset = SupportContractAssignment.objects.all()
     table = SupportContractAssignmentTable
     filterset = SupportContractAssignmentFilterSet
     filterset_form = SupportContractAssignmentFilterForm
-    actions = {
-        'add': {'add'},
-        'export': {'view'},
-        'bulk_edit': {'change'},
-        'bulk_delete': {'delete'},
-    }
 
 
 @register_model_view(SupportContractAssignment)
