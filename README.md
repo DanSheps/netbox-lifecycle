@@ -31,6 +31,7 @@ The NetBox Lifecycle plugin adds hardware EOS/EOL, license and support contract 
 
 The plugin is published on PyPI as [netbox-lifecycle](https://pypi.org/project/netbox-lifecycle/) and follows the standard [NetBox plugin installation procedure](https://netboxlabs.com/docs/netbox/plugins/#installing-plugins). The steps below assume a NetBox installation at `/opt/netbox`; adjust paths to match your environment.
 
+
 1. Install the package into the NetBox virtual environment:
 
    ```shell
