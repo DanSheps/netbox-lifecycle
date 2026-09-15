@@ -22,7 +22,10 @@ The Netbox Lifecycle plugin is a Hardware EOS/EOL, License and Support Contract 
 
 ## Installation
 
-To install, simply include this plugin in the plugins configuration section of netbox.
+To install
+
+* Install the plugin to the NetBox venv `pip install netbox-lifecycle`
+* Include this plugin in the plugins configuration section of netbox
 
 Example:
 ```python
