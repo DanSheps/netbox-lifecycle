@@ -40,4 +40,13 @@ urlpatterns = [
         'license-assignments/<int:pk>/',
         include(get_model_urls(app_name, 'licenseassignment')),
     ),
+    # EoX API settings
+    path(
+        'eox/',
+        include(get_model_urls(app_name, 'eoxapisettings', detail=False)),
+    ),
+    path(
+        'eox/<int:pk>/',
+        include(get_model_urls(app_name, 'eoxapisettings')),
+    ),
 ]

@@ -1,6 +1,7 @@
 from .contract import *
-from .license import *
+from .eox import *
 from .hardware import *
+from .license import *
 
 __all__ = (
     'VendorPanel',
@@ -15,4 +16,5 @@ __all__ = (
     'LicenseAssignmentPanel',
     'HardwareLifecyclePanel',
     'HardwareLifecycleDatesPanel',
+    'EoXAPISettingsPanel',
 )

@@ -50,6 +50,12 @@ class HardwareLifecycleQuery:
     hardware_lifecycle_list: list[HardwareLifecycleType] = strawberry_django.field()
 
 
+@strawberry.type(name="Query")
+class EoXAPISettingsQuery:
+    eox_api_settings: EoXAPISettingsType = strawberry_django.field()
+    eox_api_settings_list: list[EoXAPISettingsType] = strawberry_django.field()
+
+
 schema = [
     VendorQuery,
     SupportSKUQuery,
@@ -58,4 +64,5 @@ schema = [
     LicenseQuery,
     LicenseAssignmentQuery,
     HardwareLifecycleQuery,
+    EoXAPISettingsQuery,
 ]

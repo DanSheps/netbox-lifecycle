@@ -1,7 +1,9 @@
+from core.choices import JobIntervalChoices
 from dcim.models import Device, DeviceType, Manufacturer, Module, ModuleBay, ModuleType
 from django.test import TestCase
-from utilities.testing import create_test_device
+from utilities.testing import ChangeLoggedFilterSetTests, create_test_device
 
+from netbox_lifecycle.choices.eox import DriverChoices
 from netbox_lifecycle.filtersets import *
 from netbox_lifecycle.models import *
 from netbox_lifecycle.utilities.testing import *
@@ -450,3 +452,77 @@ class HardwareLifecycleTestCase(TestCase):
 
         params = {'module_type': [assigned_objects[0].model, assigned_objects[1].model]}
         self.assertEqual(self.filterset(params, self.queryset).qs.count(), 2)
+
+
+class EoXAPISettingsTestCase(TestCase, ChangeLoggedFilterSetTests):
+    queryset = EoXAPISettings.objects.all()
+    filterset = EoXAPISettingsFilterSet
+    ignore_fields = ('client_id', 'description', 'last_synced')
+
+    @classmethod
+    def setUpTestData(cls):
+        manufacturers = (
+            Manufacturer(name='Manufacturer 1', slug='manufacturer-1'),
+            Manufacturer(name='Manufacturer 2', slug='manufacturer-2'),
+            Manufacturer(name='Manufacturer 3', slug='manufacturer-3'),
+        )
+        Manufacturer.objects.bulk_create(manufacturers)
+
+        eox_settings = (
+            EoXAPISettings(
+                driver=DriverChoices.CISCO,
+                manufacturer=manufacturers[0],
+                enabled=True,
+                client_id='alpha-client',
+                description='First EoX config',
+                sync_interval=JobIntervalChoices.INTERVAL_HOURLY,
+            ),
+            EoXAPISettings(
+                driver=DriverChoices.CISCO,
+                manufacturer=manufacturers[1],
+                enabled=False,
+                client_id='beta-client',
+                description='Second EoX config',
+                sync_interval=JobIntervalChoices.INTERVAL_DAILY,
+            ),
+            EoXAPISettings(
+                driver=DriverChoices.CISCO,
+                manufacturer=manufacturers[2],
+                enabled=False,
+                client_id='gamma-client',
+                description='Third EoX config',
+                sync_interval=JobIntervalChoices.INTERVAL_DAILY,
+            ),
+        )
+        EoXAPISettings.objects.bulk_create(eox_settings)
+
+    def test_q(self):
+        params = {'q': 'alpha'}
+        self.assertEqual(self.filterset(params, self.queryset).qs.count(), 1)
+
+        params = {'q': 'Second EoX'}
+        self.assertEqual(self.filterset(params, self.queryset).qs.count(), 1)
+
+    def test_driver(self):
+        params = {'driver': [DriverChoices.CISCO]}
+        self.assertEqual(self.filterset(params, self.queryset).qs.count(), 3)
+
+    def test_enabled(self):
+        params = {'enabled': True}
+        self.assertEqual(self.filterset(params, self.queryset).qs.count(), 1)
+
+        params = {'enabled': False}
+        self.assertEqual(self.filterset(params, self.queryset).qs.count(), 2)
+
+    def test_manufacturer(self):
+        manufacturer = Manufacturer.objects.get(name='Manufacturer 1')
+
+        params = {'manufacturer': [manufacturer.name]}
+        self.assertEqual(self.filterset(params, self.queryset).qs.count(), 1)
+
+        params = {'manufacturer_id': [manufacturer.pk]}
+        self.assertEqual(self.filterset(params, self.queryset).qs.count(), 1)
+
+    def test_sync_interval(self):
+        params = {'sync_interval': [JobIntervalChoices.INTERVAL_HOURLY]}
+        self.assertEqual(self.filterset(params, self.queryset).qs.count(), 1)

@@ -1,4 +1,6 @@
 {
+  "eoxapisettings:api_list_objects": 14,
+  "eoxapisettings:list_objects_with_permission": 21,
   "hardwarelifecycle:api_list_objects": 16,
   "hardwarelifecycle:list_objects_with_permission": 22,
   "license:api_list_objects": 14,
