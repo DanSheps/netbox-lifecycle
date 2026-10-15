@@ -17,6 +17,7 @@ preview = true
 "netbox_lifecycle/graphql/filters.py" = ["F821", ]
 "netbox_lifecycle/ui/panels/contract.py" = ["SIM103", ]
 "netbox_lifecycle/ui/panels/license.py" = ["SIM103", ]
+"netbox_lifecycle/migrations/*" = ["E501"]
 
 [format]
 quote-style = "single"
