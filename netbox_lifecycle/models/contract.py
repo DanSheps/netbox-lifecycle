@@ -215,14 +215,16 @@ class SupportContractAssignment(PrimaryModel):
     def end_date(self):
         if self.end:
             return self.end
-        return self.contract.end
+        if self.contract:
+            return self.contract.end
+        return None
 
     @property
     def status(self):
         today = datetime.now(tz=timezone.utc).date()
 
         # Check if contract starts in the future
-        if self.contract.start and self.contract.start > today:
+        if self.contract and self.contract.start and self.contract.start > today:
             return CONTRACT_STATUS_FUTURE
 
         # Use assignment's end_date property (falls back to contract.end)

@@ -255,6 +255,23 @@ class SupportContractAssignmentStatusTest(TestCase):
         )
         self.assertEqual(assignment.status, CONTRACT_STATUS_EXPIRED)
 
+    def test_end_date_none_when_contract_deleted_and_no_override(self):
+        # A deleted contract SET_NULLs the assignment's contract; end_date
+        # must not crash on the missing relation (regression: cards and
+        # tables rendering the end column raised AttributeError).
+        assignment = SupportContractAssignment.objects.create()
+        self.assertIsNone(assignment.end_date)
+        self.assertEqual(assignment.status, CONTRACT_STATUS_UNSPECIFIED)
+
+    def test_end_date_prefers_override_when_contract_deleted(self):
+        assignment = SupportContractAssignment.objects.create(
+            end=datetime.now(tz=timezone.utc).date() + timedelta(days=30),
+        )
+        self.assertEqual(
+            assignment.end_date,
+            datetime.now(tz=timezone.utc).date() + timedelta(days=30),
+        )
+
 
 class LicenseAssignmentVMTestCase(TestCase):
     """Tests for LicenseAssignment with virtual_machine field."""
