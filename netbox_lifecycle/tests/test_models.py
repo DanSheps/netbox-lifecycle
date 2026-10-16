@@ -263,6 +263,12 @@ class SupportContractAssignmentStatusTest(TestCase):
         self.assertIsNone(assignment.end_date)
         self.assertEqual(assignment.status, CONTRACT_STATUS_UNSPECIFIED)
 
+    def test_str_renders_for_orphaned_assignment(self):
+        assignment = SupportContractAssignment.objects.create(
+            device=Device.objects.first(),
+        )
+        self.assertIn('(deleted)', str(assignment))
+
     def test_end_date_prefers_override_when_contract_deleted(self):
         assignment = SupportContractAssignment.objects.create(
             end=datetime.now(tz=timezone.utc).date() + timedelta(days=30),

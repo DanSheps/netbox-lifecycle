@@ -192,19 +192,20 @@ class SupportContractAssignment(PrimaryModel):
         )
 
     def __str__(self):
+        # A deleted contract SET_NULLs the relation; keep the assignment
+        # renderable instead of raising on every list/card row.
+        contract_id = self.contract.contract_id if self.contract else '(deleted)'
         if self.module:
-            return f'{self.module}: {self.contract.contract_id}'
+            return f'{self.module}: {contract_id}'
         if self.license and self.device:
-            return f'{self.device} ({self.license}): {self.contract.contract_id}'
+            return f'{self.device} ({self.license}): {contract_id}'
         if self.license and self.virtual_machine:
-            return (
-                f'{self.virtual_machine} ({self.license}): {self.contract.contract_id}'
-            )
+            return f'{self.virtual_machine} ({self.license}): {contract_id}'
         if self.device:
-            return f'{self.device}: {self.contract.contract_id}'
+            return f'{self.device}: {contract_id}'
         if self.virtual_machine:
-            return f'{self.virtual_machine}: {self.contract.contract_id}'
-        return f'{self.contract.contract_id}'
+            return f'{self.virtual_machine}: {contract_id}'
+        return contract_id
 
     def get_absolute_url(self):
         return reverse(
