@@ -13,7 +13,7 @@ class NetBoxLifeCycle(PluginConfig):
     author = metadata.get('Author')
     author_email = metadata.get('Author-email')
     base_url = 'lifecycle'
-    min_version = '4.5.0'
+    min_version = '4.7.0'
     required_settings = []
     default_settings = {
         'lifecycle_card_position': 'right_page',
