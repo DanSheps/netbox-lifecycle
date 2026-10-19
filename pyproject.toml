@@ -20,7 +20,29 @@ keywords = ["netbox-plugin", ]
 version = "1.1.11"
 license = { file = "LICENSE" }
 classifiers = [
+    'Development Status :: 5 - Production/Stable',
+    'Framework :: Django',
+    'Framework :: Django 6',
+    'Framework :: Django 6.0',
+    'Framework :: Django 6.1',
+    'Intended Audience :: Developers',
+    'Intended Audience :: Information Technology',
+    'Intended Audience :: System Administrators',
+    'Intended Audience :: Telecommunications Industry',
+    'License :: OSI Approved :: Apache Software License',
+    'Natural Language :: English',
     "Programming Language :: Python :: 3",
+    'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
+    'Programming Language :: Python :: 3.14',
+    'Topic :: System',
+    'Topic :: System :: Hardware',
+    'Topic :: System :: Hardware :: Mainframes',
+    'Topic :: System :: Networking',
+    'Topic :: System :: Networking :: Firewalls',
+    'Topic :: System :: Operating System',
+    'Topic :: System :: Power (UPS)',
+    'Topic :: System :: Systems Administration',
 ]
 dependencies = [
     'django-polymorphic',
