@@ -1,7 +1,10 @@
 # NetBox Lifecycle Plugin
 
-[![PyPI](https://img.shields.io/pypi/v/netbox-lifecycle)](https://pypi.org/project/netbox-lifecycle/)
-[![CI](https://github.com/DanSheps/netbox-lifecycle/actions/workflows/ci.yml/badge.svg)](https://github.com/DanSheps/netbox-lifecycle/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/netbox-lifecycle.svg)](https://pypi.org/project/netbox-lifecycle/)
+[![Python](https://img.shields.io/pypi/pyversions/netbox-lifecycle.svg)](https://pypi.org/project/netbox-lifecycle/)
+[![NetBox](https://img.shields.io/badge/NetBox-4.7%2B-success.svg)](https://github.com/netbox-community/netbox)
+[![CI](https://github.com/dansheps/netbox-lifecycle/actions/workflows/ci.yml/badge.svg)](https://github.com/dansheps/netbox-lifecycle/actions/workflows/ci.yml)
+[![License: AGPL-3.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 The NetBox Lifecycle plugin adds hardware EOS/EOL, license and support contract tracking to NetBox.
 
