@@ -1,16 +1,16 @@
 {
   "hardwarelifecycle:api_list_objects": 15,
-  "hardwarelifecycle:list_objects_with_permission": 19,
+  "hardwarelifecycle:list_objects_with_permission": 18,
   "license:api_list_objects": 13,
-  "license:list_objects_with_permission": 17,
+  "license:list_objects_with_permission": 16,
   "licenseassignment:api_list_objects": 15,
-  "licenseassignment:list_objects_with_permission": 20,
+  "licenseassignment:list_objects_with_permission": 19,
   "supportcontract:api_list_objects": 13,
-  "supportcontract:list_objects_with_permission": 17,
+  "supportcontract:list_objects_with_permission": 16,
   "supportcontractassignment:api_list_objects": 17,
-  "supportcontractassignment:list_objects_with_permission": 23,
+  "supportcontractassignment:list_objects_with_permission": 22,
   "supportsku:api_list_objects": 13,
-  "supportsku:list_objects_with_permission": 18,
+  "supportsku:list_objects_with_permission": 17,
   "vendor:api_list_objects": 12,
-  "vendor:list_objects_with_permission": 17
+  "vendor:list_objects_with_permission": 16
 }
