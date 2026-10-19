@@ -22,9 +22,9 @@ license = { file = "LICENSE" }
 classifiers = [
     'Development Status :: 5 - Production/Stable',
     'Framework :: Django',
-    'Framework :: Django 6',
-    'Framework :: Django 6.0',
-    'Framework :: Django 6.1',
+    'Framework :: Django :: 6',
+    'Framework :: Django :: 6.0',
+    'Framework :: Django :: 6.1',
     'Intended Audience :: Developers',
     'Intended Audience :: Information Technology',
     'Intended Audience :: System Administrators',
