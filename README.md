@@ -26,6 +26,7 @@ The NetBox Lifecycle plugin adds hardware EOS/EOL, license and support contract 
 | 4.4.x | 1.1.6 |
 | 4.5.x | 1.1.8 |
 | 4.6.x | 1.1.9 |
+| 4.7.x | 1.1.10 |
 
 ## Installation
 
