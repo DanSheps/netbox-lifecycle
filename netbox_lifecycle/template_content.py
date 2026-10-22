@@ -140,6 +140,8 @@ class ContractMixin:
         include_columns = [
             'contract',
             'sku',
+            'start',
+            'end',
         ]
         exclude_columns = [
             'device_name',
@@ -153,7 +155,6 @@ class ContractMixin:
             'virtual_machine_status',
             'quantity',
             'renewal',
-            'end',
             'description',
             'comments',
             'actions',

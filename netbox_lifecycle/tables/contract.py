@@ -142,6 +142,10 @@ class SupportContractAssignmentTable(NetBoxTable):
         accessor='license__quantity',
         orderable=False,
     )
+    start = tables.Column(
+        verbose_name=_('Start Date'),
+        accessor='contract__start',
+    )
     renewal = tables.Column(
         verbose_name=_('Renewal Date'),
         accessor='contract__renewal',
@@ -168,6 +172,7 @@ class SupportContractAssignmentTable(NetBoxTable):
             'device_status',
             'virtual_machine_status',
             'quantity',
+            'start',
             'renewal',
             'end',
             'description',
